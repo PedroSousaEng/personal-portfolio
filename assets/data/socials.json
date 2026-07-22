@@ -1,0 +1,8 @@
+{
+  "email": "hello@example.com",
+  "links": [
+    { "platform": "GitHub", "url": "https://github.com/example", "icon": "github" },
+    { "platform": "LinkedIn", "url": "https://linkedin.com/in/example", "icon": "linkedin" },
+    { "platform": "X (Twitter)", "url": "https://x.com/example", "icon": "twitter" }
+  ]
+}

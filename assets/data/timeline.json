@@ -1,0 +1,6 @@
+[
+  { "id": "first-line", "year": "2015", "title": "Wrote the first real line of code", "description": "A university elective in web development turned into every weekend for the rest of the year." },
+  { "id": "first-job", "year": "2019", "title": "First engineering role", "description": "Joined Fielday as the third engineering hire, working across the whole stack." },
+  { "id": "first-talk", "year": "2022", "title": "First conference talk", "description": "Spoke about incremental frontend migrations at a regional JS meetup — and got hooked on teaching." },
+  { "id": "oss-milestone", "year": "2024", "title": "Aurora UI passed 1,000 stars", "description": "The accessibility-first component library became a side project worth maintaining seriously." }
+]

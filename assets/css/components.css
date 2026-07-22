@@ -1,0 +1,410 @@
+/**
+ * PURPOSE
+ *   Every reusable UI component in the site, styled once and composed
+ *   across pages.
+ *
+ * RESPONSIBILITIES
+ *   Buttons, cards, primary navigation, form fields, badges/pills, footer.
+ *
+ * DEPENDENCIES
+ *   tokens.css, base.css, layout.css.
+ *
+ * SAFE EDITS
+ *   Add new component classes here. Every color/space/radius/duration value
+ *   used must already exist in tokens.css — if it doesn't, add it there
+ *   first rather than hard-coding a value in this file.
+ */
+
+/* =========================================================
+   Buttons
+   ========================================================= */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: 44px;
+  padding-inline: var(--space-6);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  white-space: nowrap;
+  transition: transform var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-base) var(--ease-standard),
+    border-color var(--duration-base) var(--ease-standard),
+    box-shadow var(--duration-base) var(--ease-standard);
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn--primary {
+  background: var(--color-accent-indigo);
+  color: var(--color-ink-950);
+  border: 1px solid var(--color-accent-indigo);
+}
+
+.btn--primary:hover {
+  background: #7d8cff;
+  border-color: #7d8cff;
+}
+
+.btn--secondary {
+  background: transparent;
+  color: var(--color-text-100);
+  border: 1px solid var(--color-line);
+}
+
+.btn--secondary:hover {
+  border-color: var(--color-accent-indigo);
+  box-shadow: var(--shadow-glow-indigo);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--color-text-400);
+  border: 1px solid transparent;
+  height: auto;
+  padding: var(--space-1) var(--space-2);
+}
+
+.btn--ghost:hover {
+  color: var(--color-text-100);
+}
+
+/* =========================================================
+   Cards
+   ========================================================= */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  background: var(--color-ink-800);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+}
+
+.card--interactive {
+  transition: transform var(--duration-base) var(--ease-standard),
+    box-shadow var(--duration-base) var(--ease-standard),
+    border-color var(--duration-base) var(--ease-standard);
+}
+
+.card--interactive:hover,
+.card--interactive:focus-within {
+  transform: translateY(-4px);
+  border-color: var(--color-accent-indigo-dim);
+  box-shadow: var(--shadow-glow-indigo);
+}
+
+.card__image {
+  aspect-ratio: 16 / 10;
+  width: 100%;
+  border-radius: var(--radius-md);
+  background: var(--color-ink-900);
+  object-fit: cover;
+}
+
+.card__title {
+  font-size: var(--text-xl);
+  line-height: var(--text-xl-lh);
+}
+
+.card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.card__links {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: auto;
+  padding-top: var(--space-2);
+}
+
+.card__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-text-400);
+  border-bottom: 1px solid transparent;
+  transition: color var(--duration-base) var(--ease-standard),
+    border-color var(--duration-base) var(--ease-standard);
+}
+
+.card__link:hover,
+.card__link:focus-visible {
+  color: var(--color-accent-indigo);
+  border-color: currentColor;
+}
+
+/* =========================================================
+   Badges / pills / tags
+   ========================================================= */
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-ink-900);
+  border: 1px solid var(--color-line);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-text-400);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  background: var(--color-ink-900);
+  border: 1px solid var(--color-line);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.02em;
+}
+
+.pill__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent-amber);
+  box-shadow: 0 0 0 3px var(--color-accent-amber-tint);
+  animation: pulse 2.4s var(--ease-standard) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.tag--featured {
+  color: var(--color-accent-amber);
+  border-color: var(--color-accent-amber);
+}
+
+/* =========================================================
+   Primary navigation
+   ========================================================= */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--nav-height);
+  display: flex;
+  align-items: center;
+  background: rgba(11, 13, 18, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.nav {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Signature element: persistent monospace brand mark, styled like a shell
+   prompt path. Always visible (not part of the collapsible menu). */
+.nav__brand {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-text-100);
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+}
+
+.nav__brand span {
+  color: var(--color-accent-indigo);
+}
+
+.nav__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+}
+
+.nav__toggle:hover {
+  background: var(--color-ink-800);
+}
+
+.nav__menu {
+  position: fixed;
+  inset: var(--nav-height) 0 0 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-6) var(--space-5);
+  background: var(--color-ink-950);
+  border-top: 1px solid var(--color-line);
+  transform: translateY(-8px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--duration-base) var(--ease-standard),
+    transform var(--duration-base) var(--ease-standard),
+    visibility 0s var(--duration-base);
+}
+
+.nav__menu[data-open="true"] {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+  transition: opacity var(--duration-base) var(--ease-standard),
+    transform var(--duration-base) var(--ease-standard),
+    visibility 0s 0s;
+}
+
+.nav__menu a {
+  padding: var(--space-4);
+  font-size: var(--text-xl);
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  border-bottom: 1px solid var(--color-line);
+}
+
+@media (min-width: 768px) {
+  .nav__toggle {
+    display: none;
+  }
+
+  .nav__menu {
+    position: static;
+    inset: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 0;
+    background: transparent;
+    border: none;
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .nav__menu a {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-sm);
+    font-family: var(--font-body);
+    font-weight: var(--weight-medium);
+    color: var(--color-text-400);
+    border-bottom: none;
+    border-radius: var(--radius-sm);
+    transition: color var(--duration-base) var(--ease-standard);
+  }
+
+  .nav__menu a:hover {
+    color: var(--color-text-100);
+  }
+
+  .nav__menu a[aria-current="page"] {
+    color: var(--color-text-100);
+    font-family: var(--font-mono);
+  }
+
+  /* Breadcrumb slash separators between desktop nav links. */
+  .nav__menu a:not(:first-child) {
+    position: relative;
+    margin-left: var(--space-2);
+  }
+
+  .nav__menu a:not(:first-child)::before {
+    content: "/";
+    position: absolute;
+    left: calc(-1 * var(--space-3));
+    color: var(--color-text-600);
+    font-family: var(--font-mono);
+  }
+}
+
+/* =========================================================
+   Forms (not used on Contact per brief — kept complete for future use)
+   ========================================================= */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.field label {
+  font-size: var(--text-sm);
+  color: var(--color-text-400);
+}
+
+.field input,
+.field textarea {
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-ink-900);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  color: var(--color-text-100);
+  transition: border-color var(--duration-base) var(--ease-standard);
+}
+
+.field input:focus-visible,
+.field textarea:focus-visible {
+  border-color: var(--color-accent-indigo);
+}
+
+/* =========================================================
+   Footer
+   ========================================================= */
+
+.site-footer {
+  border-top: 1px solid var(--color-line);
+  padding-block: var(--space-10);
+}
+
+.site-footer .cluster {
+  gap: var(--space-5);
+}
+
+/* =========================================================
+   Icons
+   ========================================================= */
+
+.icon {
+  width: var(--icon-md);
+  height: var(--icon-md);
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.icon--sm {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}
+
+.icon--lg {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+}

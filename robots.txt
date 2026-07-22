@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://alexrivera.github.io/portfolio/sitemap.xml

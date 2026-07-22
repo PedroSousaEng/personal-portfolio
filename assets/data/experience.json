@@ -1,0 +1,40 @@
+[
+  {
+    "id": "senior-fe-northwind",
+    "role": "Senior Frontend Engineer",
+    "company": "Northwind Software",
+    "period": "2023 — Present",
+    "location": "Remote",
+    "summary": "Lead the design-systems team, maintaining the component library that ships in every internal product.",
+    "highlights": [
+      "Cut cross-team UI bugs by rebuilding the component library around a documented accessibility contract.",
+      "Introduced a performance budget enforced in CI, keeping the flagship app's Lighthouse score above 90.",
+      "Mentored four engineers through their first design-system contributions."
+    ]
+  },
+  {
+    "id": "fe-engineer-brightloop",
+    "role": "Frontend Engineer",
+    "company": "Brightloop",
+    "period": "2021 — 2023",
+    "location": "Lisbon, Portugal",
+    "summary": "Owned the customer-facing dashboard, taking it from a jQuery codebase to a modern, tested frontend.",
+    "highlights": [
+      "Migrated the dashboard incrementally with zero downtime, shipping behind feature flags.",
+      "Built the first automated visual-regression suite for the product.",
+      "Partnered directly with design on the company's first documented design system."
+    ]
+  },
+  {
+    "id": "software-engineer-fielday",
+    "role": "Software Engineer",
+    "company": "Fielday",
+    "period": "2019 — 2021",
+    "location": "Lisbon, Portugal",
+    "summary": "Full-stack engineer on a small team building scheduling tools for field-service companies.",
+    "highlights": [
+      "Built the initial version of the team's scheduling engine, still in production today.",
+      "Set up the company's first CI/CD pipeline, cutting deploy time from hours to minutes."
+    ]
+  }
+]

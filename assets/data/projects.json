@@ -1,0 +1,68 @@
+[
+  {
+    "id": "aurora-ui",
+    "title": "Aurora UI",
+    "subtitle": "Accessible component library",
+    "description": "A themeable component library for design-system teams, built on native CSS custom properties. Every component ships with a documented accessibility contract, not just a Storybook page.",
+    "tags": ["TypeScript", "Web Components", "Design Systems"],
+    "image": "assets/images/project-aurora.svg",
+    "featured": true,
+    "github": "https://github.com/example/aurora-ui",
+    "demo": "https://aurora-ui.example.com"
+  },
+  {
+    "id": "pathfinder",
+    "title": "Pathfinder",
+    "subtitle": "Visual git history explorer",
+    "description": "A desktop tool that renders a repository's branch and merge history as an interactive graph, so reviewing a tangled history takes minutes instead of a full afternoon of `git log`.",
+    "tags": ["Rust", "Tauri", "Graph Rendering"],
+    "image": "assets/images/project-pathfinder.svg",
+    "featured": true,
+    "github": "https://github.com/example/pathfinder",
+    "demo": "https://pathfinder.example.com"
+  },
+  {
+    "id": "quiet-hours",
+    "title": "Quiet Hours",
+    "subtitle": "Focus-time scheduling for teams",
+    "description": "A lightweight scheduling layer that sits on top of existing calendars and protects blocks of uninterrupted work time across a whole team, with a public status page for each person.",
+    "tags": ["Node.js", "PostgreSQL", "Calendar APIs"],
+    "image": "assets/images/project-quiet-hours.svg",
+    "featured": true,
+    "github": "https://github.com/example/quiet-hours",
+    "demo": ""
+  },
+  {
+    "id": "ledger-lite",
+    "title": "Ledger Lite",
+    "subtitle": "Local-first budgeting tool",
+    "description": "A budgeting app that keeps every record on-device by default, with optional end-to-end encrypted sync. Built to prove a local-first architecture can still feel instant.",
+    "tags": ["JavaScript", "IndexedDB", "CRDT"],
+    "image": "assets/images/project-ledger-lite.svg",
+    "featured": false,
+    "github": "https://github.com/example/ledger-lite",
+    "demo": "https://ledger-lite.example.com"
+  },
+  {
+    "id": "typeset",
+    "title": "Typeset",
+    "subtitle": "Fluid type-scale generator",
+    "description": "A small utility that generates a full, accessible fluid type scale from three inputs, and exports it as ready-to-use CSS custom properties.",
+    "tags": ["CSS", "Design Tooling"],
+    "image": "assets/images/project-typeset.svg",
+    "featured": false,
+    "github": "https://github.com/example/typeset",
+    "demo": "https://typeset.example.com"
+  },
+  {
+    "id": "signal",
+    "title": "Signal Boards",
+    "subtitle": "Incident status pages",
+    "description": "Self-hosted status pages for small engineering teams, with a CLI that posts incident updates directly from a terminal during an outage.",
+    "tags": ["Go", "CLI", "SRE"],
+    "image": "assets/images/project-signal.svg",
+    "featured": false,
+    "github": "https://github.com/example/signal-boards",
+    "demo": ""
+  }
+]

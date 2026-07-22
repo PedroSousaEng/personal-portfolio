@@ -1,0 +1,6 @@
+[
+  { "category": "Languages", "items": ["TypeScript", "JavaScript (ES2023)", "Rust", "Go", "SQL"] },
+  { "category": "Frontend", "items": ["Web Components", "CSS Architecture", "Accessibility (WCAG 2.1)", "Performance Budgets"] },
+  { "category": "Backend & Data", "items": ["Node.js", "PostgreSQL", "REST & GraphQL APIs", "Redis"] },
+  { "category": "Practices & Tools", "items": ["CI/CD", "Testing Strategy", "Design Systems", "Git", "Docker"] }
+]

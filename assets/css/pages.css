@@ -1,0 +1,249 @@
+/**
+ * PURPOSE
+ *   Page-specific composition that isn't a general-purpose component.
+ *
+ * RESPONSIBILITIES
+ *   Hero section, status pill placement, experience timeline, contact page
+ *   layout, 404 layout.
+ *
+ * DEPENDENCIES
+ *   tokens.css, base.css, layout.css, components.css.
+ *
+ * SAFE EDITS
+ *   Add a new block per page here. If a rule would be useful on more than
+ *   one page, promote it to components.css instead of duplicating it.
+ */
+
+/* =========================================================
+   Hero (index.html)
+   ========================================================= */
+
+.hero {
+  padding-block: var(--space-16) var(--space-12);
+  min-height: calc(100dvh - var(--nav-height));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@media (min-width: 1024px) {
+  .hero {
+    padding-block: var(--space-24) var(--space-16);
+  }
+}
+
+.hero__name {
+  font-size: var(--text-4xl);
+  line-height: var(--text-4xl-lh);
+  font-family: var(--font-display);
+  font-weight: var(--weight-black);
+}
+
+/* Signature element: blinking terminal cursor beside the hero name. */
+.hero__cursor {
+  display: inline-block;
+  width: 0.5em;
+  height: 0.8em;
+  margin-left: 0.1em;
+  background: var(--color-accent-indigo);
+  animation: blink 1.1s step-end infinite;
+  vertical-align: text-bottom;
+}
+
+@keyframes blink {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+.hero__lede {
+  max-width: 56ch;
+  color: var(--color-text-400);
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+/* Orchestrated entrance: staggered reveal, disabled entirely under
+   prefers-reduced-motion via the [data-animate] rule in base.css. */
+[data-animate] {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: rise var(--duration-slow) var(--ease-standard) forwards;
+}
+
+@keyframes rise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+[data-animate="1"] { animation-delay: 0ms; }
+[data-animate="2"] { animation-delay: 90ms; }
+[data-animate="3"] { animation-delay: 180ms; }
+[data-animate="4"] { animation-delay: 270ms; }
+
+/* =========================================================
+   Section heading pattern (used on About / Projects / Home)
+   ========================================================= */
+
+.section-heading {
+  margin-bottom: var(--space-10);
+  max-width: 60ch;
+}
+
+/* =========================================================
+   Experience timeline (about.html)
+   ========================================================= */
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline__item {
+  display: grid;
+  grid-template-columns: var(--space-4) 1fr;
+  gap: var(--space-5);
+  padding-bottom: var(--space-10);
+  position: relative;
+}
+
+.timeline__item::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--space-4) / 2 - 1px);
+  top: var(--space-5);
+  bottom: 0;
+  width: 2px;
+  background: var(--color-line);
+}
+
+.timeline__item:last-child::before {
+  display: none;
+}
+
+.timeline__marker {
+  width: var(--space-4);
+  height: var(--space-4);
+  border-radius: var(--radius-full);
+  background: var(--color-ink-950);
+  border: 2px solid var(--color-accent-indigo);
+  margin-top: 4px;
+}
+
+.timeline__period {
+  display: block;
+  margin-bottom: var(--space-1);
+}
+
+/* =========================================================
+   Bio block (about.html)
+   ========================================================= */
+
+.about-avatar {
+  max-width: 320px;
+  margin-inline: auto;
+}
+
+/* =========================================================
+   Skills grid (about.html)
+   ========================================================= */
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+@media (min-width: 768px) {
+  .skills-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.skill-chip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-ink-800);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+}
+
+/* =========================================================
+   Contact page
+   ========================================================= */
+
+.contact-card {
+  max-width: 640px;
+}
+
+.contact-methods {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.contact-method {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-ink-800);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  transition: border-color var(--duration-base) var(--ease-standard);
+}
+
+.contact-method:hover,
+.contact-method:focus-visible {
+  border-color: var(--color-accent-indigo-dim);
+}
+
+.contact-method__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--color-ink-900);
+  color: var(--color-accent-indigo);
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   Empty / error states (used by render-*.js fallback + 404.html)
+   ========================================================= */
+
+.empty-state {
+  padding: var(--space-8);
+  text-align: center;
+  border: 1px dashed var(--color-line);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-400);
+}
+
+.page-404 {
+  min-height: calc(100dvh - var(--nav-height));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.page-404__code {
+  font-family: var(--font-mono);
+  font-size: var(--text-4xl);
+  color: var(--color-accent-indigo);
+}

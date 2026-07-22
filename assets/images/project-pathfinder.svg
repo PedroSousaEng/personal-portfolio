@@ -1,0 +1,17 @@
+<svg viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pathfinder project cover">
+  <rect width="480" height="300" fill="#14171F"/>
+  <g stroke="#262B38" opacity="0.6">
+    <line x1="0" y1="75" x2="480" y2="75"/>
+    <line x1="0" y1="150" x2="480" y2="150"/>
+    <line x1="0" y1="225" x2="480" y2="225"/>
+  </g>
+  <g fill="none" stroke="#FFB347" stroke-width="2">
+    <circle cx="120" cy="90" r="8" fill="#FFB347" stroke="none"/>
+    <circle cx="220" cy="150" r="8" fill="#FFB347" stroke="none"/>
+    <circle cx="180" cy="220" r="8" fill="#FFB347" stroke="none"/>
+    <circle cx="330" cy="110" r="8" fill="#6C7CFF" stroke="none"/>
+    <circle cx="380" cy="200" r="8" fill="#6C7CFF" stroke="none"/>
+    <path d="M120 90 L220 150 L180 220 M220 150 L330 110 L380 200"/>
+  </g>
+  <text x="32" y="260" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="20" fill="#8B93A7">PF</text>
+</svg>

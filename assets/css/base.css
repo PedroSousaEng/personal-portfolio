@@ -1,0 +1,154 @@
+/**
+ * PURPOSE
+ *   Normalize browser defaults and set base typographic/element behavior.
+ *
+ * RESPONSIBILITIES
+ *   - Modern CSS reset (box-sizing, margin removal, media defaults).
+ *   - Base element styles: body, headings, links, lists, media, forms.
+ *   - The single global prefers-reduced-motion behavior override.
+ *
+ * DEPENDENCIES
+ *   tokens.css must be loaded first.
+ *
+ * SAFE EDITS
+ *   Element-level defaults only. Component-specific styling belongs in
+ *   components.css; page composition belongs in pages.css.
+ */
+
+/* ---- Reset ---- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  color-scheme: dark;
+}
+
+html:focus-within {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100dvh;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--text-base-lh);
+  color: var(--color-text-100);
+  background-color: var(--color-ink-950);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+img,
+video {
+  height: auto;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+p {
+  max-width: 68ch;
+}
+
+/* ---- Focus visibility (WCAG 2.4.7) ---- */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent-indigo);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ---- Selection ---- */
+::selection {
+  background-color: var(--color-accent-indigo);
+  color: var(--color-ink-950);
+}
+
+/* ---- Screen-reader-only utility (used for skip link target labels, etc.) ---- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- Global reduced-motion behavior ----
+ * Duration tokens already collapse to ~0 (see tokens.css), which handles
+ * transition timing. This additionally removes transform-based entrance
+ * animation so nothing appears to "jump" instead of transition.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  [data-animate] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
