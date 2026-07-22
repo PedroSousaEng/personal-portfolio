@@ -111,6 +111,26 @@
   --nav-height: 68px;
 
   /*
+   * ---- Signature element: pendulum + blueprint + atmosphere ----
+   * See docs/DESIGN_SYSTEM.md, "Signature element" for the reasoning.
+   * These are the only tokens the pendulum/blueprint/dust layer
+   * (assets/css/signature.css, assets/js/pendulum.js) is allowed to read —
+   * no bare colors in that layer either.
+   */
+  --pendulum-rod-light: #d8dbe2;
+  --pendulum-rod-mid: #9096a3;
+  --pendulum-rod-dark: #5b6070;
+  --pendulum-bob-light: #eef0f4;
+  --pendulum-bob-mid: #aeb3c0;
+  --pendulum-bob-dark: #33364a;
+  --pendulum-shadow: rgba(0, 0, 0, 0.45);
+  --blueprint-line: #6c7cff;
+  --blueprint-opacity: 0.05;
+  --dust-color: rgba(242, 244, 248, 0.5);
+  --reveal-distance: 14px;
+  --signature-z: 3; /* stacking level content must clear — see signature.css */
+
+  /*
    * Breakpoints cannot live in a custom property because @media conditions
    * cannot reference var(). The canonical values are documented in
    * docs/DESIGN_SYSTEM.md and mirrored as literal numbers in layout.css

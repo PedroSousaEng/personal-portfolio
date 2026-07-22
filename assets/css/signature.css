@@ -1,0 +1,182 @@
+/**
+ * PURPOSE
+ *   The site's one signature visual system: an almost-invisible CAD
+ *   blueprint backdrop, slow floating dust, a physically-simulated
+ *   pendulum, and the scroll-reveal transition used to sync content with
+ *   the pendulum crossing center. See docs/DESIGN_SYSTEM.md, "Signature
+ *   element."
+ *
+ * RESPONSIBILITIES
+ *   - Fixed, decorative, non-interactive layers (blueprint, dust, pendulum
+ *     canvas). None of these ever intercept pointer events.
+ *   - The [data-reveal] transition classes toggled by
+ *     assets/js/scroll-reveal.js.
+ *   - Making sure real page content stacks above those decorative layers
+ *     (see "Content stacking" below) — this file is the one place that
+ *     couples the two, so the rule lives here rather than being
+ *     duplicated per page.
+ *
+ * DEPENDENCIES
+ *   tokens.css (every color/duration here is a token — no bare values).
+ *   Paired with assets/js/pendulum.js and assets/js/scroll-reveal.js.
+ *
+ * SAFE EDITS
+ *   Tune opacity/size here. Physics constants live in pendulum.js, not here.
+ */
+
+/* =========================================================
+   Blueprint backdrop
+   A construction-line grid, inspired by CAD software, faint enough that
+   it reads as texture rather than pattern. Fixed attachment gives a hint
+   of parallax against scrolling content for free, with no JS cost.
+   ========================================================= */
+
+.blueprint-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: var(--blueprint-opacity);
+  background-image:
+    linear-gradient(var(--blueprint-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--blueprint-line) 1px, transparent 1px),
+    linear-gradient(var(--blueprint-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--blueprint-line) 1px, transparent 1px);
+  background-size: 96px 96px, 96px 96px, 16px 16px, 16px 16px;
+  background-position: -1px -1px;
+}
+
+@media (min-width: 768px) {
+  .blueprint-bg {
+    background-attachment: fixed;
+  }
+}
+
+/* =========================================================
+   Atmosphere: floating dust
+   A handful of tiny, slow, near-invisible motes — the feeling of
+   precision machinery inside a clean workshop, not a snow effect.
+   ========================================================= */
+
+.dust {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.dust__mote {
+  position: absolute;
+  bottom: -4%;
+  width: var(--mote-size, 2px);
+  height: var(--mote-size, 2px);
+  border-radius: 50%;
+  background: var(--dust-color);
+  opacity: 0;
+  animation: dust-rise var(--mote-duration, 26s) linear infinite;
+  animation-delay: var(--mote-delay, 0s);
+}
+
+@keyframes dust-rise {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  8% {
+    opacity: var(--mote-opacity, 0.35);
+  }
+  92% {
+    opacity: var(--mote-opacity, 0.35);
+  }
+  100% {
+    transform: translate(var(--mote-drift, 12px), -108vh);
+    opacity: 0;
+  }
+}
+
+/* =========================================================
+   Pendulum
+   Hangs from above the browser chrome — the attachment point itself is
+   never drawn, only the rod entering from the top edge. Physics live in
+   pendulum.js; this just positions and sizes the canvas.
+   ========================================================= */
+
+.pendulum {
+  position: fixed;
+  top: 0;
+  right: clamp(16px, 6vw, 96px);
+  z-index: 2;
+  width: clamp(90px, 9vw, 150px);
+  height: clamp(220px, 32vh, 340px);
+  pointer-events: none;
+}
+
+.pendulum canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Hide the signature layers well before print/reduced-data concerns and
+   keep them out of the way on very short viewports where they'd crowd
+   the hero. */
+@media (max-height: 560px) {
+  .pendulum {
+    height: 40vh;
+  }
+}
+
+/* =========================================================
+   Content stacking
+   The blueprint/dust/pendulum layers are `position: fixed` with an
+   explicit z-index (0/1/2). Per the CSS stacking spec, *any* positioned
+   element at z-index 0+ paints above in-flow, non-positioned content —
+   regardless of DOM order — so without this rule the pendulum bob would
+   render on top of main content and the footer instead of behind them.
+   `.site-header` isn't listed here: it already sets its own
+   `position: sticky; z-index: 50` in components.css, which (a) already
+   clears the pendulum and (b) loads after this file, so redeclaring
+   `position` for it here would fight that rule instead of reinforcing it.
+   ========================================================= */
+
+#main,
+.site-footer {
+  position: relative;
+  z-index: var(--signature-z);
+}
+
+/* =========================================================
+   Scroll reveal
+   Understated companion to the hero's entrance animation: content below
+   the fold arrives with the same rise/fade language, nudged by the
+   pendulum crossing center (see scroll-reveal.js) rather than by scroll
+   position alone.
+   ========================================================= */
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(var(--reveal-distance));
+  transition:
+    opacity var(--duration-slow) var(--ease-standard),
+    transform var(--duration-slow) var(--ease-standard);
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pendulum,
+  .dust,
+  .blueprint-bg {
+    display: none;
+  }
+
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
