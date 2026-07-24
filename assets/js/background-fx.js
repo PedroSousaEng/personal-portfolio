@@ -37,11 +37,20 @@
  *   module is self-contained — it never reaches into DOM outside the
  *   canvas it creates, so it's safe to add/remove the initBackgroundFX()
  *   call in main.js without touching anything else.
+ *
+ *   Page scope: this effect is intended for the Home page only. Other
+ *   pages (About, Projects, Contact, 404) run their own effect modules
+ *   via main.js, and calling initBackgroundFX() there would produce a
+ *   double-layer canvas. The main.js orchestrator gates the call on
+ *   `data-page="home"`; the guard below is a belt-and-braces early-out
+ *   in case the module is ever imported directly.
  */
 
 export function initBackgroundFX() {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   if (typeof window.requestAnimationFrame !== "function") return;
+  // Belt-and-braces: never run on non-home pages even if the caller forgot to gate.
+  if (document.body && document.body.dataset.page && document.body.dataset.page !== "home") return;
 
   // ---- Tunables ---------------------------------------------------------
   const PENDULUM_PERIOD_MS = 14000; // full swing cycle — slow & giant

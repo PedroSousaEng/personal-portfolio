@@ -1,0 +1,390 @@
+/**
+ * PURPOSE
+ *   Ambient full-viewport "technological network" background for the About
+ *   page. A field of quiet nodes connected by hair-thin lines, with a
+ *   slow orbital layer overlaid on top and a very gentle parallax reaction
+ *   to the pointer. The whole scene should read as an instrument idling —
+ *   never busy, never colourful.
+ *
+ * DESIGN INTENT
+ *   - Nodes: small, dim, breathe subtly. A few "hub" nodes are slightly
+ *     larger and hold longer connections.
+ *   - Links: only drawn between nodes within a threshold distance. The
+ *     line alpha decays with distance and with combined node depth.
+ *   - Orbits: 2–3 concentric ellipses centred slightly off-screen; each
+ *     hosts one traveller that ticks along the ring very slowly.
+ *   - Parallax: nodes shift a fraction of a pixel toward or away from the
+ *     pointer, scaled by depth. No repulsion, no scatter.
+ *
+ * RESPONSIBILITIES
+ *   - Inject a <canvas class="bg-fx bg-fx--network"> as the first child of
+ *     <body> and run a single requestAnimationFrame loop.
+ *   - Pause the loop when the tab is hidden.
+ *   - Do nothing at all (early-return) when reduced-motion is preferred —
+ *     base.css hides .bg-fx in that case.
+ *   - Fully self-contained: never touches DOM outside its own canvas.
+ *
+ * DEPENDENCIES
+ *   assets/css/base.css (.bg-fx sizing/stacking + reduced-motion guard).
+ *   assets/css/effects/tech-network.css (page-scoped visual layer).
+ *   assets/css/tokens.css (--fx-* colour tokens).
+ *
+ * SAFE EDITS
+ *   Tunable constants are grouped at the top of initTechNetwork(). This
+ *   module is self-contained; add/remove the initTechNetwork() call in
+ *   main.js without touching anything else.
+ */
+
+export function initTechNetwork() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (typeof window.requestAnimationFrame !== "function") return;
+
+  // ---- Tunables ---------------------------------------------------------
+  const NODE_AREA_DIVISOR = 16000; // lower = more nodes
+  const NODE_MIN = 46;
+  const NODE_MAX = 120;
+  const HUB_RATIO = 0.08; // proportion of nodes promoted to "hub"
+
+  const LINK_DIST = 138;         // px, threshold for drawing a link
+  const HUB_LINK_DIST = 210;     // hubs reach further
+
+  // Parallax: how many px a near node shifts toward/away from the pointer.
+  const PARALLAX_MAX = 6;
+  const PARALLAX_EASE = 0.06;    // low-pass filter toward target offset
+
+  // Node drift (very slow) — organic sinusoidal wander around anchor.
+  const DRIFT_AMP = 6;           // px around each anchor
+  const DRIFT_FREQ = 0.00018;    // rad / ms
+
+  // Node breathing (alpha modulation).
+  const BREATH_FREQ = 0.00055;
+
+  // Orbits: number of concentric rings and their configuration.
+  const ORBITS = [
+    { rx: 0.62, ry: 0.44, cx: 0.28, cy: 0.55, period: 42000, phase: 0.0 },
+    { rx: 0.48, ry: 0.34, cx: 0.74, cy: 0.42, period: 58000, phase: 1.9 },
+    { rx: 0.36, ry: 0.24, cx: 0.5,  cy: 0.5,  period: 74000, phase: 3.4 },
+  ];
+
+  // ---- Read colour tokens from CSS --------------------------------------
+  const rootStyles = getComputedStyle(document.documentElement);
+  const tok = (name, fallback) =>
+    rootStyles.getPropertyValue(name).trim() || fallback;
+
+  function parseColorTriplet(raw) {
+    if (!raw) return null;
+    const s = raw.trim();
+    const commaMatch = s.match(/^(\d+)\s*,\s*(\d+)\s*,\s*(\d+)$/);
+    if (commaMatch) return `${commaMatch[1]}, ${commaMatch[2]}, ${commaMatch[3]}`;
+    const rgbaMatch = s.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+    if (rgbaMatch) return `${rgbaMatch[1]}, ${rgbaMatch[2]}, ${rgbaMatch[3]}`;
+    const hexMatch = s.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+    if (hexMatch)
+      return `${parseInt(hexMatch[1], 16)}, ${parseInt(hexMatch[2], 16)}, ${parseInt(hexMatch[3], 16)}`;
+    return null;
+  }
+
+  const FX_NODE  = parseColorTriplet(tok("--fx-particle", "#aeb8ff")) || "174, 184, 255";
+  const FX_LINK  = parseColorTriplet(tok("--fx-particle-link", "#a0a8c8")) || "160, 168, 200";
+  const FX_DIM   = parseColorTriplet(tok("--fx-particle-dim", "#5b6376")) || "91, 99, 118";
+  const FX_ORBIT = parseColorTriplet(tok("--fx-network-orbit", "#6c7cff")) || "108, 124, 255";
+
+  // ---- Canvas setup -----------------------------------------------------
+  const canvas = document.createElement("canvas");
+  canvas.className = "bg-fx bg-fx--network";
+  canvas.setAttribute("aria-hidden", "true");
+  document.body.prepend(canvas);
+  const ctx = canvas.getContext("2d");
+
+  let width = window.innerWidth;
+  let height = window.innerHeight;
+  let dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  function resize() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+    canvas.style.width = width + "px";
+    canvas.style.height = height + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    seedNodesIfNeeded();
+  }
+
+  // ---- Pointer (parallax only, no repulsion) ----------------------------
+  const pointer = { x: width / 2, y: height / 2, tx: width / 2, ty: height / 2 };
+  const parallax = { x: 0, y: 0, tx: 0, ty: 0 };
+
+  function onPointerMove(event) {
+    pointer.tx = event.clientX;
+    pointer.ty = event.clientY;
+    // Target parallax: normalised offset from centre, scaled to PARALLAX_MAX.
+    const nx = (event.clientX / width) * 2 - 1;
+    const ny = (event.clientY / height) * 2 - 1;
+    parallax.tx = -nx * PARALLAX_MAX;
+    parallax.ty = -ny * PARALLAX_MAX;
+  }
+
+  window.addEventListener("pointermove", onPointerMove, { passive: true });
+
+  // ---- Nodes ------------------------------------------------------------
+  let nodes = [];
+
+  function targetNodeCount() {
+    const count = Math.round((width * height) / NODE_AREA_DIVISOR);
+    return Math.max(NODE_MIN, Math.min(NODE_MAX, count));
+  }
+
+  function makeNode() {
+    const z = Math.random(); // depth [0..1]
+    const isHub = Math.random() < HUB_RATIO;
+    return {
+      ax: Math.random() * width,    // anchor
+      ay: Math.random() * height,
+      x: 0, y: 0,                    // rendered position (anchor + drift + parallax)
+      z,
+      r: isHub ? 1.6 + z * 1.4 : 0.8 + z * 1.4,
+      hub: isHub,
+      driftPhaseX: Math.random() * Math.PI * 2,
+      driftPhaseY: Math.random() * Math.PI * 2,
+      breathPhase: Math.random() * Math.PI * 2,
+    };
+  }
+
+  function seedNodesIfNeeded() {
+    const target = targetNodeCount();
+    if (nodes.length === 0) {
+      nodes = Array.from({ length: target }, makeNode);
+      return;
+    }
+    // Rescatter anchors to fill the new viewport rather than clumping in
+    // the previous size's rect.
+    for (let i = 0; i < nodes.length; i++) {
+      if (nodes[i].ax > width)  nodes[i].ax = Math.random() * width;
+      if (nodes[i].ay > height) nodes[i].ay = Math.random() * height;
+    }
+    while (nodes.length < target) nodes.push(makeNode());
+    if (nodes.length > target) nodes.length = target;
+  }
+
+  // ---- Spatial hash grid (link culling) ---------------------------------
+  const GRID_CELL = HUB_LINK_DIST; // widest possible reach
+  const grid = new Map();
+
+  function buildGrid() {
+    grid.clear();
+    for (let i = 0; i < nodes.length; i++) {
+      const n = nodes[i];
+      const cx = Math.floor(n.x / GRID_CELL);
+      const cy = Math.floor(n.y / GRID_CELL);
+      const key = cx * 100000 + cy;
+      let cell = grid.get(key);
+      if (!cell) {
+        cell = [];
+        grid.set(key, cell);
+      }
+      cell.push(i);
+    }
+  }
+
+  // ---- Update + draw ----------------------------------------------------
+  function updateNodes(now) {
+    // Ease parallax toward target for a fluid, non-jittery feel.
+    parallax.x += (parallax.tx - parallax.x) * PARALLAX_EASE;
+    parallax.y += (parallax.ty - parallax.y) * PARALLAX_EASE;
+
+    for (let i = 0; i < nodes.length; i++) {
+      const n = nodes[i];
+      const dx = Math.sin(now * DRIFT_FREQ + n.driftPhaseX) * DRIFT_AMP;
+      const dy = Math.cos(now * DRIFT_FREQ * 0.85 + n.driftPhaseY) * DRIFT_AMP;
+      // Depth-scaled parallax: near nodes (z→1) shift most.
+      const pxOff = parallax.x * (0.35 + n.z * 0.65);
+      const pyOff = parallax.y * (0.35 + n.z * 0.65);
+      n.x = n.ax + dx + pxOff;
+      n.y = n.ay + dy + pyOff;
+    }
+  }
+
+  function drawLinks() {
+    buildGrid();
+
+    ctx.lineWidth = 1;
+    const drawn = new Set();
+    const linkDistSq = LINK_DIST * LINK_DIST;
+    const hubLinkDistSq = HUB_LINK_DIST * HUB_LINK_DIST;
+
+    for (let i = 0; i < nodes.length; i++) {
+      const a = nodes[i];
+      const cx = Math.floor(a.x / GRID_CELL);
+      const cy = Math.floor(a.y / GRID_CELL);
+
+      for (let ox = -1; ox <= 1; ox++) {
+        for (let oy = -1; oy <= 1; oy++) {
+          const key = (cx + ox) * 100000 + (cy + oy);
+          const cell = grid.get(key);
+          if (!cell) continue;
+
+          for (let ci = 0; ci < cell.length; ci++) {
+            const j = cell[ci];
+            if (j <= i) continue;
+
+            const pairKey = i * 100000 + j;
+            if (drawn.has(pairKey)) continue;
+            drawn.add(pairKey);
+
+            const b = nodes[j];
+            const ddx = a.x - b.x;
+            const ddy = a.y - b.y;
+            const distSq = ddx * ddx + ddy * ddy;
+
+            // Use extended reach only when at least one endpoint is a hub.
+            const eitherHub = a.hub || b.hub;
+            const limitSq = eitherHub ? hubLinkDistSq : linkDistSq;
+            if (distSq > limitSq) continue;
+
+            const limit = eitherHub ? HUB_LINK_DIST : LINK_DIST;
+            const dist = Math.sqrt(distSq);
+            const falloff = 1 - dist / limit;
+
+            // Depth-aware: fainter links between deeper nodes.
+            const depthFactor = 0.45 + ((a.z + b.z) * 0.5) * 0.55;
+            const alpha = falloff * 0.22 * depthFactor;
+            if (alpha < 0.005) continue;
+
+            ctx.strokeStyle = `rgba(${FX_LINK}, ${alpha})`;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+  }
+
+  function drawNodes(now) {
+    for (let i = 0; i < nodes.length; i++) {
+      const n = nodes[i];
+      if (n.x < -12 || n.x > width + 12 || n.y < -12 || n.y > height + 12) continue;
+
+      const breath = 0.75 + 0.25 * Math.sin(now * BREATH_FREQ + n.breathPhase);
+      const depthScale = 0.55 + n.z * 0.45;
+      const radius = n.r * depthScale * (n.hub ? 1.15 : 1);
+      const alpha = (0.22 + n.z * 0.32) * breath;
+
+      if (n.hub) {
+        // Hub halo: a whisper of a glow, no bright core.
+        const halo = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, radius * 4);
+        halo.addColorStop(0, `rgba(${FX_NODE}, ${0.18 * breath})`);
+        halo.addColorStop(1, `rgba(${FX_NODE}, 0)`);
+        ctx.fillStyle = halo;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, radius * 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(${FX_NODE}, ${alpha})`;
+      ctx.arc(n.x, n.y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function drawOrbits(now) {
+    ctx.lineWidth = 1;
+
+    for (let i = 0; i < ORBITS.length; i++) {
+      const o = ORBITS[i];
+      const cx = width * o.cx + parallax.x * 0.4;
+      const cy = height * o.cy + parallax.y * 0.4;
+      const rx = Math.min(width, height) * o.rx;
+      const ry = Math.min(width, height) * o.ry;
+
+      // The orbit ring: dashed, extremely faint.
+      ctx.save();
+      ctx.setLineDash([2, 6]);
+      ctx.strokeStyle = `rgba(${FX_ORBIT}, 0.08)`;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+
+      // Traveller ticking along the ring.
+      const t = (now / o.period) * Math.PI * 2 + o.phase;
+      const tx = cx + Math.cos(t) * rx;
+      const ty = cy + Math.sin(t) * ry;
+
+      // Trail: a short arc behind the traveller for gentle motion cue.
+      ctx.save();
+      const trailFrom = t - 0.28;
+      const grad = ctx.createRadialGradient(tx, ty, 0, tx, ty, 22);
+      grad.addColorStop(0, `rgba(${FX_ORBIT}, 0.55)`);
+      grad.addColorStop(1, `rgba(${FX_ORBIT}, 0)`);
+      ctx.strokeStyle = `rgba(${FX_ORBIT}, 0.22)`;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rx, ry, 0, trailFrom, t);
+      ctx.stroke();
+
+      // Traveller glow + core.
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(tx, ty, 22, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = `rgba(${FX_NODE}, 0.9)`;
+      ctx.beginPath();
+      ctx.arc(tx, ty, 2.1, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  // ---- Main loop --------------------------------------------------------
+  let rafId = null;
+
+  function frame(now) {
+    ctx.clearRect(0, 0, width, height);
+    updateNodes(now);
+    drawOrbits(now);
+    drawLinks();
+    drawNodes(now);
+    rafId = window.requestAnimationFrame(frame);
+  }
+
+  function start() {
+    if (rafId === null) rafId = window.requestAnimationFrame(frame);
+  }
+
+  function stop() {
+    if (rafId !== null) {
+      window.cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+  }
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) stop();
+    else start();
+  });
+
+  let resizeTimer = null;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(resize, 150);
+  });
+
+  const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  reduceMotionQuery.addEventListener("change", (event) => {
+    if (event.matches) {
+      stop();
+      window.removeEventListener("pointermove", onPointerMove);
+      // Remove the canvas so nothing lingers behind the reduced-motion CSS.
+      if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
+    }
+  });
+
+  resize();
+  start();
+}

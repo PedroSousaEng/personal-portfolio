@@ -22,6 +22,7 @@ import { renderProjects } from "./render-projects.js";
 import { renderSkills, renderExperience, renderTimeline } from "./render-about.js";
 import { renderContact } from "./render-contact.js";
 import { initBackgroundFX } from "./background-fx.js";
+import { initTechNetwork } from "./effects/tech-network.js";
 import { initScrollReveal } from "./scroll-reveal.js";
 import { initCursor } from "./cursor.js";
 import { initMagneticButtons } from "./magnetic.js";
@@ -106,11 +107,30 @@ function initPageData() {
   }
 }
 
+/**
+ * Route the page to the correct ambient background effect.
+ *   home    -> initBackgroundFX() : pendulum + particle field + lighting
+ *   about   -> initTechNetwork()  : nodes / links / slow orbits + parallax
+ *   others  -> no background canvas (will be added in later phases)
+ *
+ * Each effect module is self-contained: it injects its own <canvas>,
+ * owns its own rAF loop, and honours prefers-reduced-motion internally.
+ * Never call more than one on the same page — they'd stack.
+ */
+function initPageBackground() {
+  const page = document.body.dataset.page;
+  if (page === "home") {
+    initBackgroundFX();
+  } else if (page === "about") {
+    initTechNetwork();
+  }
+}
+
 function init() {
   initNav();
   initFooterYear();
   initPageData();
-  initBackgroundFX();
+  initPageBackground();
   initScrollReveal();
   initCursor();
   initMagneticButtons();

@@ -50,6 +50,15 @@
      to give the canvas particle field a sense of spatial depth. */
   --fx-depth-vignette: rgba(20, 23, 31, 0.5);
 
+  /* ---- About page: technological network layer ----
+     Consumed by:
+       - assets/js/effects/tech-network.js (nodes / links / orbits)
+       - assets/css/effects/tech-network.css (schematic grid wash)
+     Kept in tokens so the About effect is themable from one place. */
+  --fx-network-orbit: #6c7cff;
+  --fx-network-grid: rgba(120, 130, 170, 0.035);
+  --fx-network-grid-size: 56px;
+
   /* ---- Color: state ---- */
   --color-success: #4ade80;
   --color-danger: #ff6b6b;

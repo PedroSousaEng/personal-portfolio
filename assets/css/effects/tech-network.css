@@ -1,0 +1,91 @@
+/**
+ * PURPOSE
+ *   Page-scoped visual layer for the About page's technological-network
+ *   background. Provides the subtle grid wash and depth vignette that sit
+ *   *behind* the canvas nodes/links drawn by
+ *   assets/js/effects/tech-network.js.
+ *
+ * RESPONSIBILITIES
+ *   - Only apply when <body data-page="about">, so the effect is truly
+ *     page-scoped and never leaks into Home / Projects / Contact.
+ *   - Style the injected .bg-fx--network canvas variant without touching
+ *     the base .bg-fx rules in base.css.
+ *   - Provide a purely-CSS grid wash (fixed, GPU-cheap) that reads as
+ *     "technical schematic paper" behind the canvas.
+ *
+ * DEPENDENCIES
+ *   tokens.css (--fx-network-* tokens), base.css (.bg-fx base rules).
+ *
+ * SAFE EDITS
+ *   Tune grid density / opacity below. This file must not contain any
+ *   selector that isn't scoped under [data-page="about"] — that scoping
+ *   is what keeps the module independent.
+ */
+
+/* =========================================================
+   About-only background layer
+   ========================================================= */
+
+[data-page="about"] {
+  /* Subtle schematic grid + a soft depth vignette. The grid is a pair of
+     repeating linear gradients so it costs nothing at runtime. */
+  background-image:
+    linear-gradient(
+      to right,
+      var(--fx-network-grid) 0,
+      var(--fx-network-grid) 1px,
+      transparent 1px,
+      transparent var(--fx-network-grid-size)
+    ),
+    linear-gradient(
+      to bottom,
+      var(--fx-network-grid) 0,
+      var(--fx-network-grid) 1px,
+      transparent 1px,
+      transparent var(--fx-network-grid-size)
+    ),
+    radial-gradient(
+      ellipse 75% 80% at 50% 50%,
+      transparent 0%,
+      transparent 55%,
+      var(--fx-depth-vignette) 100%
+    );
+  background-size:
+    var(--fx-network-grid-size) var(--fx-network-grid-size),
+    var(--fx-network-grid-size) var(--fx-network-grid-size),
+    100% 100%;
+  background-attachment: fixed;
+}
+
+/* Canvas variant: same base .bg-fx rules; this variant hook lets us
+   tweak blend / composition without touching base.css. */
+[data-page="about"] .bg-fx--network {
+  /* Screen blend keeps dark backgrounds intact while letting the faint
+     node/link colour additively sit on top of the grid wash. */
+  mix-blend-mode: screen;
+}
+
+/* Bio card: sits on the network layer, so we lift it with a hair-thin
+   ink surface + subtle inset line — feels like a spec sheet clipped onto
+   the schematic. Kept minimal so it never competes with the fx. */
+[data-page="about"] .about-avatar {
+  filter: drop-shadow(0 0 24px rgba(108, 124, 255, 0.08));
+  transition: filter var(--duration-slow) var(--ease-standard);
+}
+
+[data-page="about"] .about-avatar:hover {
+  filter: drop-shadow(0 0 32px rgba(108, 124, 255, 0.16));
+}
+
+/* =========================================================
+   Reduced-motion: strip the animated layer, keep static grid
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  /* Base .bg-fx is already hidden by base.css; the grid wash stays
+     because it's purely static CSS and adds no motion. Explicitly
+     re-affirm here so the intent is documented in this module too. */
+  [data-page="about"] .bg-fx--network {
+    display: none;
+  }
+}
