@@ -58,7 +58,13 @@ export function initErrorSignal() {
   canvas.setAttribute("aria-hidden", "true");
   document.body.prepend(canvas);
 
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext("2d", { alpha: true });
+
+  // Static-background offscreen cache for the base radial glow — depends
+  // only on viewport size, so re-rendering it every frame is pure waste.
+  const bgCanvas = document.createElement("canvas");
+  const bgCtx = bgCanvas.getContext("2d", { alpha: true });
+
   let width = window.innerWidth;
   let height = window.innerHeight;
   let dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -86,6 +92,21 @@ export function initErrorSignal() {
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // Rebuild the cached base radial glow.
+    bgCanvas.width = Math.round(width * dpr);
+    bgCanvas.height = Math.round(height * dpr);
+    bgCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    bgCtx.clearRect(0, 0, width, height);
+    const glow = bgCtx.createRadialGradient(
+      width * 0.52, height * 0.42, 0,
+      width * 0.52, height * 0.42, Math.max(width, height) * 0.42
+    );
+    glow.addColorStop(0, `rgba(${FX_SOFT}, 0.06)`);
+    glow.addColorStop(1, "rgba(0, 0, 0, 0)");
+    bgCtx.fillStyle = glow;
+    bgCtx.fillRect(0, 0, width, height);
+
     seedSegments();
     seedBars();
   }
@@ -117,7 +138,19 @@ export function initErrorSignal() {
 
   function seedSegments() {
     const target = segmentCount();
-    segments = Array.from({ length: target }, makeSegment);
+    // Reuse the array; only allocate the tail when growing.
+    if (segments.length < target) {
+      while (segments.length < target) segments.push(makeSegment());
+    } else if (segments.length > target) {
+      segments.length = target;
+    }
+    // Re-scatter existing segments across the new viewport so they don't
+    // clump in the old rect after a resize.
+    for (let i = 0; i < segments.length; i++) {
+      const s = segments[i];
+      if (s.x > width) s.x = Math.random() * width;
+      if (s.y > height) s.y = Math.random() * height;
+    }
   }
 
   function makeBar(index) {
@@ -131,7 +164,9 @@ export function initErrorSignal() {
   }
 
   function seedBars() {
-    bars = Array.from({ length: BAR_COUNT }, (_, index) => makeBar(index));
+    if (bars.length !== BAR_COUNT) {
+      bars = Array.from({ length: BAR_COUNT }, (_, index) => makeBar(index));
+    }
   }
 
   function onPointerMove(event) {
@@ -146,14 +181,6 @@ export function initErrorSignal() {
 
   function scheduleNextGlitch(now) {
     nextGlitchAt = now + GLITCH_MIN_MS + Math.random() * (GLITCH_MAX_MS - GLITCH_MIN_MS);
-  }
-
-  function drawBaseGlow() {
-    const glow = ctx.createRadialGradient(width * 0.52, height * 0.42, 0, width * 0.52, height * 0.42, Math.max(width, height) * 0.42);
-    glow.addColorStop(0, `rgba(${FX_SOFT}, 0.06)`);
-    glow.addColorStop(1, "rgba(0, 0, 0, 0)");
-    ctx.fillStyle = glow;
-    ctx.fillRect(0, 0, width, height);
   }
 
   function drawBars(now, glitching) {
@@ -183,10 +210,17 @@ export function initErrorSignal() {
     const px = width ? (pointer.x / width) * 2 - 1 : 0;
     const py = height ? (pointer.y / height) * 2 - 1 : 0;
 
+    // Group segments by stroke colour so we can batch strokes with the
+    // same style — avoids setting strokeStyle for every segment.
+    // Since the colour choice depends on glitchBias (constant per segment)
+    // and only glitchBias > 0.66 uses FX_GLITCH, we run two passes.
+    const flickerT = now * 0.0011;
+    const driftT = now * 0.00045;
+
     for (let i = 0; i < segments.length; i++) {
       const segment = segments[i];
-      const flicker = 0.55 + 0.45 * Math.sin(now * 0.0011 + segment.phase);
-      const drift = Math.sin(now * 0.00045 + segment.phase) * segment.drift;
+      const flicker = 0.55 + 0.45 * Math.sin(flickerT + segment.phase);
+      const drift = Math.sin(driftT + segment.phase) * segment.drift;
       const offsetX = -px * (4 + segment.glitchBias * 6) + (glitching && segment.glitchBias > 0.58 ? 6 : 0);
       const offsetY = -py * (3 + segment.glitchBias * 4) + (glitching && segment.glitchBias < 0.42 ? -4 : 0);
       const alpha = segment.alpha * flicker + (glitching ? 0.06 * segment.glitchBias : 0);
@@ -245,7 +279,9 @@ export function initErrorSignal() {
 
     updatePointer();
     ctx.clearRect(0, 0, width, height);
-    drawBaseGlow();
+    // Blit the pre-rendered static base glow instead of rebuilding a
+    // radial gradient every frame.
+    ctx.drawImage(bgCanvas, 0, 0, width, height);
     drawBars(now, glitching);
     drawSegments(now, glitching);
     drawNoise(now, glitching);
@@ -291,7 +327,7 @@ export function initErrorSignal() {
   const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   window.addEventListener("pointermove", onPointerMove, { passive: true });
-  window.addEventListener("resize", onResize);
+  window.addEventListener("resize", onResize, { passive: true });
   document.addEventListener("visibilitychange", onVisibilityChange);
   reduceMotionQuery.addEventListener("change", onReduceMotionChange);
 

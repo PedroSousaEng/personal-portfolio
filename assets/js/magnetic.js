@@ -7,6 +7,11 @@
  *   - Event-delegate pointermove on document (rather than binding a
  *     listener per button) so the effect works on any .btn in the DOM,
  *     present now or added later, with a single listener.
+ *   - Cache the active button's bounding rect on entry — refresh only on
+ *     scroll/resize — so the hot pointermove path performs no layout
+ *     reads.
+ *   - Batch style writes through requestAnimationFrame so a burst of
+ *     pointermove events collapses into one transform per frame.
  *   - Clamp displacement to a small maximum so the effect reads as
  *     "subtle," per the design brief.
  *   - No-op on touch/coarse-pointer devices and under
@@ -36,14 +41,25 @@ export function initMagneticButtons() {
   if (reduceMotionQuery.matches || !finePointerQuery.matches) return;
 
   let activeButton = null;
+  let activeRect = null;
+  let pendingX = 0;
+  let pendingY = 0;
+  let rafScheduled = false;
 
-  function applyOffset(el, event) {
-    const rect = el.getBoundingClientRect();
-    const relX = event.clientX - (rect.left + rect.width / 2);
-    const relY = event.clientY - (rect.top + rect.height / 2);
-    const offsetX = clamp(relX * STRENGTH, -MAX_OFFSET_PX, MAX_OFFSET_PX);
-    const offsetY = clamp(relY * STRENGTH, -MAX_OFFSET_PX, MAX_OFFSET_PX);
-    el.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+  function refreshRect() {
+    if (activeButton) activeRect = activeButton.getBoundingClientRect();
+  }
+
+  function flush() {
+    rafScheduled = false;
+    if (!activeButton) return;
+    activeButton.style.transform = `translate3d(${pendingX}px, ${pendingY}px, 0)`;
+  }
+
+  function scheduleFlush() {
+    if (rafScheduled) return;
+    rafScheduled = true;
+    requestAnimationFrame(flush);
   }
 
   function snapBack(el) {
@@ -67,11 +83,23 @@ export function initMagneticButtons() {
     if (el !== activeButton) {
       if (activeButton) snapBack(activeButton);
       activeButton = el;
-      if (activeButton) delete activeButton.dataset.magneticActive; // instant-follow while actively tracked
+      if (activeButton) {
+        delete activeButton.dataset.magneticActive; // instant-follow while actively tracked
+        // One layout read per activation, cached for the whole hover.
+        activeRect = activeButton.getBoundingClientRect();
+      } else {
+        activeRect = null;
+        return;
+      }
     }
 
-    if (!el) return;
-    applyOffset(el, event);
+    if (!activeRect) return;
+
+    const relX = event.clientX - (activeRect.left + activeRect.width / 2);
+    const relY = event.clientY - (activeRect.top + activeRect.height / 2);
+    pendingX = clamp(relX * STRENGTH, -MAX_OFFSET_PX, MAX_OFFSET_PX);
+    pendingY = clamp(relY * STRENGTH, -MAX_OFFSET_PX, MAX_OFFSET_PX);
+    scheduleFlush();
   }
 
   function onPointerOut(event) {
@@ -81,8 +109,12 @@ export function initMagneticButtons() {
 
     snapBack(activeButton);
     activeButton = null;
+    activeRect = null;
   }
 
   document.addEventListener("pointermove", onPointerMove, { passive: true });
   document.addEventListener("pointerout", onPointerOut);
+  // Cached rect must be invalidated when the page reflows.
+  window.addEventListener("scroll", refreshRect, { passive: true });
+  window.addEventListener("resize", refreshRect, { passive: true });
 }

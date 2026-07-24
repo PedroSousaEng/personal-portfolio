@@ -62,12 +62,22 @@ export function initProjectsSpotlight() {
   canvas.setAttribute("aria-hidden", "true");
   document.body.prepend(canvas);
 
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext("2d", { alpha: true });
+
+  // Cached window metrics — updated only on resize.
   let width = window.innerWidth;
   let height = window.innerHeight;
   let dpr = Math.min(window.devicePixelRatio || 1, 2);
   let rafId = null;
   let resizeTimer = null;
+
+  // The base wash (top gradient + top-right corner glow) is completely
+  // static: it depends only on width/height. Rendering it into an
+  // offscreen canvas once per resize and blitting via drawImage every
+  // frame replaces two createLinearGradient/createRadialGradient +
+  // fillRect calls per frame with a single fast drawImage.
+  const bgCanvas = document.createElement("canvas");
+  const bgCtx = bgCanvas.getContext("2d", { alpha: true });
 
   const pointer = {
     x: width * 0.5,
@@ -87,6 +97,28 @@ export function initProjectsSpotlight() {
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // Rebuild the cached background wash for the new viewport size.
+    bgCanvas.width = Math.round(width * dpr);
+    bgCanvas.height = Math.round(height * dpr);
+    bgCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    bgCtx.clearRect(0, 0, width, height);
+
+    const topWash = bgCtx.createLinearGradient(0, 0, 0, height * 0.72);
+    topWash.addColorStop(0, `rgba(${FX_LINE}, 0.18)`);
+    topWash.addColorStop(0.45, `rgba(${FX_LINE}, 0.07)`);
+    topWash.addColorStop(1, `rgba(${FX_LINE}, 0)`);
+    bgCtx.fillStyle = topWash;
+    bgCtx.fillRect(0, 0, width, height);
+
+    const cornerWash = bgCtx.createRadialGradient(
+      width * 0.82, height * 0.18, 0,
+      width * 0.82, height * 0.18, Math.max(width, height) * 0.42
+    );
+    cornerWash.addColorStop(0, `rgba(${FX_SOFT}, 0.08)`);
+    cornerWash.addColorStop(1, `rgba(${FX_SOFT}, 0)`);
+    bgCtx.fillStyle = cornerWash;
+    bgCtx.fillRect(0, 0, width, height);
   }
 
   function onPointerMove(event) {
@@ -100,38 +132,15 @@ export function initProjectsSpotlight() {
     pointer.active = false;
   }
 
-  function idleTarget(now) {
-    const t = (now / IDLE_DRIFT_PERIOD_MS) * Math.PI * 2;
-    return {
-      x: width * (0.5 + Math.sin(t) * 0.18),
-      y: height * (0.34 + Math.sin(t * 1.37 + 0.9) * 0.12),
-    };
-  }
-
   function updatePointer(now) {
     if (!pointer.active && now - pointer.lastMove > IDLE_AFTER_MS) {
-      const target = idleTarget(now);
-      pointer.tx = target.x;
-      pointer.ty = target.y;
+      const t = (now / IDLE_DRIFT_PERIOD_MS) * Math.PI * 2;
+      pointer.tx = width * (0.5 + Math.sin(t) * 0.18);
+      pointer.ty = height * (0.34 + Math.sin(t * 1.37 + 0.9) * 0.12);
     }
 
     pointer.x += (pointer.tx - pointer.x) * TRACKING_EASE;
     pointer.y += (pointer.ty - pointer.y) * TRACKING_EASE;
-  }
-
-  function drawBaseWash() {
-    const topWash = ctx.createLinearGradient(0, 0, 0, height * 0.72);
-    topWash.addColorStop(0, `rgba(${FX_LINE}, 0.18)`);
-    topWash.addColorStop(0.45, `rgba(${FX_LINE}, 0.07)`);
-    topWash.addColorStop(1, `rgba(${FX_LINE}, 0)`);
-    ctx.fillStyle = topWash;
-    ctx.fillRect(0, 0, width, height);
-
-    const cornerWash = ctx.createRadialGradient(width * 0.82, height * 0.18, 0, width * 0.82, height * 0.18, Math.max(width, height) * 0.42);
-    cornerWash.addColorStop(0, `rgba(${FX_SOFT}, 0.08)`);
-    cornerWash.addColorStop(1, `rgba(${FX_SOFT}, 0)`);
-    ctx.fillStyle = cornerWash;
-    ctx.fillRect(0, 0, width, height);
   }
 
   function drawSpotlight(now) {
@@ -142,7 +151,13 @@ export function initProjectsSpotlight() {
     large.addColorStop(0.42, `rgba(${FX_SOFT}, ${0.035 * pulse})`);
     large.addColorStop(1, `rgba(${FX_SOFT}, 0)`);
     ctx.fillStyle = large;
-    ctx.fillRect(0, 0, width, height);
+    // Clip fillRect to the affected bounding box to avoid a full-viewport
+    // gradient rasterisation — outside the radius the gradient is fully
+    // transparent, so painting it there is wasted work.
+    const lx = pointer.x - SPOTLIGHT_RADIUS_LARGE;
+    const ly = pointer.y - SPOTLIGHT_RADIUS_LARGE;
+    const lw = SPOTLIGHT_RADIUS_LARGE * 2;
+    ctx.fillRect(lx, ly, lw, lw);
 
     const core = ctx.createRadialGradient(pointer.x, pointer.y, 0, pointer.x, pointer.y, SPOTLIGHT_RADIUS);
     core.addColorStop(0, `rgba(${FX_CORE}, ${0.16 * pulse})`);
@@ -150,7 +165,10 @@ export function initProjectsSpotlight() {
     core.addColorStop(0.72, `rgba(${FX_CORE}, 0.015)`);
     core.addColorStop(1, `rgba(${FX_CORE}, 0)`);
     ctx.fillStyle = core;
-    ctx.fillRect(0, 0, width, height);
+    const cx = pointer.x - SPOTLIGHT_RADIUS;
+    const cy = pointer.y - SPOTLIGHT_RADIUS;
+    const cw = SPOTLIGHT_RADIUS * 2;
+    ctx.fillRect(cx, cy, cw, cw);
   }
 
   function drawTrackingLines() {
@@ -184,7 +202,8 @@ export function initProjectsSpotlight() {
   function frame(now) {
     ctx.clearRect(0, 0, width, height);
     updatePointer(now);
-    drawBaseWash();
+    // Blit the pre-rendered static base wash instead of rebuilding it.
+    ctx.drawImage(bgCanvas, 0, 0, width, height);
     drawSpotlight(now);
     drawTrackingLines();
     rafId = window.requestAnimationFrame(frame);
@@ -203,6 +222,7 @@ export function initProjectsSpotlight() {
 
   function destroy() {
     stop();
+    clearTimeout(resizeTimer);
     window.removeEventListener("pointermove", onPointerMove);
     window.removeEventListener("pointerleave", onPointerLeave);
     window.removeEventListener("resize", onResize);
@@ -229,7 +249,7 @@ export function initProjectsSpotlight() {
 
   window.addEventListener("pointermove", onPointerMove, { passive: true });
   window.addEventListener("pointerleave", onPointerLeave);
-  window.addEventListener("resize", onResize);
+  window.addEventListener("resize", onResize, { passive: true });
   document.addEventListener("visibilitychange", onVisibilityChange);
   reduceMotionQuery.addEventListener("change", onReduceMotionChange);
 

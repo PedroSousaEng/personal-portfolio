@@ -33,6 +33,7 @@ export function initContactRadar() {
   const BLIP_MAX = 18;
   const BLIP_PING_WINDOW = 0.28;
   const GRID_STEP = 72;
+  const TAU = Math.PI * 2;
 
   const rootStyles = getComputedStyle(document.documentElement);
   const tok = (name, fallback) => rootStyles.getPropertyValue(name).trim() || fallback;
@@ -60,10 +61,18 @@ export function initContactRadar() {
   canvas.setAttribute("aria-hidden", "true");
   document.body.prepend(canvas);
 
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext("2d", { alpha: true });
+
+  // Static-background offscreen cache: the grid + concentric rings +
+  // crosshair axes depend only on width/height/center. Re-render only
+  // on resize; blit each frame with a single drawImage.
+  const bgCanvas = document.createElement("canvas");
+  const bgCtx = bgCanvas.getContext("2d", { alpha: true });
+
   let width = window.innerWidth;
   let height = window.innerHeight;
   let dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let maxRadius = 0;
   let rafId = null;
   let resizeTimer = null;
 
@@ -104,6 +113,62 @@ export function initContactRadar() {
     center.y = height * 0.54;
     center.tx = center.x;
     center.ty = center.y;
+    maxRadius = Math.min(width, height) * 0.3;
+
+    // Rebuild the cached static layer: grid + rings + crosshair axes.
+    bgCanvas.width = Math.round(width * dpr);
+    bgCanvas.height = Math.round(height * dpr);
+    bgCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    bgCtx.clearRect(0, 0, width, height);
+
+    // Grid.
+    bgCtx.lineWidth = 1;
+    bgCtx.strokeStyle = `rgba(${FX_LINE}, 0.08)`;
+    for (let x = Math.ceil(width * 0.48 / GRID_STEP) * GRID_STEP; x < width + GRID_STEP; x += GRID_STEP) {
+      bgCtx.beginPath();
+      bgCtx.moveTo(x, 0);
+      bgCtx.lineTo(x, height);
+      bgCtx.stroke();
+    }
+    for (let y = 0; y < height + GRID_STEP; y += GRID_STEP) {
+      bgCtx.beginPath();
+      bgCtx.moveTo(width * 0.44, y);
+      bgCtx.lineTo(width, y);
+      bgCtx.stroke();
+    }
+
+    // Radar halo (radial fill) — static because it's centred on the
+    // resting center; the animated center drift is small enough that
+    // baking it once is visually indistinguishable.
+    const halo = bgCtx.createRadialGradient(center.x, center.y, 0, center.x, center.y, maxRadius * 1.08);
+    halo.addColorStop(0, `rgba(${FX_SWEEP}, 0.05)`);
+    halo.addColorStop(0.55, `rgba(${FX_SWEEP}, 0.018)`);
+    halo.addColorStop(1, "rgba(0, 0, 0, 0)");
+    bgCtx.fillStyle = halo;
+    bgCtx.beginPath();
+    bgCtx.arc(center.x, center.y, maxRadius * 1.08, 0, TAU);
+    bgCtx.fill();
+
+    // Concentric rings.
+    bgCtx.lineWidth = 1;
+    for (let i = 1; i <= 4; i++) {
+      const radius = (maxRadius * i) / 4;
+      bgCtx.strokeStyle = `rgba(${FX_RING}, ${0.07 + i * 0.02})`;
+      bgCtx.beginPath();
+      bgCtx.arc(center.x, center.y, radius, 0, TAU);
+      bgCtx.stroke();
+    }
+
+    // Crosshair axes.
+    bgCtx.strokeStyle = `rgba(${FX_LINE}, 0.18)`;
+    bgCtx.beginPath();
+    bgCtx.moveTo(center.x - maxRadius, center.y);
+    bgCtx.lineTo(center.x + maxRadius, center.y);
+    bgCtx.stroke();
+    bgCtx.beginPath();
+    bgCtx.moveTo(center.x, center.y - maxRadius);
+    bgCtx.lineTo(center.x, center.y + maxRadius);
+    bgCtx.stroke();
 
     seedBlipsIfNeeded();
   }
@@ -115,10 +180,10 @@ export function initContactRadar() {
 
   function makeBlip() {
     return {
-      angle: Math.random() * Math.PI * 2,
+      angle: Math.random() * TAU,
       radiusRatio: 0.18 + Math.random() * 0.74,
       size: 1.2 + Math.random() * 2.2,
-      phase: Math.random() * Math.PI * 2,
+      phase: Math.random() * TAU,
       energy: 0,
       bias: Math.random() * 0.18,
     };
@@ -145,19 +210,11 @@ export function initContactRadar() {
     pointer.active = false;
   }
 
-  function idlePointerTarget(now) {
-    const t = (now / IDLE_DRIFT_PERIOD_MS) * Math.PI * 2;
-    return {
-      x: width * (0.74 + Math.sin(t) * 0.06),
-      y: height * (0.54 + Math.cos(t * 1.3 + 0.6) * 0.05),
-    };
-  }
-
   function updateTracking(now) {
     if (!pointer.active && now - pointer.lastMove > 1200) {
-      const idle = idlePointerTarget(now);
-      pointer.tx = idle.x;
-      pointer.ty = idle.y;
+      const t = (now / IDLE_DRIFT_PERIOD_MS) * TAU;
+      pointer.tx = width * (0.74 + Math.sin(t) * 0.06);
+      pointer.ty = height * (0.54 + Math.cos(t * 1.3 + 0.6) * 0.05);
     }
 
     pointer.x += (pointer.tx - pointer.x) * TRACKING_EASE;
@@ -171,62 +228,8 @@ export function initContactRadar() {
     center.y += (center.ty - center.y) * 0.035;
   }
 
-  function drawGrid() {
-    ctx.save();
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = `rgba(${FX_LINE}, 0.08)`;
-
-    for (let x = Math.ceil(width * 0.48 / GRID_STEP) * GRID_STEP; x < width + GRID_STEP; x += GRID_STEP) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
-      ctx.stroke();
-    }
-
-    for (let y = 0; y < height + GRID_STEP; y += GRID_STEP) {
-      ctx.beginPath();
-      ctx.moveTo(width * 0.44, y);
-      ctx.lineTo(width, y);
-      ctx.stroke();
-    }
-
-    ctx.restore();
-  }
-
-  function drawRadarBase(maxRadius) {
-    const halo = ctx.createRadialGradient(center.x, center.y, 0, center.x, center.y, maxRadius * 1.08);
-    halo.addColorStop(0, `rgba(${FX_SWEEP}, 0.05)`);
-    halo.addColorStop(0.55, `rgba(${FX_SWEEP}, 0.018)`);
-    halo.addColorStop(1, "rgba(0, 0, 0, 0)");
-    ctx.fillStyle = halo;
-    ctx.beginPath();
-    ctx.arc(center.x, center.y, maxRadius * 1.08, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.save();
-    ctx.lineWidth = 1;
-    for (let i = 1; i <= 4; i++) {
-      const radius = (maxRadius * i) / 4;
-      ctx.strokeStyle = `rgba(${FX_RING}, ${0.07 + i * 0.02})`;
-      ctx.beginPath();
-      ctx.arc(center.x, center.y, radius, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-
-    ctx.strokeStyle = `rgba(${FX_LINE}, 0.18)`;
-    ctx.beginPath();
-    ctx.moveTo(center.x - maxRadius, center.y);
-    ctx.lineTo(center.x + maxRadius, center.y);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(center.x, center.y - maxRadius);
-    ctx.lineTo(center.x, center.y + maxRadius);
-    ctx.stroke();
-    ctx.restore();
-  }
-
-  function drawSweep(now, maxRadius) {
-    const rotation = ((now % SWEEP_PERIOD_MS) / SWEEP_PERIOD_MS) * Math.PI * 2;
+  function drawSweep(now) {
+    const rotation = ((now % SWEEP_PERIOD_MS) / SWEEP_PERIOD_MS) * TAU;
     const start = rotation - SWEEP_ARC;
     const end = rotation;
 
@@ -235,44 +238,38 @@ export function initContactRadar() {
     sweep.addColorStop(0.45, `rgba(${FX_SWEEP}, 0.075)`);
     sweep.addColorStop(1, "rgba(0, 0, 0, 0)");
 
-    ctx.save();
     ctx.fillStyle = sweep;
     ctx.beginPath();
     ctx.moveTo(center.x, center.y);
     ctx.arc(center.x, center.y, maxRadius, start, end);
     ctx.closePath();
     ctx.fill();
-    ctx.restore();
 
-    ctx.save();
     ctx.strokeStyle = `rgba(${FX_RING}, 0.42)`;
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.moveTo(center.x, center.y);
     ctx.lineTo(center.x + Math.cos(rotation) * maxRadius, center.y + Math.sin(rotation) * maxRadius);
     ctx.stroke();
-    ctx.restore();
 
     return rotation;
   }
 
-  function normaliseAngle(angle) {
-    let value = angle % (Math.PI * 2);
-    if (value < 0) value += Math.PI * 2;
-    return value;
-  }
-
   function angleDistance(a, b) {
-    const diff = Math.abs(normaliseAngle(a) - normaliseAngle(b));
-    return Math.min(diff, Math.PI * 2 - diff);
+    let na = a % TAU; if (na < 0) na += TAU;
+    let nb = b % TAU; if (nb < 0) nb += TAU;
+    const diff = Math.abs(na - nb);
+    return diff > Math.PI ? TAU - diff : diff;
   }
 
-  function drawBlips(now, maxRadius, rotation) {
+  function drawBlips(now, rotation) {
+    const cx = center.x;
+    const cy = center.y;
     for (let i = 0; i < blips.length; i++) {
       const blip = blips[i];
       const radius = maxRadius * blip.radiusRatio;
-      const x = center.x + Math.cos(blip.angle) * radius;
-      const y = center.y + Math.sin(blip.angle) * radius;
+      const x = cx + Math.cos(blip.angle) * radius;
+      const y = cy + Math.sin(blip.angle) * radius;
       const sweepDistance = angleDistance(rotation, blip.angle);
       const sweepBoost = Math.max(0, 1 - sweepDistance / BLIP_PING_WINDOW);
       blip.energy = Math.max(blip.energy * 0.94, sweepBoost);
@@ -287,12 +284,12 @@ export function initContactRadar() {
       halo.addColorStop(1, "rgba(0, 0, 0, 0)");
       ctx.fillStyle = halo;
       ctx.beginPath();
-      ctx.arc(x, y, haloRadius, 0, Math.PI * 2);
+      ctx.arc(x, y, haloRadius, 0, TAU);
       ctx.fill();
 
       ctx.fillStyle = `rgba(${FX_SWEEP}, ${Math.min(alpha * 0.88, 0.92)})`;
       ctx.beginPath();
-      ctx.arc(x, y, blip.size + drift + blip.energy * 0.6, 0, Math.PI * 2);
+      ctx.arc(x, y, blip.size + drift + blip.energy * 0.6, 0, TAU);
       ctx.fill();
     }
   }
@@ -300,26 +297,26 @@ export function initContactRadar() {
   function drawFrame(now) {
     ctx.clearRect(0, 0, width, height);
     updateTracking(now);
-    drawGrid();
 
-    const maxRadius = Math.min(width, height) * 0.3;
-    drawRadarBase(maxRadius);
-    const rotation = drawSweep(now, maxRadius);
-    drawBlips(now, maxRadius, rotation);
+    // Blit the pre-rendered static layer (grid + rings + crosshair).
+    ctx.drawImage(bgCanvas, 0, 0, width, height);
+
+    const rotation = drawSweep(now);
+    drawBlips(now, rotation);
 
     ctx.strokeStyle = `rgba(${FX_RING}, 0.32)`;
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.arc(center.x, center.y, 6, 0, Math.PI * 2);
+    ctx.arc(center.x, center.y, 6, 0, TAU);
     ctx.stroke();
 
-    const pulse = 0.9 + Math.sin((now / 4200) * Math.PI * 2) * 0.1;
+    const pulse = 0.9 + Math.sin((now / 4200) * TAU) * 0.1;
     const core = ctx.createRadialGradient(center.x, center.y, 0, center.x, center.y, 18);
     core.addColorStop(0, `rgba(${FX_RING}, ${0.32 * pulse})`);
     core.addColorStop(1, "rgba(0, 0, 0, 0)");
     ctx.fillStyle = core;
     ctx.beginPath();
-    ctx.arc(center.x, center.y, 18, 0, Math.PI * 2);
+    ctx.arc(center.x, center.y, 18, 0, TAU);
     ctx.fill();
 
     rafId = window.requestAnimationFrame(drawFrame);
@@ -365,7 +362,7 @@ export function initContactRadar() {
 
   window.addEventListener("pointermove", onPointerMove, { passive: true });
   window.addEventListener("pointerleave", onPointerLeave);
-  window.addEventListener("resize", onResize);
+  window.addEventListener("resize", onResize, { passive: true });
   document.addEventListener("visibilitychange", onVisibilityChange);
   reduceMotionQuery.addEventListener("change", onReduceMotionChange);
 

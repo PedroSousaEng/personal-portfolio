@@ -94,32 +94,45 @@ export function initTechNetwork() {
   canvas.className = "bg-fx bg-fx--network";
   canvas.setAttribute("aria-hidden", "true");
   document.body.prepend(canvas);
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext("2d", { alpha: true });
 
+  // Cached window metrics — updated only on resize, never read inside
+  // the rAF loop.
   let width = window.innerWidth;
   let height = window.innerHeight;
   let dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let minWH = Math.min(width, height);
+
+  // Pre-computed per-orbit geometry, recomputed only on resize.
+  const orbitGeom = ORBITS.map(() => ({ cx0: 0, cy0: 0, rx: 0, ry: 0 }));
 
   function resize() {
     width = window.innerWidth;
     height = window.innerHeight;
     dpr = Math.min(window.devicePixelRatio || 1, 2);
+    minWH = Math.min(width, height);
     canvas.width = Math.round(width * dpr);
     canvas.height = Math.round(height * dpr);
     canvas.style.width = width + "px";
     canvas.style.height = height + "px";
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (let i = 0; i < ORBITS.length; i++) {
+      const o = ORBITS[i];
+      const g = orbitGeom[i];
+      g.cx0 = width * o.cx;
+      g.cy0 = height * o.cy;
+      g.rx = minWH * o.rx;
+      g.ry = minWH * o.ry;
+    }
     seedNodesIfNeeded();
   }
 
   // ---- Pointer (parallax only, no repulsion) ----------------------------
-  const pointer = { x: width / 2, y: height / 2, tx: width / 2, ty: height / 2 };
   const parallax = { x: 0, y: 0, tx: 0, ty: 0 };
 
   function onPointerMove(event) {
-    pointer.tx = event.clientX;
-    pointer.ty = event.clientY;
     // Target parallax: normalised offset from centre, scaled to PARALLAX_MAX.
+    // No time reads or per-frame allocations here — assignment only.
     const nx = (event.clientX / width) * 2 - 1;
     const ny = (event.clientY / height) * 2 - 1;
     parallax.tx = -nx * PARALLAX_MAX;
@@ -129,6 +142,9 @@ export function initTechNetwork() {
   window.addEventListener("pointermove", onPointerMove, { passive: true });
 
   // ---- Nodes ------------------------------------------------------------
+  // Reusable node objects — the array is grown/shrunk in place, never
+  // reallocated. Each object is mutated frame-to-frame instead of
+  // recreated, so the effect makes zero per-frame allocations.
   let nodes = [];
 
   function targetNodeCount() {
@@ -149,6 +165,11 @@ export function initTechNetwork() {
       driftPhaseX: Math.random() * Math.PI * 2,
       driftPhaseY: Math.random() * Math.PI * 2,
       breathPhase: Math.random() * Math.PI * 2,
+      // Cached-per-frame values populated by updateNodes so link + node
+      // draw passes don't recompute them.
+      _depthFactor: 0,
+      _cellX: 0,
+      _cellY: 0,
     };
   }
 
@@ -169,20 +190,35 @@ export function initTechNetwork() {
   }
 
   // ---- Spatial hash grid (link culling) ---------------------------------
+  // Reused across frames — Map is cleared, cell arrays are reused rather
+  // than reallocated, so buildGrid() makes no allocations after warmup.
   const GRID_CELL = HUB_LINK_DIST; // widest possible reach
   const grid = new Map();
+  const cellPool = []; // pool of empty arrays we can hand out
+  const activeCells = []; // cells currently in grid — cleared at start of buildGrid
 
   function buildGrid() {
+    // Return every active cell to the pool (length=0 preserves capacity).
+    for (let i = 0; i < activeCells.length; i++) {
+      const cell = activeCells[i];
+      cell.length = 0;
+      cellPool.push(cell);
+    }
+    activeCells.length = 0;
     grid.clear();
+
     for (let i = 0; i < nodes.length; i++) {
       const n = nodes[i];
-      const cx = Math.floor(n.x / GRID_CELL);
-      const cy = Math.floor(n.y / GRID_CELL);
+      const cx = (n.x / GRID_CELL) | 0;
+      const cy = (n.y / GRID_CELL) | 0;
+      n._cellX = cx;
+      n._cellY = cy;
       const key = cx * 100000 + cy;
       let cell = grid.get(key);
       if (!cell) {
-        cell = [];
+        cell = cellPool.pop() || [];
         grid.set(key, cell);
+        activeCells.push(cell);
       }
       cell.push(i);
     }
@@ -194,15 +230,19 @@ export function initTechNetwork() {
     parallax.x += (parallax.tx - parallax.x) * PARALLAX_EASE;
     parallax.y += (parallax.ty - parallax.y) * PARALLAX_EASE;
 
+    const px = parallax.x;
+    const py = parallax.y;
+    const t1 = now * DRIFT_FREQ;
+    const t2 = now * DRIFT_FREQ * 0.85;
+
     for (let i = 0; i < nodes.length; i++) {
       const n = nodes[i];
-      const dx = Math.sin(now * DRIFT_FREQ + n.driftPhaseX) * DRIFT_AMP;
-      const dy = Math.cos(now * DRIFT_FREQ * 0.85 + n.driftPhaseY) * DRIFT_AMP;
+      const dx = Math.sin(t1 + n.driftPhaseX) * DRIFT_AMP;
+      const dy = Math.cos(t2 + n.driftPhaseY) * DRIFT_AMP;
       // Depth-scaled parallax: near nodes (z→1) shift most.
-      const pxOff = parallax.x * (0.35 + n.z * 0.65);
-      const pyOff = parallax.y * (0.35 + n.z * 0.65);
-      n.x = n.ax + dx + pxOff;
-      n.y = n.ay + dy + pyOff;
+      const depthP = 0.35 + n.z * 0.65;
+      n.x = n.ax + dx + px * depthP;
+      n.y = n.ay + dy + py * depthP;
     }
   }
 
@@ -210,28 +250,26 @@ export function initTechNetwork() {
     buildGrid();
 
     ctx.lineWidth = 1;
-    const drawn = new Set();
     const linkDistSq = LINK_DIST * LINK_DIST;
     const hubLinkDistSq = HUB_LINK_DIST * HUB_LINK_DIST;
 
     for (let i = 0; i < nodes.length; i++) {
       const a = nodes[i];
-      const cx = Math.floor(a.x / GRID_CELL);
-      const cy = Math.floor(a.y / GRID_CELL);
+      const cx = a._cellX;
+      const cy = a._cellY;
 
+      // Iterate the 3x3 neighbourhood. j > i uniqueness makes a per-frame
+      // Set unnecessary (previous implementation allocated ~O(n) entries
+      // in a Set every frame, dominating the About-page cost).
       for (let ox = -1; ox <= 1; ox++) {
+        const cxo = (cx + ox) * 100000;
         for (let oy = -1; oy <= 1; oy++) {
-          const key = (cx + ox) * 100000 + (cy + oy);
-          const cell = grid.get(key);
+          const cell = grid.get(cxo + (cy + oy));
           if (!cell) continue;
 
           for (let ci = 0; ci < cell.length; ci++) {
             const j = cell[ci];
             if (j <= i) continue;
-
-            const pairKey = i * 100000 + j;
-            if (drawn.has(pairKey)) continue;
-            drawn.add(pairKey);
 
             const b = nodes[j];
             const ddx = a.x - b.x;
@@ -264,23 +302,27 @@ export function initTechNetwork() {
   }
 
   function drawNodes(now) {
+    const breathT = now * BREATH_FREQ;
     for (let i = 0; i < nodes.length; i++) {
       const n = nodes[i];
       if (n.x < -12 || n.x > width + 12 || n.y < -12 || n.y > height + 12) continue;
 
-      const breath = 0.75 + 0.25 * Math.sin(now * BREATH_FREQ + n.breathPhase);
+      const breath = 0.75 + 0.25 * Math.sin(breathT + n.breathPhase);
       const depthScale = 0.55 + n.z * 0.45;
       const radius = n.r * depthScale * (n.hub ? 1.15 : 1);
       const alpha = (0.22 + n.z * 0.32) * breath;
 
       if (n.hub) {
-        // Hub halo: a whisper of a glow, no bright core.
-        const halo = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, radius * 4);
+        // Hub halo: a whisper of a glow, no bright core. Radial gradient
+        // is unavoidable here (per-node varying centre), but it's only
+        // built for ~8% of nodes, not all of them.
+        const haloR = radius * 4;
+        const halo = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, haloR);
         halo.addColorStop(0, `rgba(${FX_NODE}, ${0.18 * breath})`);
         halo.addColorStop(1, `rgba(${FX_NODE}, 0)`);
         ctx.fillStyle = halo;
         ctx.beginPath();
-        ctx.arc(n.x, n.y, radius * 4, 0, Math.PI * 2);
+        ctx.arc(n.x, n.y, haloR, 0, Math.PI * 2);
         ctx.fill();
       }
 
@@ -293,13 +335,16 @@ export function initTechNetwork() {
 
   function drawOrbits(now) {
     ctx.lineWidth = 1;
+    const paraX04 = parallax.x * 0.4;
+    const paraY04 = parallax.y * 0.4;
 
     for (let i = 0; i < ORBITS.length; i++) {
       const o = ORBITS[i];
-      const cx = width * o.cx + parallax.x * 0.4;
-      const cy = height * o.cy + parallax.y * 0.4;
-      const rx = Math.min(width, height) * o.rx;
-      const ry = Math.min(width, height) * o.ry;
+      const g = orbitGeom[i];
+      const cx = g.cx0 + paraX04;
+      const cy = g.cy0 + paraY04;
+      const rx = g.rx;
+      const ry = g.ry;
 
       // The orbit ring: dashed, extremely faint.
       ctx.save();
@@ -364,26 +409,32 @@ export function initTechNetwork() {
     }
   }
 
-  document.addEventListener("visibilitychange", () => {
+  function onVisibilityChange() {
     if (document.hidden) stop();
     else start();
-  });
+  }
+  document.addEventListener("visibilitychange", onVisibilityChange);
 
   let resizeTimer = null;
-  window.addEventListener("resize", () => {
+  function onResize() {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(resize, 150);
-  });
+  }
+  window.addEventListener("resize", onResize, { passive: true });
 
   const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-  reduceMotionQuery.addEventListener("change", (event) => {
+  function onReduceMotionChange(event) {
     if (event.matches) {
       stop();
       window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      reduceMotionQuery.removeEventListener("change", onReduceMotionChange);
       // Remove the canvas so nothing lingers behind the reduced-motion CSS.
       if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
     }
-  });
+  }
+  reduceMotionQuery.addEventListener("change", onReduceMotionChange);
 
   resize();
   start();
