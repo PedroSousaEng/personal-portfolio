@@ -197,6 +197,111 @@
 }
 
 /* =========================================================
+   Projects page
+   ========================================================= */
+
+body[data-page="projects"] [data-all-projects] {
+  align-items: stretch;
+}
+
+body[data-page="projects"] [data-all-projects] > .card {
+  position: relative;
+  min-height: 100%;
+  isolation: isolate;
+  transform-style: preserve-3d;
+  background:
+    linear-gradient(180deg, rgba(27, 31, 42, 0.92) 0%, rgba(20, 23, 31, 0.98) 100%);
+  box-shadow: 0 24px 56px -40px rgba(0, 0, 0, 0.9);
+}
+
+body[data-page="projects"] [data-all-projects] > .card::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background:
+    linear-gradient(135deg, rgba(242, 244, 248, 0.06) 0%, transparent 28%),
+    linear-gradient(115deg, transparent 48%, rgba(108, 124, 255, 0.14) 58%, transparent 74%);
+  opacity: 0;
+  transform: translate3d(-5%, 0, 0);
+  transition:
+    opacity var(--duration-slow) var(--ease-standard),
+    transform var(--duration-slow) var(--ease-standard);
+  pointer-events: none;
+}
+
+body[data-page="projects"] [data-all-projects] > .card:hover::after,
+body[data-page="projects"] [data-all-projects] > .card:focus-within::after,
+body[data-page="projects"] [data-all-projects] > .card[data-tilting="true"]::after {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+body[data-page="projects"] .card__image {
+  clip-path: inset(0 round var(--radius-md));
+  transition:
+    transform var(--duration-slow) var(--ease-standard),
+    filter var(--duration-slow) var(--ease-standard),
+    opacity var(--duration-base) var(--ease-standard);
+  filter: saturate(0.88) brightness(0.92) contrast(1.04);
+}
+
+body[data-page="projects"] [data-all-projects] > .card:hover .card__image,
+body[data-page="projects"] [data-all-projects] > .card:focus-within .card__image,
+body[data-page="projects"] [data-all-projects] > .card[data-tilting="true"] .card__image {
+  transform: scale(1.025) translateY(-1px);
+  filter: saturate(1) brightness(1) contrast(1.08);
+}
+
+body[data-page="projects"] [data-all-projects] > .card .card__title,
+body[data-page="projects"] [data-all-projects] > .card .card__link,
+body[data-page="projects"] [data-all-projects] > .card .tag {
+  transition:
+    color var(--duration-base) var(--ease-standard),
+    border-color var(--duration-base) var(--ease-standard),
+    background-color var(--duration-base) var(--ease-standard),
+    transform var(--duration-base) var(--ease-standard);
+}
+
+body[data-page="projects"] [data-all-projects] > .card:hover .card__title,
+body[data-page="projects"] [data-all-projects] > .card:focus-within .card__title,
+body[data-page="projects"] [data-all-projects] > .card[data-tilting="true"] .card__title {
+  color: var(--color-text-100);
+}
+
+body[data-page="projects"] [data-all-projects] > .card:hover .tag,
+body[data-page="projects"] [data-all-projects] > .card:focus-within .tag,
+body[data-page="projects"] [data-all-projects] > .card[data-tilting="true"] .tag {
+  border-color: var(--color-accent-indigo-dim);
+  background: rgba(20, 23, 31, 0.92);
+}
+
+body[data-page="projects"] [data-all-projects] > .card:hover .card__link,
+body[data-page="projects"] [data-all-projects] > .card:focus-within .card__link,
+body[data-page="projects"] [data-all-projects] > .card[data-tilting="true"] .card__link {
+  color: var(--color-text-100);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-page="projects"] [data-all-projects] > .card,
+  body[data-page="projects"] [data-all-projects] > .card:hover,
+  body[data-page="projects"] [data-all-projects] > .card:focus-within {
+    transform: none !important;
+  }
+
+  body[data-page="projects"] [data-all-projects] > .card::after {
+    display: none;
+  }
+
+  body[data-page="projects"] .card__image,
+  body[data-page="projects"] [data-all-projects] > .card:hover .card__image,
+  body[data-page="projects"] [data-all-projects] > .card:focus-within .card__image {
+    transform: none;
+    filter: none;
+  }
+}
+
+/* =========================================================
    Contact page
    ========================================================= */
 

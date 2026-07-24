@@ -59,6 +59,16 @@
   --fx-network-grid: rgba(120, 130, 170, 0.035);
   --fx-network-grid-size: 56px;
 
+  /* ---- Projects page: spotlight wash ----
+     Consumed by:
+       - assets/js/effects/projects-spotlight.js
+       - assets/css/effects/projects-spotlight.css
+     Keeps the Projects background themable without leaking page rules into
+     shared component styles. */
+  --fx-projects-spotlight-core: #6c7cff;
+  --fx-projects-spotlight-soft: #aeb8ff;
+  --fx-projects-line: #5b6376;
+
   /* ---- Color: state ---- */
   --color-success: #4ade80;
   --color-danger: #ff6b6b;

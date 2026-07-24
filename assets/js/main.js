@@ -23,6 +23,7 @@ import { renderSkills, renderExperience, renderTimeline } from "./render-about.j
 import { renderContact } from "./render-contact.js";
 import { initBackgroundFX } from "./background-fx.js";
 import { initTechNetwork } from "./effects/tech-network.js";
+import { initProjectsSpotlight } from "./effects/projects-spotlight.js";
 import { initScrollReveal } from "./scroll-reveal.js";
 import { initCursor } from "./cursor.js";
 import { initMagneticButtons } from "./magnetic.js";
@@ -110,7 +111,8 @@ function initPageData() {
 /**
  * Route the page to the correct ambient background effect.
  *   home    -> initBackgroundFX() : pendulum + particle field + lighting
- *   about   -> initTechNetwork()  : nodes / links / slow orbits + parallax
+ *   about   -> initTechNetwork()      : nodes / links / slow orbits + parallax
+ *   projects-> initProjectsSpotlight(): mouse-led spotlight wash
  *   others  -> no background canvas (will be added in later phases)
  *
  * Each effect module is self-contained: it injects its own <canvas>,
@@ -123,6 +125,8 @@ function initPageBackground() {
     initBackgroundFX();
   } else if (page === "about") {
     initTechNetwork();
+  } else if (page === "projects") {
+    initProjectsSpotlight();
   }
 }
 
