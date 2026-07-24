@@ -44,6 +44,41 @@ function buildCard(project) {
   const card = document.createElement("article");
   card.className = "card card--interactive";
 
+  // Whole-card click-through to the project's GitHub repo, when known.
+  // Kept as a card-level affordance (not just the "Código" link below) so
+  // clicking anywhere on the card — image, title, description — opens the
+  // repository, while still behaving like a normal link for middle-click/
+  // new-tab/keyboard users.
+  if (project.github) {
+    card.classList.add("card--linked");
+    card.setAttribute("role", "link");
+    card.tabIndex = 0;
+    card.setAttribute(
+      "aria-label",
+      `Ver ${project.title} no GitHub (abre numa nova aba)`
+    );
+
+    const openRepo = () => {
+      window.open(project.github, "_blank", "noopener,noreferrer");
+    };
+
+    card.addEventListener("click", (event) => {
+      // Don't double-navigate if the click landed on an actual <a> inside
+      // the card (e.g. the "Código" / "Ver demo" links) — let those follow
+      // their own href/target normally.
+      if (event.target.closest("a")) return;
+      openRepo();
+    });
+
+    card.addEventListener("keydown", (event) => {
+      if (event.target.closest("a")) return;
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openRepo();
+      }
+    });
+  }
+
   const image = document.createElement("img");
   image.className = "card__image";
   image.src = project.image;

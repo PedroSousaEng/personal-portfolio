@@ -7,7 +7,7 @@
     "tags": ["Python", "Inteligência Artificial", "Automação"],
     "image": "assets/images/project-vinted-os.svg",
     "featured": true,
-    "github": "",
+    "github": "https://github.com/PedroSousaEng/vinted-os",
     "demo": ""
   },
   {
@@ -18,7 +18,7 @@
     "tags": ["HTML", "CSS", "JavaScript", "Inteligência Artificial"],
     "image": "assets/images/project-portfolio.svg",
     "featured": true,
-    "github": "",
+    "github": "https://github.com/PedroSousaEng/portfolio",
     "demo": ""
   },
   {
@@ -29,7 +29,7 @@
     "tags": ["Python", "SolidWorks", "Solid Edge", "Simulação"],
     "image": "assets/images/project-formula-water.svg",
     "featured": true,
-    "github": "",
+    "github": "https://github.com/PedroSousaEng/formula-water",
     "demo": ""
   },
   {
@@ -40,7 +40,7 @@
     "tags": ["Engenharia Inversa", "Materiais", "Desenvolvimento de Produto"],
     "image": "assets/images/project-teardown.svg",
     "featured": false,
-    "github": "",
+    "github": "https://github.com/PedroSousaEng/teardown-fechadura",
     "demo": ""
   },
   {
@@ -51,7 +51,7 @@
     "tags": ["CAD", "Impressão 3D", "PLA", "Mecânica"],
     "image": "assets/images/project-embraiagem.svg",
     "featured": false,
-    "github": "",
+    "github": "https://github.com/PedroSousaEng/embraiagem-pla",
     "demo": ""
   }
 ]

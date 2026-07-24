@@ -102,6 +102,15 @@
   box-shadow: var(--shadow-glow-indigo);
 }
 
+.card--linked {
+  cursor: pointer;
+}
+
+.card--linked:focus-visible {
+  outline: 2px solid var(--color-accent-indigo);
+  outline-offset: 2px;
+}
+
 .card__image {
   aspect-ratio: 16 / 10;
   width: 100%;
