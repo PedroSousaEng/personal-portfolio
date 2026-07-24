@@ -49,7 +49,7 @@
     "subtitle": "FEA-based fatigue life assessment of a transmission hub",
     "description": "A structural integrity study of a transmission hub combining CAD modeling, Finite Element Analysis (FEA), and analytical calculations to evaluate stress distribution and fatigue performance under cyclic loading. The project investigates stress concentrations, identifies critical failure regions, validates numerical results with engineering theory, and estimates fatigue life. It demonstrates the application of solid mechanics, material behavior, and simulation-driven engineering methodologies for mechanical component assessment.",
     "tags": ["FEA", "CAD", "Solid Mechanics", "Fatigue Analysis"],
-    "image": "assets/images/project-signal.svg",
+    "image": "assets/images/project-fatigue-study.svg",
     "featured": false,
     "github": "https://github.com/PedroSousaEng/fatigue-study",
     "demo": ""

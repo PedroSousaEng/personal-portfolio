@@ -1,0 +1,32 @@
+<svg viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fatigue Study project cover">
+  <rect width="480" height="300" fill="#14171F"/>
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FF8A65"/>
+      <stop offset="1" stop-color="#FF5252"/>
+    </linearGradient>
+  </defs>
+  <g opacity="0.5" stroke="#262B38">
+    <line x1="0" y1="75" x2="480" y2="75"/>
+    <line x1="0" y1="150" x2="480" y2="150"/>
+    <line x1="0" y1="225" x2="480" y2="225"/>
+  </g>
+
+  <!-- axes -->
+  <g stroke="#33394A" stroke-width="1.5" opacity="0.8">
+    <line x1="140" y1="75" x2="140" y2="215"/>
+    <line x1="140" y1="215" x2="360" y2="215"/>
+  </g>
+
+  <!-- endurance limit (dashed) -->
+  <line x1="140" y1="118" x2="360" y2="118" stroke="#FF5252" stroke-width="1.5" stroke-dasharray="5 5" opacity="0.7"/>
+
+  <!-- S-N curve approaching the limit -->
+  <path d="M150 90 C 210 150, 270 172, 350 116" fill="none" stroke="url(#g1)" stroke-width="2.5"/>
+
+  <!-- point where the curve reaches its limit -->
+  <circle cx="350" cy="116" r="5.5" fill="#FF5252"/>
+  <circle cx="350" cy="116" r="10" fill="none" stroke="#FF5252" stroke-width="1.5" opacity="0.5"/>
+
+  <text x="32" y="260" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="20" fill="#8B93A7">FS</text>
+</svg>
