@@ -1,7 +1,7 @@
 {
   "email": "pedro.sousa@exemplo.com",
   "links": [
-    { "platform": "GitHub", "url": "https://github.com/seu-username", "icon": "github" },
-    { "platform": "LinkedIn", "url": "https://linkedin.com/in/seu-username", "icon": "linkedin" }
+    { "platform": "GitHub", "url": "https://github.com/PedroSousaEng", "icon": "github" },
+    { "platform": "LinkedIn", "url": "https://linkedin.com/in/pedro-sousa-3408201a4/", "icon": "linkedin" }
   ]
 }
