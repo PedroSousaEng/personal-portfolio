@@ -49,6 +49,7 @@ body[data-page="contact"]::after {
 
 body[data-page="contact"] .bg-fx--contact {
   mix-blend-mode: screen;
+  isolation: isolate;
   opacity: 0.95;
 }
 

@@ -42,6 +42,7 @@ body[data-page="404"]::after {
 
 body[data-page="404"] .bg-fx--404 {
   mix-blend-mode: screen;
+  isolation: isolate;
   opacity: 0.92;
 }
 

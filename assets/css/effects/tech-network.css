@@ -61,8 +61,11 @@
    tweak blend / composition without touching base.css. */
 [data-page="about"] .bg-fx--network {
   /* Screen blend keeps dark backgrounds intact while letting the faint
-     node/link colour additively sit on top of the grid wash. */
+     node/link colour additively sit on top of the grid wash. Isolated so
+     the browser can composite this layer on its own each frame instead
+     of re-blending the whole page stack behind it. */
   mix-blend-mode: screen;
+  isolation: isolate;
 }
 
 /* Bio card: sits on the network layer, so we lift it with a hair-thin
