@@ -1,6 +1,7 @@
 [
-  { "id": "first-line", "year": "2015", "title": "Wrote the first real line of code", "description": "A university elective in web development turned into every weekend for the rest of the year." },
-  { "id": "first-job", "year": "2019", "title": "First engineering role", "description": "Joined Fielday as the third engineering hire, working across the whole stack." },
-  { "id": "first-talk", "year": "2022", "title": "First conference talk", "description": "Spoke about incremental frontend migrations at a regional JS meetup — and got hooked on teaching." },
-  { "id": "oss-milestone", "year": "2024", "title": "Aurora UI passed 1,000 stars", "description": "The accessibility-first component library became a side project worth maintaining seriously." }
+  { "id": "formula-water", "year": "Projeto académico", "title": "Formula Water", "description": "Protótipo de veículo movido pela energia potencial da água, com estudo de dinâmica, transmissão de movimento, atritos, estabilidade e centro de massa." },
+  { "id": "teardown-fechadura", "year": "Projeto pessoal", "title": "Teardown de uma fechadura", "description": "Desmontagem e análise detalhada do mecanismo interno, dos materiais e dos processos de fabrico utilizados." },
+  { "id": "embraiagem-pla", "year": "Projeto pessoal", "title": "Embraiagem mecânica em PLA", "description": "Sistema de acoplamento e desacoplamento entre dois eixos, acionado por pedal e por um pino de ligação, modelado em CAD e impresso em 3D." },
+  { "id": "vinted-os", "year": "Projeto em curso", "title": "Vinted OS", "description": "Plataforma criada para otimizar a gestão de anúncios na Vinted, com apoio de ferramentas de inteligência artificial." },
+  { "id": "portfolio", "year": "Projeto em curso", "title": "Portefólio pessoal", "description": "Presença online moderna e diferenciadora, desenvolvida com o auxílio de inteligência artificial." }
 ]

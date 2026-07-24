@@ -17,6 +17,7 @@
  */
 
 export const DATA_PATHS = Object.freeze({
+  site: "assets/data/site.json",
   projects: "assets/data/projects.json",
   skills: "assets/data/skills.json",
   experience: "assets/data/experience.json",
@@ -32,4 +33,6 @@ export const BREAKPOINTS = Object.freeze({
   xl: 1280,
 });
 
-export const SITE_NAME = "Alex Rivera";
+// Kept as a build-time fallback only; the source of truth for the name
+// shown across pages is assets/data/site.json (see render-site.js).
+export const SITE_NAME = "Pedro Sousa";

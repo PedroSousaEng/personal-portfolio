@@ -1,8 +1,8 @@
-<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Portrait placeholder for Alex Rivera">
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Portrait placeholder for Pedro Sousa">
   <rect width="400" height="400" rx="24" fill="#1B1F2A"/>
   <rect width="400" height="400" rx="24" fill="none" stroke="#262B38"/>
   <circle cx="200" cy="160" r="70" fill="#232838"/>
   <path d="M80 340c8-70 62-110 120-110s112 40 120 110" fill="#232838"/>
   <circle cx="316" cy="300" r="7" fill="#FFB347"/>
-  <text x="200" y="378" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" fill="#5B6376" text-anchor="middle">replace with a real photo</text>
+  <text x="200" y="378" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" fill="#5B6376" text-anchor="middle">substituir por foto real</text>
 </svg>

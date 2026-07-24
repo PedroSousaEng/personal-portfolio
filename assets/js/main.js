@@ -25,6 +25,7 @@
 import { renderProjects } from "./render-projects.js";
 import { renderSkills, renderExperience, renderTimeline } from "./render-about.js";
 import { renderContact } from "./render-contact.js";
+import { initSiteIdentity } from "./render-site.js";
 import { initBackgroundFX } from "./background-fx.js";
 import { initTechNetwork } from "./effects/tech-network.js";
 import { initProjectsSpotlight } from "./effects/projects-spotlight.js";
@@ -156,6 +157,7 @@ function init() {
   // before any subsequent module inspects it.
   initReducedMotion();
 
+  initSiteIdentity();
   initNav();
   initFooterYear();
   initPageData();

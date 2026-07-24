@@ -65,7 +65,7 @@ function buildCard(project) {
   if (project.featured) {
     const badge = document.createElement("span");
     badge.className = "tag tag--featured";
-    badge.textContent = "Featured";
+    badge.textContent = "Destaque";
     titleRow.appendChild(badge);
   }
 
@@ -101,10 +101,10 @@ function buildCard(project) {
     githubLink.target = "_blank";
     githubLink.rel = "noopener noreferrer";
     githubLink.innerHTML = GITHUB_ICON;
-    githubLink.append(" Source");
+    githubLink.append(" Código");
     githubLink.setAttribute(
       "aria-label",
-      `View source for ${project.title} on GitHub (opens in a new tab)`
+      `Ver código de ${project.title} no GitHub (abre numa nova aba)`
     );
     links.appendChild(githubLink);
   }
@@ -116,10 +116,10 @@ function buildCard(project) {
     demoLink.target = "_blank";
     demoLink.rel = "noopener noreferrer";
     demoLink.innerHTML = EXTERNAL_ICON;
-    demoLink.append(" Live demo");
+    demoLink.append(" Ver demo");
     demoLink.setAttribute(
       "aria-label",
-      `View live demo of ${project.title} (opens in a new tab)`
+      `Ver demonstração de ${project.title} (abre numa nova aba)`
     );
     links.appendChild(demoLink);
   }
@@ -159,7 +159,7 @@ export async function renderProjects(containerEl, options = {}) {
       : projects;
 
     if (list.length === 0) {
-      renderFallback(containerEl, "No projects to show yet — check back soon.");
+      renderFallback(containerEl, "Ainda não há projetos para mostrar — volte em breve.");
       return;
     }
 
@@ -172,7 +172,7 @@ export async function renderProjects(containerEl, options = {}) {
     console.error("renderProjects:", error);
     renderFallback(
       containerEl,
-      "Projects couldn't be loaded right now. Try refreshing the page."
+      "Não foi possível carregar os projetos agora. Tente atualizar a página."
     );
   }
 }

@@ -1,0 +1,18 @@
+<svg viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Teardown de uma fechadura project cover">
+  <rect width="480" height="300" fill="#14171F"/>
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFB347"/>
+      <stop offset="1" stop-color="#B8763F"/>
+    </linearGradient>
+  </defs>
+  <g opacity="0.5" stroke="#262B38">
+    <line x1="0" y1="75" x2="480" y2="75"/>
+    <line x1="0" y1="150" x2="480" y2="150"/>
+    <line x1="0" y1="225" x2="480" y2="225"/>
+  </g>
+  <rect x="200" y="100" width="80" height="120" rx="10" fill="none" stroke="url(#g1)" stroke-width="2"/>
+  <circle cx="240" cy="150" r="14" fill="none" stroke="url(#g1)" stroke-width="2"/>
+  <rect x="234" y="164" width="12" height="30" fill="url(#g1)" opacity="0.6"/>
+  <text x="32" y="260" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="20" fill="#8B93A7">TD</text>
+</svg>

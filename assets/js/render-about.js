@@ -62,7 +62,7 @@ export async function renderSkills(containerEl) {
     containerEl.replaceChildren(fragment);
   } catch (error) {
     console.error("renderSkills:", error);
-    renderFallback(containerEl, "Skills couldn't be loaded right now.");
+    renderFallback(containerEl, "Não foi possível carregar as competências agora.");
   }
 }
 
@@ -117,7 +117,7 @@ export async function renderExperience(containerEl) {
     containerEl.replaceChildren(fragment);
   } catch (error) {
     console.error("renderExperience:", error);
-    renderFallback(containerEl, "Experience couldn't be loaded right now.");
+    renderFallback(containerEl, "Não foi possível carregar a formação agora.");
   }
 }
 
@@ -161,6 +161,6 @@ export async function renderTimeline(containerEl) {
     containerEl.replaceChildren(list);
   } catch (error) {
     console.error("renderTimeline:", error);
-    renderFallback(containerEl, "Timeline couldn't be loaded right now.");
+    renderFallback(containerEl, "Não foi possível carregar os marcos agora.");
   }
 }

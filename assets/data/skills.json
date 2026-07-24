@@ -1,6 +1,6 @@
 [
-  { "category": "Languages", "items": ["TypeScript", "JavaScript (ES2023)", "Rust", "Go", "SQL"] },
-  { "category": "Frontend", "items": ["Web Components", "CSS Architecture", "Accessibility (WCAG 2.1)", "Performance Budgets"] },
-  { "category": "Backend & Data", "items": ["Node.js", "PostgreSQL", "REST & GraphQL APIs", "Redis"] },
-  { "category": "Practices & Tools", "items": ["CI/CD", "Testing Strategy", "Design Systems", "Git", "Docker"] }
+  { "category": "Programação", "items": ["Python", "Análise de Dados", "Automação"] },
+  { "category": "Engenharia & CAD", "items": ["SolidWorks", "Solid Edge", "Modelação Mecânica", "Desenvolvimento de Produto"] },
+  { "category": "Fabrico & Prototipagem", "items": ["Impressão 3D", "PLA", "Montagem Mecânica"] },
+  { "category": "Inteligência Artificial", "items": ["Ferramentas de IA generativa", "Aceleração de desenvolvimento", "Aprendizagem assistida por IA"] }
 ]
