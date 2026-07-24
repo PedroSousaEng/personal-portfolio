@@ -12,6 +12,7 @@
  *   - Dispatch a `pendulum:cross` event on `document` each time the bob
  *     crosses center, so other modules (scroll-reveal.js) can sync to it
  *     without depending on pendulum internals.
+ *   - Pause the rAF loop while the tab is hidden (Phase 8 polish).
  *
  * DEPENDENCIES
  *   A `.pendulum` element with a `<canvas>` child must exist in the page
@@ -48,6 +49,8 @@ function initPendulum() {
   let omega = 0;
   let lastScrollY = window.scrollY;
   let lastCrossSign = Math.sign(theta) || 1;
+  let rafId = null;
+  let running = true;
 
   function scrollProgress() {
     const max = document.documentElement.scrollHeight - window.innerHeight;
@@ -66,6 +69,8 @@ function initPendulum() {
   window.addEventListener('scroll', onScroll, { passive: true });
 
   function step() {
+    if (!running) return;
+
     const progress = scrollProgress();
     // Ease damping up over the last ~12% of the page so the pendulum comes
     // to rest by the time the reader reaches the bottom, rather than
@@ -90,16 +95,40 @@ function initPendulum() {
     }
 
     drawFrame(canvas, theta);
-    requestAnimationFrame(step);
+    rafId = requestAnimationFrame(step);
   }
 
-  requestAnimationFrame(step);
+  rafId = requestAnimationFrame(step);
+
+  // Phase 8 performance polish: pause the physics loop while the tab is
+  // hidden. When it comes back, resynchronise lastScrollY so a
+  // background-scroll doesn't produce a giant delta kick.
+  function onVisibilityChange() {
+    if (document.hidden) {
+      running = false;
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+    } else if (!running) {
+      running = true;
+      lastScrollY = window.scrollY;
+      rafId = requestAnimationFrame(step);
+    }
+  }
+  document.addEventListener('visibilitychange', onVisibilityChange);
 
   // If the user's system preference changes mid-session, stop reacting to
   // scroll and freeze at rest rather than fighting the new preference.
   reduceMotionQuery.addEventListener('change', (event) => {
     if (event.matches) {
+      running = false;
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
       window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
       drawFrame(canvas, 0);
     }
   });

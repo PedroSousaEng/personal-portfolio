@@ -1,0 +1,67 @@
+/**
+ * PURPOSE
+ *   Phase 8 — SVG line-draw effect.
+ *
+ *   Any inline <svg> annotated with `data-line-draw` will have its
+ *   strokes "drawn" left-to-right / start-to-end on entry, using the
+ *   stroke-dasharray / stroke-dashoffset technique. Purely
+ *   declarative from the HTML side; the paired JS module measures
+ *   each path once and hands the length to CSS via a custom property.
+ *
+ * RESPONSIBILITIES
+ *   - The two draw states (pending / drawn) and their transition.
+ *   - Full opt-out under prefers-reduced-motion (strokes reveal
+ *     instantly, no animation).
+ *
+ * DEPENDENCIES
+ *   tokens.css (motion tokens).
+ *   Paired with assets/js/svg-line-draw.js (measures pathLength and
+ *   toggles [data-drawn] via IntersectionObserver).
+ *
+ * SAFE EDITS
+ *   Duration lives here (via --duration-*). Add `data-line-draw` to
+ *   any inline SVG to opt it in — no JS change needed.
+ */
+
+[data-line-draw] path,
+[data-line-draw] line,
+[data-line-draw] polyline,
+[data-line-draw] rect,
+[data-line-draw] circle,
+[data-line-draw] ellipse,
+[data-line-draw] polygon {
+  stroke-dasharray: var(--line-length, 1);
+  stroke-dashoffset: var(--line-length, 1);
+  transition: stroke-dashoffset 1200ms var(--ease-standard);
+}
+
+[data-line-draw][data-drawn="true"] path,
+[data-line-draw][data-drawn="true"] line,
+[data-line-draw][data-drawn="true"] polyline,
+[data-line-draw][data-drawn="true"] rect,
+[data-line-draw][data-drawn="true"] circle,
+[data-line-draw][data-drawn="true"] ellipse,
+[data-line-draw][data-drawn="true"] polygon {
+  stroke-dashoffset: 0;
+}
+
+/* Stagger helper: children may declare --line-delay for a small
+   sequenced reveal. The base value stays 0 so unmarked children
+   draw simultaneously with the parent. */
+[data-line-draw] [data-line-index] {
+  transition-delay: var(--line-delay, 0ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-line-draw] path,
+  [data-line-draw] line,
+  [data-line-draw] polyline,
+  [data-line-draw] rect,
+  [data-line-draw] circle,
+  [data-line-draw] ellipse,
+  [data-line-draw] polygon {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    transition: none;
+  }
+}

@@ -8,10 +8,13 @@
  *   - Set the footer's copyright year.
  *   - Call the correct render-*.js function(s) for the current page, based
  *     on the `data-page` attribute on <body>.
+ *   - Boot Phase 8 global polish modules: reduced-motion, page
+ *     transitions and SVG line-draw.
  *
  * DEPENDENCIES
  *   render-projects.js, render-about.js, background-fx.js, scroll-reveal.js,
- *   cursor.js, magnetic.js, text-decode.js, tilt.js,
+ *   cursor.js, magnetic.js, text-decode.js, tilt.js, reduced-motion.js,
+ *   page-transitions.js, svg-line-draw.js,
  *   effects/{tech-network,projects-spotlight,contact-radar,error-signal}.js
  *
  * SAFE EDITS
@@ -32,6 +35,10 @@ import { initCursor } from "./cursor.js";
 import { initMagneticButtons } from "./magnetic.js";
 import { initTextDecode } from "./text-decode.js";
 import { initCardTilt } from "./tilt.js";
+import { initReducedMotion } from "./reduced-motion.js";
+import { initPageTransitions } from "./page-transitions.js";
+import { initSvgLineDraw } from "./svg-line-draw.js";
+import { initScrollProgress } from "./scroll-progress.js";
 
 /** Wires up the mobile navigation toggle button and overlay menu. */
 function initNav() {
@@ -140,6 +147,10 @@ function initPageBackground() {
 }
 
 function init() {
+  // Reduced-motion first so the boolean is mirrored on <body>
+  // before any subsequent module inspects it.
+  initReducedMotion();
+
   initNav();
   initFooterYear();
   initPageData();
@@ -149,6 +160,11 @@ function init() {
   initMagneticButtons();
   initTextDecode();
   initCardTilt();
+
+  // Phase 8 polish: scroll progress, SVG line-draw, page fade.
+  initScrollProgress();
+  initSvgLineDraw();
+  initPageTransitions();
 }
 
 document.addEventListener("DOMContentLoaded", init);

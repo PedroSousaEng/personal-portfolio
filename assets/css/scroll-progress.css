@@ -1,0 +1,56 @@
+/**
+ * PURPOSE
+ *   Phase 8 — Global scroll progress bar.
+ *
+ *   A 2px indigo bar pinned to the top of the viewport that grows
+ *   left-to-right as the document is scrolled. Rendered as a fixed
+ *   element whose horizontal scale is driven by the paired JS
+ *   module (via a CSS custom property), so the update path is
+ *   transform-only and never triggers reflow.
+ *
+ * RESPONSIBILITIES
+ *   - Fixed positioning, size and colour of the bar.
+ *   - Opt-out under prefers-reduced-motion (the bar itself is
+ *     harmless, but we drop the transition so it doesn't glide
+ *     on paint).
+ *
+ * DEPENDENCIES
+ *   tokens.css only.
+ *   Paired with assets/js/scroll-progress.js.
+ *
+ * SAFE EDITS
+ *   Change --scroll-progress-height / colour here. The bar sits
+ *   above the sticky header (which is z-index: 50) but below the
+ *   noise overlay (150) so the header doesn't ever hide it.
+ */
+
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 60; /* above sticky header (50), below noise (150) */
+  pointer-events: none;
+  background: transparent;
+}
+
+.scroll-progress__bar {
+  height: 100%;
+  transform-origin: left center;
+  transform: scaleX(var(--scroll-progress, 0));
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-accent-indigo-dim) 40%,
+    var(--color-accent-indigo) 100%
+  );
+  will-change: transform;
+  transition: transform 80ms linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-progress__bar {
+    transition: none;
+  }
+}

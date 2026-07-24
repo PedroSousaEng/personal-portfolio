@@ -1,0 +1,74 @@
+/**
+ * PURPOSE
+ *   Phase 8 — Global page-transition layer.
+ *
+ *   A single fixed overlay that fades over the page on outbound
+ *   navigation and fades away on load, so travelling between pages
+ *   feels like one continuous surface instead of a hard document
+ *   swap. Paired with assets/js/page-transitions.js.
+ *
+ * RESPONSIBILITIES
+ *   - Position/size the overlay (fixed, full viewport, above content
+ *     but under the custom cursor).
+ *   - Own the two animation states: entering (fading in over the
+ *     current page) and leaving (fading out once the next page has
+ *     painted).
+ *   - Full opt-out under prefers-reduced-motion.
+ *
+ * DEPENDENCIES
+ *   tokens.css (--color-ink-950, motion tokens, --ease-standard).
+ *   Paired with assets/js/page-transitions.js.
+ *
+ * SAFE EDITS
+ *   Tune duration via tokens; do NOT hardcode values. The overlay
+ *   colour must match --color-ink-950 so the fade reads as the page
+ *   itself dimming, not as a coloured wash.
+ */
+
+.page-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 180; /* below custom cursor (z-index: 200), above everything else */
+  background-color: var(--color-ink-950);
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition:
+    opacity var(--duration-slow) var(--ease-standard),
+    visibility 0s var(--duration-slow);
+  will-change: opacity;
+}
+
+/* Leaving the current page — overlay fades in, briefly covers everything. */
+.page-transition[data-state="leaving"] {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity var(--duration-slow) var(--ease-standard),
+    visibility 0s 0s;
+}
+
+/* Entering the new page — overlay starts opaque then fades out. */
+.page-transition[data-state="entering"] {
+  opacity: 1;
+  visibility: visible;
+  transition: none;
+}
+
+.page-transition[data-state="entering"].is-clearing {
+  opacity: 0;
+  transition:
+    opacity var(--duration-slow) var(--ease-standard),
+    visibility 0s var(--duration-slow);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition,
+  .page-transition[data-state="leaving"],
+  .page-transition[data-state="entering"],
+  .page-transition[data-state="entering"].is-clearing {
+    display: none;
+    opacity: 0;
+    transition: none;
+  }
+}
