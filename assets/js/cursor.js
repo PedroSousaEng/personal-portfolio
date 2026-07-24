@@ -46,6 +46,15 @@ export function initCursor() {
   ring.className = "cursor-ring";
   ring.setAttribute("aria-hidden", "true");
 
+  // The outer ring only ever receives the position transform (written every
+  // frame below). Shape — border-radius, border-style, rotation — lives on
+  // this inner element instead, so per-page CSS can freely use `transform:
+  // rotate()` without fighting the JS-driven position transform on the
+  // parent.
+  const ringShape = document.createElement("span");
+  ringShape.className = "cursor-ring-shape";
+  ring.appendChild(ringShape);
+
   document.body.append(dot, ring);
   document.body.dataset.customCursor = "active";
 

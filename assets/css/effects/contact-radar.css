@@ -14,14 +14,10 @@ body[data-page="contact"] {
   background-image:
     radial-gradient(circle at 74% 52%, rgba(108, 124, 255, 0.12), transparent 22%),
     radial-gradient(circle at 80% 58%, rgba(174, 184, 255, 0.06), transparent 36%),
-    linear-gradient(to right, var(--fx-contact-grid) 0, var(--fx-contact-grid) 1px, transparent 1px, transparent var(--fx-contact-grid-size)),
-    linear-gradient(to bottom, var(--fx-contact-grid) 0, var(--fx-contact-grid) 1px, transparent 1px, transparent var(--fx-contact-grid-size)),
     radial-gradient(ellipse 78% 82% at 50% 50%, transparent 0%, transparent 58%, var(--fx-depth-vignette) 100%);
   background-size:
     100% 100%,
     100% 100%,
-    var(--fx-contact-grid-size) var(--fx-contact-grid-size),
-    var(--fx-contact-grid-size) var(--fx-contact-grid-size),
     100% 100%;
   background-attachment: fixed;
 }

@@ -59,12 +59,19 @@ body[data-custom-cursor="active"] .btn {
   width: 32px;
   height: 32px;
   margin: -16px 0 0 -16px;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--color-accent-indigo-dim);
   transition: opacity var(--duration-base) var(--ease-standard),
     width var(--duration-base) var(--ease-standard),
     height var(--duration-base) var(--ease-standard),
-    margin var(--duration-base) var(--ease-standard),
+    margin var(--duration-base) var(--ease-standard);
+}
+
+.cursor-ring-shape {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-accent-indigo-dim);
+  transition: border-radius var(--duration-base) var(--ease-standard),
     border-color var(--duration-base) var(--ease-standard),
     background-color var(--duration-base) var(--ease-standard);
 }
@@ -73,6 +80,9 @@ body[data-custom-cursor="active"] .btn {
   width: 52px;
   height: 52px;
   margin: -26px 0 0 -26px;
+}
+
+.cursor-ring[data-hover="true"] .cursor-ring-shape {
   border-color: var(--color-accent-indigo);
   background: var(--color-accent-indigo-tint);
 }
@@ -80,35 +90,39 @@ body[data-custom-cursor="active"] .btn {
 /* =========================================================
    Per-page cursor identity
    Home keeps the plain circle (default rules above). Every other
-   page gets its own simple, single-property silhouette — shape only,
-   same indigo brand colour, same dot+ring mechanics. Only clip-path /
-   border-radius / border-style are used here: cursor.js writes the
-   ring's `transform` inline every frame for positioning, so a CSS
-   `transform` (e.g. rotate) would never take visible effect.
+   page gets its own simple silhouette on .cursor-ring-shape — the
+   inner element is untouched by cursor.js (which only ever writes
+   `transform` on the outer .cursor-ring, for position), so rotation
+   is fair game here alongside border-radius / border-style.
    ========================================================= */
 
-/* About: diamond — reads as a facet of the node network behind it. */
-body[data-page="about"] .cursor-ring {
-  border-radius: 0;
-  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+/* About: a true diamond — a rotated square, reads as a facet of the
+   node network behind it. */
+body[data-page="about"] .cursor-ring-shape {
+  border-radius: 3px;
+  transform: rotate(45deg);
 }
 
-/* Projects: soft square reticle — a viewfinder framing each card. */
-body[data-page="projects"] .cursor-ring,
-body[data-page="projects"] .cursor-ring[data-hover="true"] {
+body[data-page="about"] .cursor-ring[data-hover="true"] .cursor-ring-shape {
+  border-radius: 4px;
+}
+
+/* Projects: a square reticle — a viewfinder framing each card. */
+body[data-page="projects"] .cursor-ring-shape {
   border-radius: 6px;
 }
 
-/* Contact: dashed ring — echoes the radar sweep on the page. */
-body[data-page="contact"] .cursor-ring {
+/* Contact: a dashed ring — echoes the radar sweep on the page. */
+body[data-page="contact"] .cursor-ring-shape {
   border-style: dashed;
 }
 
-/* 404: dashed square — a slightly broken, off-signal frame. */
-body[data-page="404"] .cursor-ring,
-body[data-page="404"] .cursor-ring[data-hover="true"] {
-  border-radius: 4px;
+/* 404: a dashed square, tilted slightly off-axis — a broken,
+   off-signal frame. */
+body[data-page="404"] .cursor-ring-shape {
+  border-radius: 3px;
   border-style: dashed;
+  transform: rotate(6deg);
 }
 
 @media (prefers-reduced-motion: reduce) {
