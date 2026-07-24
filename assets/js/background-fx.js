@@ -27,11 +27,11 @@ export function initBackgroundFX() {
   if (typeof window.requestAnimationFrame !== "function") return;
 
   // ---- Tunables -----------------------------------------------------
-  const PENDULUM_PERIOD_MS = 16000; // full swing cycle — slow & giant
-  const PENDULUM_AMPLITUDE = 0.22; // radians (~12.6deg either side)
-  const PENDULUM_PIVOT_X_RATIO = 0.78;
-  const PENDULUM_PIVOT_Y_RATIO = -0.25;
-  const PENDULUM_ROD_LENGTH_RATIO = 1.05;
+  const PENDULUM_PERIOD_MS = 14000; // full swing cycle — slow & giant
+  const PENDULUM_AMPLITUDE = 0.26; // radians (~15deg either side)
+  const PENDULUM_PIVOT_X_RATIO = 0.72;
+  const PENDULUM_PIVOT_Y_RATIO = -0.08;
+  const PENDULUM_ROD_LENGTH_RATIO = 0.95;
 
   const PARTICLE_AREA_DIVISOR = 14000; // lower = more particles
   const PARTICLE_MIN = 40;
@@ -97,7 +97,7 @@ export function initBackgroundFX() {
       y: Math.random() * height,
       vx: (Math.random() - 0.5) * 0.12,
       vy: (Math.random() - 0.5) * 0.12,
-      r: 0.8 + Math.random() * 1.6,
+      r: 1.4 + Math.random() * 2.0,
       twinklePhase: Math.random() * Math.PI * 2,
     };
   }
@@ -127,40 +127,55 @@ export function initBackgroundFX() {
   function drawPendulum() {
     const { pivotX, pivotY, bobX, bobY } = pendulum;
 
-    // Rod: faint gradient line, brighter near the bob.
+    // Rod: bright silvery line, glowing faintly along its length.
+    ctx.save();
+    ctx.shadowColor = "rgba(174, 184, 255, 0.5)";
+    ctx.shadowBlur = 6;
     const rodGradient = ctx.createLinearGradient(pivotX, pivotY, bobX, bobY);
-    rodGradient.addColorStop(0, "rgba(51, 58, 77, 0)");
-    rodGradient.addColorStop(1, "rgba(51, 58, 77, 0.5)");
+    rodGradient.addColorStop(0, "rgba(180, 190, 220, 0.15)");
+    rodGradient.addColorStop(1, "rgba(210, 216, 255, 0.85)");
     ctx.strokeStyle = rodGradient;
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 2.5;
     ctx.beginPath();
     ctx.moveTo(pivotX, pivotY);
     ctx.lineTo(bobX, bobY);
     ctx.stroke();
+    ctx.restore();
 
-    // Bob glow: soft radial falloff, warm accent tone.
-    const glowR = 46;
+    // Small pivot anchor so the rod visibly hangs from something.
+    ctx.fillStyle = "rgba(210, 216, 255, 0.4)";
+    ctx.beginPath();
+    ctx.arc(pivotX, pivotY, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Bob glow: large, saturated warm halo — the pendulum's signature.
+    const glowR = 90;
     const glow = ctx.createRadialGradient(bobX, bobY, 0, bobX, bobY, glowR);
-    glow.addColorStop(0, "rgba(255, 179, 71, 0.55)");
-    glow.addColorStop(0.4, "rgba(255, 179, 71, 0.18)");
-    glow.addColorStop(1, "rgba(255, 179, 71, 0)");
+    glow.addColorStop(0, "rgba(255, 190, 100, 0.9)");
+    glow.addColorStop(0.35, "rgba(255, 170, 70, 0.45)");
+    glow.addColorStop(1, "rgba(255, 170, 70, 0)");
     ctx.fillStyle = glow;
     ctx.beginPath();
     ctx.arc(bobX, bobY, glowR, 0, Math.PI * 2);
     ctx.fill();
 
     // Bob core.
-    ctx.fillStyle = "rgba(255, 200, 130, 0.7)";
+    ctx.save();
+    ctx.shadowColor = "rgba(255, 200, 120, 0.9)";
+    ctx.shadowBlur = 18;
+    ctx.fillStyle = "rgba(255, 225, 180, 0.95)";
     ctx.beginPath();
-    ctx.arc(bobX, bobY, 5, 0, Math.PI * 2);
+    ctx.arc(bobX, bobY, 9, 0, Math.PI * 2);
     ctx.fill();
+    ctx.restore();
   }
 
   // ---- Dynamic lighting (roaming glow pools) ---------------------------
   function drawAmbientLight(x, y, radius, color, strength) {
     if (strength <= 0.01) return;
     const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-    gradient.addColorStop(0, `rgba(${color}, ${0.16 * strength})`);
+    gradient.addColorStop(0, `rgba(${color}, ${0.32 * strength})`);
+    gradient.addColorStop(0.5, `rgba(${color}, ${0.12 * strength})`);
     gradient.addColorStop(1, `rgba(${color}, 0)`);
     ctx.fillStyle = gradient;
     ctx.beginPath();
@@ -207,13 +222,19 @@ export function initBackgroundFX() {
       const litByBob = Math.max(0, 1 - distBob / PENDULUM_LIGHT_RADIUS);
 
       const twinkle = 0.75 + 0.25 * Math.sin(now / 1800 + p.twinklePhase);
-      const brightness = Math.min(1, 0.22 * twinkle + litByMouse * 0.8 + litByBob * 0.55);
+      const brightness = Math.min(1, 0.45 * twinkle + litByMouse * 0.85 + litByBob * 0.6);
 
-      const radius = p.r + brightness * 1.4;
+      const radius = p.r + brightness * 1.8;
+      ctx.save();
+      if (brightness > 0.55) {
+        ctx.shadowColor = "rgba(174, 184, 255, 0.8)";
+        ctx.shadowBlur = 8;
+      }
       ctx.beginPath();
-      ctx.fillStyle = `rgba(174, 184, 255, ${0.15 + brightness * 0.65})`;
+      ctx.fillStyle = `rgba(190, 198, 255, ${0.35 + brightness * 0.65})`;
       ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
       ctx.fill();
+      ctx.restore();
     }
 
     // Faint constellation links between nearby particles.
@@ -224,8 +245,8 @@ export function initBackgroundFX() {
         const b = particles[j];
         const dist = Math.hypot(a.x - b.x, a.y - b.y);
         if (dist < PARTICLE_LINK_DIST) {
-          const alpha = (1 - dist / PARTICLE_LINK_DIST) * 0.12;
-          ctx.strokeStyle = `rgba(139, 147, 167, ${alpha})`;
+          const alpha = (1 - dist / PARTICLE_LINK_DIST) * 0.22;
+          ctx.strokeStyle = `rgba(160, 168, 200, ${alpha})`;
           ctx.beginPath();
           ctx.moveTo(a.x, a.y);
           ctx.lineTo(b.x, b.y);
