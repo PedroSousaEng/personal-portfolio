@@ -42,6 +42,17 @@ body {
   line-height: var(--text-base-lh);
   color: var(--color-text-100);
   background-color: var(--color-ink-950);
+  /* Depth vignette: a very subtle radial gradient that darkens the edges
+     of the viewport, giving the background-fx particle field a sense of
+     spatial depth — as if the particles recede into shadow at the edges.
+     This is a pure-CSS enhancement with zero runtime cost. */
+  background-image: radial-gradient(
+    ellipse 75% 80% at 50% 50%,
+    transparent 0%,
+    transparent 55%,
+    var(--fx-depth-vignette) 100%
+  );
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }

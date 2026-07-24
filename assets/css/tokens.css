@@ -41,9 +41,14 @@
   /* ---- Color: background-fx (canvas pendulum/particles/lighting) ---- */
   --fx-particle: #aeb8ff;
   --fx-particle-dim: #5b6376;
+  --fx-particle-link: #a0a8c8;
   --fx-pendulum-rod: #333a4d;
   --fx-glow-cursor: #6c7cff;
   --fx-glow-pendulum: #ffb347;
+
+  /* Depth vignette: very subtle radial gradient on the page background
+     to give the canvas particle field a sense of spatial depth. */
+  --fx-depth-vignette: rgba(20, 23, 31, 0.5);
 
   /* ---- Color: state ---- */
   --color-success: #4ade80;
