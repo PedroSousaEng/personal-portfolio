@@ -27,6 +27,7 @@ export function initProjectsSpotlight() {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   if (typeof window.requestAnimationFrame !== "function") return;
   if (document.body?.dataset.page !== "projects") return;
+  if (document.querySelector(".bg-fx--projects")) return;
 
   const SPOTLIGHT_RADIUS = 320;
   const SPOTLIGHT_RADIUS_LARGE = 540;
@@ -78,6 +79,37 @@ export function initProjectsSpotlight() {
   // fillRect calls per frame with a single fast drawImage.
   const bgCanvas = document.createElement("canvas");
   const bgCtx = bgCanvas.getContext("2d", { alpha: true });
+
+  function createRadialSprite(color, radius, stops) {
+    const size = radius * 2;
+    const sprite = document.createElement("canvas");
+    sprite.width = size;
+    sprite.height = size;
+    const spriteCtx = sprite.getContext("2d", { alpha: true });
+    const gradient = spriteCtx.createRadialGradient(radius, radius, 0, radius, radius, radius);
+    for (let i = 0; i < stops.length; i++) {
+      const stop = stops[i];
+      gradient.addColorStop(stop[0], `rgba(${color}, ${stop[1]})`);
+    }
+    spriteCtx.fillStyle = gradient;
+    spriteCtx.fillRect(0, 0, size, size);
+    return sprite;
+  }
+
+  // The spotlight colour profiles are static. Pulse strength and position are
+  // applied through destination alpha/coordinates, so the render loop does
+  // not need to allocate two radial gradients every frame.
+  const largeSpotlightSprite = createRadialSprite(FX_SOFT, SPOTLIGHT_RADIUS_LARGE, [
+    [0, 1],
+    [0.42, 0.4375],
+    [1, 0],
+  ]);
+  const coreSpotlightSprite = createRadialSprite(FX_CORE, SPOTLIGHT_RADIUS, [
+    [0, 1],
+    [0.28, 0.5],
+    [0.72, 0.09375],
+    [1, 0],
+  ]);
 
   const pointer = {
     x: width * 0.5,
@@ -146,48 +178,32 @@ export function initProjectsSpotlight() {
   function drawSpotlight(now) {
     const pulse = 0.92 + Math.sin((now / PULSE_PERIOD_MS) * Math.PI * 2) * 0.08;
 
-    const large = ctx.createRadialGradient(pointer.x, pointer.y, 0, pointer.x, pointer.y, SPOTLIGHT_RADIUS_LARGE);
-    large.addColorStop(0, `rgba(${FX_SOFT}, ${0.08 * pulse})`);
-    large.addColorStop(0.42, `rgba(${FX_SOFT}, ${0.035 * pulse})`);
-    large.addColorStop(1, `rgba(${FX_SOFT}, 0)`);
-    ctx.fillStyle = large;
-    // Clip fillRect to the affected bounding box to avoid a full-viewport
-    // gradient rasterisation — outside the radius the gradient is fully
-    // transparent, so painting it there is wasted work.
     const lx = pointer.x - SPOTLIGHT_RADIUS_LARGE;
     const ly = pointer.y - SPOTLIGHT_RADIUS_LARGE;
     const lw = SPOTLIGHT_RADIUS_LARGE * 2;
-    ctx.fillRect(lx, ly, lw, lw);
+    ctx.globalAlpha = 0.08 * pulse;
+    ctx.drawImage(largeSpotlightSprite, lx, ly, lw, lw);
 
-    const core = ctx.createRadialGradient(pointer.x, pointer.y, 0, pointer.x, pointer.y, SPOTLIGHT_RADIUS);
-    core.addColorStop(0, `rgba(${FX_CORE}, ${0.16 * pulse})`);
-    core.addColorStop(0.28, `rgba(${FX_CORE}, ${0.08 * pulse})`);
-    core.addColorStop(0.72, `rgba(${FX_CORE}, 0.015)`);
-    core.addColorStop(1, `rgba(${FX_CORE}, 0)`);
-    ctx.fillStyle = core;
     const cx = pointer.x - SPOTLIGHT_RADIUS;
     const cy = pointer.y - SPOTLIGHT_RADIUS;
     const cw = SPOTLIGHT_RADIUS * 2;
-    ctx.fillRect(cx, cy, cw, cw);
+    ctx.globalAlpha = 0.16 * pulse;
+    ctx.drawImage(coreSpotlightSprite, cx, cy, cw, cw);
+    ctx.globalAlpha = 1;
   }
 
   function drawTrackingLines() {
-    const xGradient = ctx.createLinearGradient(pointer.x - LINE_FADE_RADIUS, 0, pointer.x + LINE_FADE_RADIUS, 0);
-    xGradient.addColorStop(0, "rgba(0, 0, 0, 0)");
-    xGradient.addColorStop(0.5, `rgba(${FX_LINE}, 0.22)`);
-    xGradient.addColorStop(1, "rgba(0, 0, 0, 0)");
-    ctx.strokeStyle = xGradient;
+    // Each original gradient was perpendicular to its one-pixel stroke, so
+    // the sampled colour was uniform along that stroke. Solid styles render
+    // identically while avoiding two gradient allocations per frame.
     ctx.lineWidth = 1;
+    ctx.strokeStyle = `rgba(${FX_LINE}, 0.22)`;
     ctx.beginPath();
     ctx.moveTo(pointer.x, 0);
     ctx.lineTo(pointer.x, height);
     ctx.stroke();
 
-    const yGradient = ctx.createLinearGradient(0, pointer.y - LINE_FADE_RADIUS, 0, pointer.y + LINE_FADE_RADIUS);
-    yGradient.addColorStop(0, "rgba(0, 0, 0, 0)");
-    yGradient.addColorStop(0.5, `rgba(${FX_LINE}, 0.16)`);
-    yGradient.addColorStop(1, "rgba(0, 0, 0, 0)");
-    ctx.strokeStyle = yGradient;
+    ctx.strokeStyle = `rgba(${FX_LINE}, 0.16)`;
     ctx.beginPath();
     ctx.moveTo(0, pointer.y);
     ctx.lineTo(width, pointer.y);

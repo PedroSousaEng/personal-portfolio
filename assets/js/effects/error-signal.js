@@ -22,6 +22,7 @@ export function initErrorSignal() {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   if (typeof window.requestAnimationFrame !== "function") return;
   if (document.body?.dataset.page !== "404") return;
+  if (document.querySelector(".bg-fx--404")) return;
 
   const SEGMENT_AREA_DIVISOR = 36000;
   const SEGMENT_MIN = 18;
@@ -52,6 +53,8 @@ export function initErrorSignal() {
   const FX_LINE = parseColorTriplet(tok("--fx-404-line", "#5b6376")) || "91, 99, 118";
   const FX_GLITCH = parseColorTriplet(tok("--fx-404-glitch", "#6c7cff")) || "108, 124, 255";
   const FX_SOFT = parseColorTriplet(tok("--fx-404-soft", "#aeb8ff")) || "174, 184, 255";
+  const LINE_COLOR = `rgb(${FX_LINE})`;
+  const GLITCH_COLOR = `rgb(${FX_GLITCH})`;
 
   const canvas = document.createElement("canvas");
   canvas.className = "bg-fx bg-fx--404";
@@ -64,6 +67,35 @@ export function initErrorSignal() {
   // only on viewport size, so re-rendering it every frame is pure waste.
   const bgCanvas = document.createElement("canvas");
   const bgCtx = bgCanvas.getContext("2d", { alpha: true });
+
+  function createHorizontalFadeSprite(stops) {
+    const sprite = document.createElement("canvas");
+    sprite.width = 512;
+    sprite.height = 2;
+    const spriteCtx = sprite.getContext("2d", { alpha: true });
+    const gradient = spriteCtx.createLinearGradient(0, 0, sprite.width, 0);
+    for (let i = 0; i < stops.length; i++) {
+      const stop = stops[i];
+      gradient.addColorStop(stop[0], stop[1]);
+    }
+    spriteCtx.fillStyle = gradient;
+    spriteCtx.fillRect(0, 0, sprite.width, sprite.height);
+    return sprite;
+  }
+
+  // The horizontal colour profiles never change. Reusing sprites removes the
+  // 9–13 createLinearGradient calls that previously happened every frame.
+  const barSprite = createHorizontalFadeSprite([
+    [0, "rgba(0, 0, 0, 0)"],
+    [0.35, `rgb(${FX_LINE})`],
+    [0.6, `rgba(${FX_GLITCH}, 0.9)`],
+    [1, "rgba(0, 0, 0, 0)"],
+  ]);
+  const noiseSprite = createHorizontalFadeSprite([
+    [0, "rgba(0, 0, 0, 0)"],
+    [0.5, `rgb(${FX_SOFT})`],
+    [1, "rgba(0, 0, 0, 0)"],
+  ]);
 
   let width = window.innerWidth;
   let height = window.innerHeight;
@@ -191,19 +223,10 @@ export function initErrorSignal() {
       const barWidth = width * bar.widthRatio;
       const alpha = bar.opacity + (glitching ? 0.025 : 0);
 
-      const gradient = ctx.createLinearGradient(x, y, x + barWidth, y);
-      gradient.addColorStop(0, "rgba(0, 0, 0, 0)");
-      gradient.addColorStop(0.35, `rgba(${FX_LINE}, ${alpha})`);
-      gradient.addColorStop(0.6, `rgba(${FX_GLITCH}, ${alpha * 0.9})`);
-      gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
-
-      ctx.strokeStyle = gradient;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x + barWidth, y);
-      ctx.stroke();
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(barSprite, x, y - 0.5, barWidth, 1);
     }
+    ctx.globalAlpha = 1;
   }
 
   function drawSegments(now, glitching) {
@@ -228,7 +251,8 @@ export function initErrorSignal() {
       const x = segment.horizontal ? segment.x + drift + offsetX : segment.x + offsetX;
       const y = segment.horizontal ? segment.y + offsetY : segment.y + drift + offsetY;
 
-      ctx.strokeStyle = `rgba(${segment.glitchBias > 0.66 ? FX_GLITCH : FX_LINE}, ${alpha})`;
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = segment.glitchBias > 0.66 ? GLITCH_COLOR : LINE_COLOR;
       ctx.lineWidth = segment.thickness;
       ctx.beginPath();
 
@@ -252,6 +276,7 @@ export function initErrorSignal() {
 
       ctx.stroke();
     }
+    ctx.globalAlpha = 1;
   }
 
   function drawNoise(now, glitching) {
@@ -260,13 +285,10 @@ export function initErrorSignal() {
       const y = ((now * 0.08) + i * 137) % height;
       const h = 1 + ((i + 1) % 3);
       const alpha = glitching ? 0.08 : 0.03;
-      const gradient = ctx.createLinearGradient(0, y, width, y);
-      gradient.addColorStop(0, "rgba(0, 0, 0, 0)");
-      gradient.addColorStop(0.5, `rgba(${FX_SOFT}, ${alpha})`);
-      gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, y, width, h);
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(noiseSprite, 0, y, width, h);
     }
+    ctx.globalAlpha = 1;
   }
 
   function frame(now) {

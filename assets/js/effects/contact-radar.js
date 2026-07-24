@@ -23,6 +23,7 @@ export function initContactRadar() {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   if (typeof window.requestAnimationFrame !== "function") return;
   if (document.body?.dataset.page !== "contact") return;
+  if (document.querySelector(".bg-fx--contact")) return;
 
   const SWEEP_PERIOD_MS = 18000;
   const SWEEP_ARC = Math.PI * 0.34;
@@ -55,6 +56,8 @@ export function initContactRadar() {
   const FX_RING = parseColorTriplet(tok("--fx-contact-ring", "#6c7cff")) || "108, 124, 255";
   const FX_SWEEP = parseColorTriplet(tok("--fx-contact-sweep", "#aeb8ff")) || "174, 184, 255";
   const FX_LINE = parseColorTriplet(tok("--fx-contact-line", "#5b6376")) || "91, 99, 118";
+  const RING_COLOR = `rgb(${FX_RING})`;
+  const SWEEP_COLOR = `rgb(${FX_SWEEP})`;
 
   const canvas = document.createElement("canvas");
   canvas.className = "bg-fx bg-fx--contact";
@@ -68,6 +71,26 @@ export function initContactRadar() {
   // on resize; blit each frame with a single drawImage.
   const bgCanvas = document.createElement("canvas");
   const bgCtx = bgCanvas.getContext("2d", { alpha: true });
+
+  function createGlowSprite(color, radius) {
+    const size = radius * 2;
+    const sprite = document.createElement("canvas");
+    sprite.width = size;
+    sprite.height = size;
+    const spriteCtx = sprite.getContext("2d", { alpha: true });
+    const gradient = spriteCtx.createRadialGradient(radius, radius, 0, radius, radius, radius);
+    gradient.addColorStop(0, `rgb(${color})`);
+    gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+    spriteCtx.fillStyle = gradient;
+    spriteCtx.fillRect(0, 0, size, size);
+    return sprite;
+  }
+
+  // These gradients are centre-independent and are only scaled/positioned in
+  // the frame loop. Keeping them as sprites avoids rebuilding 8–18 blip
+  // gradients plus the centre glow every frame.
+  const blipHaloSprite = createGlowSprite(FX_SWEEP, 64);
+  const centerGlowSprite = createGlowSprite(FX_RING, 32);
 
   let width = window.innerWidth;
   let height = window.innerHeight;
@@ -279,19 +302,22 @@ export function initContactRadar() {
       const alpha = idleGlow + blip.energy * 0.62 + blip.bias;
       const haloRadius = blip.size * (4 + blip.energy * 8);
 
-      const halo = ctx.createRadialGradient(x, y, 0, x, y, haloRadius);
-      halo.addColorStop(0, `rgba(${FX_SWEEP}, ${Math.min(alpha * 0.34, 0.34)})`);
-      halo.addColorStop(1, "rgba(0, 0, 0, 0)");
-      ctx.fillStyle = halo;
-      ctx.beginPath();
-      ctx.arc(x, y, haloRadius, 0, TAU);
-      ctx.fill();
+      ctx.globalAlpha = Math.min(alpha * 0.34, 0.34);
+      ctx.drawImage(
+        blipHaloSprite,
+        x - haloRadius,
+        y - haloRadius,
+        haloRadius * 2,
+        haloRadius * 2
+      );
 
-      ctx.fillStyle = `rgba(${FX_SWEEP}, ${Math.min(alpha * 0.88, 0.92)})`;
+      ctx.globalAlpha = Math.min(alpha * 0.88, 0.92);
+      ctx.fillStyle = SWEEP_COLOR;
       ctx.beginPath();
       ctx.arc(x, y, blip.size + drift + blip.energy * 0.6, 0, TAU);
       ctx.fill();
     }
+    ctx.globalAlpha = 1;
   }
 
   function drawFrame(now) {
@@ -304,20 +330,17 @@ export function initContactRadar() {
     const rotation = drawSweep(now);
     drawBlips(now, rotation);
 
-    ctx.strokeStyle = `rgba(${FX_RING}, 0.32)`;
+    ctx.globalAlpha = 0.32;
+    ctx.strokeStyle = RING_COLOR;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.arc(center.x, center.y, 6, 0, TAU);
     ctx.stroke();
 
     const pulse = 0.9 + Math.sin((now / 4200) * TAU) * 0.1;
-    const core = ctx.createRadialGradient(center.x, center.y, 0, center.x, center.y, 18);
-    core.addColorStop(0, `rgba(${FX_RING}, ${0.32 * pulse})`);
-    core.addColorStop(1, "rgba(0, 0, 0, 0)");
-    ctx.fillStyle = core;
-    ctx.beginPath();
-    ctx.arc(center.x, center.y, 18, 0, TAU);
-    ctx.fill();
+    ctx.globalAlpha = 0.32 * pulse;
+    ctx.drawImage(centerGlowSprite, center.x - 18, center.y - 18, 36, 36);
+    ctx.globalAlpha = 1;
 
     rafId = window.requestAnimationFrame(drawFrame);
   }

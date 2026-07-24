@@ -40,6 +40,8 @@ import { initPageTransitions } from "./page-transitions.js";
 import { initSvgLineDraw } from "./svg-line-draw.js";
 import { initScrollProgress } from "./scroll-progress.js";
 
+let initialized = false;
+
 /** Wires up the mobile navigation toggle button and overlay menu. */
 function initNav() {
   const toggle = document.querySelector("[data-nav-toggle]");
@@ -147,6 +149,9 @@ function initPageBackground() {
 }
 
 function init() {
+  if (initialized) return;
+  initialized = true;
+
   // Reduced-motion first so the boolean is mirrored on <body>
   // before any subsequent module inspects it.
   initReducedMotion();

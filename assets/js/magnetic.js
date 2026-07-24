@@ -1,40 +1,25 @@
 /**
  * PURPOSE
- *   Magnetic buttons: every .btn shifts subtly toward the pointer while
- *   it's nearby, and eases back to rest the moment the pointer leaves.
+ *   Magnetic buttons: each eligible .btn shifts subtly toward the pointer
+ *   while hovered and eases back immediately after exit.
  *
- * RESPONSIBILITIES
- *   - Event-delegate pointermove on document (rather than binding a
- *     listener per button) so the effect works on any .btn in the DOM,
- *     present now or added later, with a single listener.
- *   - Cache the active button's bounding rect on entry — refresh only on
- *     scroll/resize — so the hot pointermove path performs no layout
- *     reads.
- *   - Batch style writes through requestAnimationFrame so a burst of
- *     pointermove events collapses into one transform per frame.
- *   - Clamp displacement to a small maximum so the effect reads as
- *     "subtle," per the design brief.
- *   - No-op on touch/coarse-pointer devices and under
- *     prefers-reduced-motion.
- *
- * DEPENDENCIES
- *   assets/css/micro-interactions.css (return-transition rule for
- *   [data-magnetic-active="true"]).
- *
- * SAFE EDITS
- *   Tune MAX_OFFSET_PX / STRENGTH below. Add data-magnetic="false" to any
- *   .btn in HTML to opt that one button out.
+ *   Delegated entry/exit avoids scanning the DOM on every pointermove and
+ *   keeps the interaction available for buttons rendered after boot.
  */
 
 const SELECTOR = ".btn:not([data-magnetic='false'])";
 const MAX_OFFSET_PX = 10;
 const STRENGTH = 0.35;
 
+let destroyMagnetic = null;
+
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
 export function initMagneticButtons() {
+  if (!document.querySelector(SELECTOR) || destroyMagnetic) return;
+
   const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
   const finePointerQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
 
@@ -44,77 +29,115 @@ export function initMagneticButtons() {
   let activeRect = null;
   let pendingX = 0;
   let pendingY = 0;
-  let rafScheduled = false;
+  let rafId = null;
 
   function refreshRect() {
-    if (activeButton) activeRect = activeButton.getBoundingClientRect();
+    if (activeButton?.isConnected) activeRect = activeButton.getBoundingClientRect();
+  }
+
+  function cancelFrame() {
+    if (rafId === null) return;
+    window.cancelAnimationFrame(rafId);
+    rafId = null;
   }
 
   function flush() {
-    rafScheduled = false;
-    if (!activeButton) return;
+    rafId = null;
+    if (!activeButton?.isConnected) return;
     activeButton.style.transform = `translate3d(${pendingX}px, ${pendingY}px, 0)`;
   }
 
   function scheduleFlush() {
-    if (rafScheduled) return;
-    rafScheduled = true;
-    requestAnimationFrame(flush);
+    if (rafId !== null) return;
+    rafId = window.requestAnimationFrame(flush);
   }
 
-  function snapBack(el) {
-    // Enable the CSS return-transition for exactly this one move back to
-    // rest, then drop the flag once it's done so a future hover starts
-    // instant-follow again instead of transitioning.
-    el.dataset.magneticActive = "true";
-    el.style.transform = "";
-    el.addEventListener(
+  function resetButton(button) {
+    delete button.dataset.magneticActive;
+    button.style.transform = "";
+  }
+
+  function snapBack(button) {
+    button.dataset.magneticActive = "true";
+    button.style.transform = "";
+    button.addEventListener(
       "transitionend",
-      () => {
-        delete el.dataset.magneticActive;
+      (event) => {
+        if (event.propertyName === "transform") delete button.dataset.magneticActive;
       },
       { once: true }
     );
   }
 
-  function onPointerMove(event) {
-    const el = event.target.closest ? event.target.closest(SELECTOR) : null;
-
-    if (el !== activeButton) {
-      if (activeButton) snapBack(activeButton);
-      activeButton = el;
-      if (activeButton) {
-        delete activeButton.dataset.magneticActive; // instant-follow while actively tracked
-        // One layout read per activation, cached for the whole hover.
-        activeRect = activeButton.getBoundingClientRect();
-      } else {
-        activeRect = null;
-        return;
-      }
+  function deactivateButton(animate = true) {
+    cancelFrame();
+    if (activeButton?.isConnected) {
+      if (animate) snapBack(activeButton);
+      else resetButton(activeButton);
     }
+    activeButton = null;
+    activeRect = null;
+  }
 
-    if (!activeRect) return;
+  function onPointerOver(event) {
+    const button = event.target.closest ? event.target.closest(SELECTOR) : null;
+    if (!button || button === activeButton) return;
 
-    const relX = event.clientX - (activeRect.left + activeRect.width / 2);
-    const relY = event.clientY - (activeRect.top + activeRect.height / 2);
+    deactivateButton();
+    activeButton = button;
+    delete activeButton.dataset.magneticActive;
+    // One layout read per entry. Pointer movement works only from this cache.
+    activeRect = activeButton.getBoundingClientRect();
+  }
+
+  function onPointerOut(event) {
+    if (!activeButton) return;
+    const button = event.target.closest ? event.target.closest(SELECTOR) : null;
+    if (button !== activeButton) return;
+
+    const related = event.relatedTarget;
+    if (related && activeButton.contains(related)) return;
+    deactivateButton();
+  }
+
+  function onPointerMove(event) {
+    if (!activeRect || !activeButton) return;
+
+    const relX = event.clientX - (activeRect.left + activeRect.width * 0.5);
+    const relY = event.clientY - (activeRect.top + activeRect.height * 0.5);
     pendingX = clamp(relX * STRENGTH, -MAX_OFFSET_PX, MAX_OFFSET_PX);
     pendingY = clamp(relY * STRENGTH, -MAX_OFFSET_PX, MAX_OFFSET_PX);
     scheduleFlush();
   }
 
-  function onPointerOut(event) {
-    if (!activeButton) return;
-    const related = event.relatedTarget;
-    if (related && activeButton.contains && activeButton.contains(related)) return;
-
-    snapBack(activeButton);
-    activeButton = null;
-    activeRect = null;
+  function onWindowLeave() {
+    deactivateButton();
   }
 
-  document.addEventListener("pointermove", onPointerMove, { passive: true });
+  function onReduceMotionChange(event) {
+    if (event.matches) destroy();
+  }
+
+  function destroy() {
+    deactivateButton(false);
+    document.removeEventListener("pointerover", onPointerOver);
+    document.removeEventListener("pointerout", onPointerOut);
+    document.removeEventListener("pointermove", onPointerMove);
+    document.removeEventListener("mouseleave", onWindowLeave);
+    window.removeEventListener("scroll", refreshRect);
+    window.removeEventListener("resize", refreshRect);
+    reduceMotionQuery.removeEventListener("change", onReduceMotionChange);
+    destroyMagnetic = null;
+  }
+
+  document.addEventListener("pointerover", onPointerOver);
   document.addEventListener("pointerout", onPointerOut);
-  // Cached rect must be invalidated when the page reflows.
+  document.addEventListener("pointermove", onPointerMove, { passive: true });
+  document.addEventListener("mouseleave", onWindowLeave);
+  // Only the active button's cached rect is refreshed on document movement.
   window.addEventListener("scroll", refreshRect, { passive: true });
   window.addEventListener("resize", refreshRect, { passive: true });
+  reduceMotionQuery.addEventListener("change", onReduceMotionChange);
+
+  destroyMagnetic = destroy;
 }

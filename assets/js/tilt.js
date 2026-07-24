@@ -1,43 +1,29 @@
 /**
  * PURPOSE
- *   3D tilt + subtle cursor-tracking glow for interactive cards
- *   (.card--interactive, currently only project cards).
+ *   3D tilt + subtle cursor-tracking glow for interactive project cards.
  *
- * RESPONSIBILITIES
- *   - Event-delegate pointermove on document so cards rendered later from
- *     assets/data/projects.json (by render-projects.js) are covered
- *     without a MutationObserver or per-card listeners.
- *   - Cache the active card's bounding rect on entry — refresh only on
- *     scroll/resize — so the hot pointermove path performs no layout
- *     reads.
- *   - Batch style writes through requestAnimationFrame so a burst of
- *     pointermove events collapses into a single transform per frame.
- *   - Compute a small rotateX/rotateY from pointer position within the
- *     card, applied with perspective() directly in the transform so no
- *     parent element needs its own `perspective` rule.
- *   - Feed the pointer position to CSS via --tilt-x/--tilt-y custom
- *     properties, which micro-interactions.css uses to position the glow.
- *   - No-op on touch/coarse-pointer devices and under
- *     prefers-reduced-motion — the plain CSS :hover lift already defined
- *     on .card--interactive in components.css still applies in both
- *     cases, so cards stay interactive either way.
- *
- * DEPENDENCIES
- *   assets/css/micro-interactions.css (the [data-tilting] glow rules).
- *
- * SAFE EDITS
- *   Tune MAX_TILT_DEG / LIFT_PX below.
+ *   The module uses delegated pointer entry/exit to identify one active card,
+ *   then uses a single rAF-coalesced pointer path while that card is active.
  */
 
 const SELECTOR = ".card--interactive";
 const MAX_TILT_DEG = 6;
 const LIFT_PX = 6;
 
+let destroyTilt = null;
+
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
 export function initCardTilt() {
+  // Project cards are rendered dynamically on Home and Projects. A static
+  // match keeps the module extensible without making About, Contact or 404
+  // subscribe to global pointer/scroll/resize work they cannot use.
+  const page = document.body?.dataset.page;
+  if (!document.querySelector(SELECTOR) && page !== "home" && page !== "projects") return;
+  if (destroyTilt) return;
+
   const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
   const finePointerQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
 
@@ -49,15 +35,22 @@ export function initCardTilt() {
   let pendingRotY = 0;
   let pendingTiltX = 0;
   let pendingTiltY = 0;
-  let rafScheduled = false;
+  let rafId = null;
 
   function refreshRect() {
-    if (activeCard) activeRect = activeCard.getBoundingClientRect();
+    if (activeCard?.isConnected) activeRect = activeCard.getBoundingClientRect();
+  }
+
+  function cancelFrame() {
+    if (rafId === null) return;
+    window.cancelAnimationFrame(rafId);
+    rafId = null;
   }
 
   function flush() {
-    rafScheduled = false;
-    if (!activeCard) return;
+    rafId = null;
+    if (!activeCard?.isConnected) return;
+
     activeCard.style.transform =
       `perspective(900px) rotateX(${pendingRotX}deg) rotateY(${pendingRotY}deg) translate3d(0, -${LIFT_PX}px, 0)`;
     activeCard.style.setProperty("--tilt-x", `${pendingTiltX}%`);
@@ -65,9 +58,8 @@ export function initCardTilt() {
   }
 
   function scheduleFlush() {
-    if (rafScheduled) return;
-    rafScheduled = true;
-    requestAnimationFrame(flush);
+    if (rafId !== null) return;
+    rafId = window.requestAnimationFrame(flush);
   }
 
   function resetCard(card) {
@@ -79,23 +71,38 @@ export function initCardTilt() {
     delete card.dataset.tilting;
   }
 
-  function onPointerMove(event) {
+  function deactivateCard() {
+    cancelFrame();
+    if (activeCard?.isConnected) resetCard(activeCard);
+    activeCard = null;
+    activeRect = null;
+  }
+
+  function onPointerOver(event) {
     const card = event.target.closest ? event.target.closest(SELECTOR) : null;
+    if (!card || card === activeCard) return;
 
-    if (card !== activeCard) {
-      if (activeCard) resetCard(activeCard);
-      activeCard = card;
-      if (activeCard) {
-        activeCard.style.transition = "none"; // instant-follow while actively tracked
-        activeCard.dataset.tilting = "true";
-        // One layout read per activation, cached for the whole hover.
-        activeRect = activeCard.getBoundingClientRect();
-      } else {
-        activeRect = null;
-      }
-    }
+    deactivateCard();
+    activeCard = card;
+    activeCard.style.transition = "none";
+    activeCard.dataset.tilting = "true";
+    // One layout read when the pointer enters the card; the move path below
+    // only reads cached numbers and writes transforms/custom properties.
+    activeRect = activeCard.getBoundingClientRect();
+  }
 
-    if (!card || !activeRect) return;
+  function onPointerOut(event) {
+    if (!activeCard) return;
+    const card = event.target.closest ? event.target.closest(SELECTOR) : null;
+    if (card !== activeCard) return;
+
+    const related = event.relatedTarget;
+    if (related && activeCard.contains(related)) return;
+    deactivateCard();
+  }
+
+  function onPointerMove(event) {
+    if (!activeCard || !activeRect) return;
 
     const px = (event.clientX - activeRect.left) / activeRect.width;
     const py = (event.clientY - activeRect.top) / activeRect.height;
@@ -108,14 +115,33 @@ export function initCardTilt() {
   }
 
   function onWindowLeave() {
-    if (activeCard) resetCard(activeCard);
-    activeCard = null;
-    activeRect = null;
+    deactivateCard();
   }
 
+  function onReduceMotionChange(event) {
+    if (event.matches) destroy();
+  }
+
+  function destroy() {
+    deactivateCard();
+    document.removeEventListener("pointerover", onPointerOver);
+    document.removeEventListener("pointerout", onPointerOut);
+    document.removeEventListener("pointermove", onPointerMove);
+    document.removeEventListener("mouseleave", onWindowLeave);
+    window.removeEventListener("scroll", refreshRect);
+    window.removeEventListener("resize", refreshRect);
+    reduceMotionQuery.removeEventListener("change", onReduceMotionChange);
+    destroyTilt = null;
+  }
+
+  document.addEventListener("pointerover", onPointerOver);
+  document.addEventListener("pointerout", onPointerOut);
   document.addEventListener("pointermove", onPointerMove, { passive: true });
   document.addEventListener("mouseleave", onWindowLeave);
-  // Cached rect must be invalidated when the page reflows.
+  // Re-read the cached rect only for the one card currently under the pointer.
   window.addEventListener("scroll", refreshRect, { passive: true });
   window.addEventListener("resize", refreshRect, { passive: true });
+  reduceMotionQuery.addEventListener("change", onReduceMotionChange);
+
+  destroyTilt = destroy;
 }

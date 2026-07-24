@@ -38,6 +38,8 @@
 export function initTechNetwork() {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   if (typeof window.requestAnimationFrame !== "function") return;
+  if (document.body?.dataset.page !== "about") return;
+  if (document.querySelector(".bg-fx--network")) return;
 
   // ---- Tunables ---------------------------------------------------------
   const NODE_AREA_DIVISOR = 16000; // lower = more nodes
@@ -47,6 +49,8 @@ export function initTechNetwork() {
 
   const LINK_DIST = 138;         // px, threshold for drawing a link
   const HUB_LINK_DIST = 210;     // hubs reach further
+  const LINK_ALPHA_MAX = 0.22;
+  const LINK_ALPHA_BUCKETS = 24;
 
   // Parallax: how many px a near node shifts toward/away from the pointer.
   const PARALLAX_MAX = 6;
@@ -88,6 +92,8 @@ export function initTechNetwork() {
   const FX_LINK  = parseColorTriplet(tok("--fx-particle-link", "#a0a8c8")) || "160, 168, 200";
   const FX_DIM   = parseColorTriplet(tok("--fx-particle-dim", "#5b6376")) || "91, 99, 118";
   const FX_ORBIT = parseColorTriplet(tok("--fx-network-orbit", "#6c7cff")) || "108, 124, 255";
+  const NODE_COLOR = `rgb(${FX_NODE})`;
+  const LINK_COLOR = `rgb(${FX_LINK})`;
 
   // ---- Canvas setup -----------------------------------------------------
   const canvas = document.createElement("canvas");
@@ -95,6 +101,23 @@ export function initTechNetwork() {
   canvas.setAttribute("aria-hidden", "true");
   document.body.prepend(canvas);
   const ctx = canvas.getContext("2d", { alpha: true });
+
+  function createGlowSprite(color, radius) {
+    const size = radius * 2;
+    const sprite = document.createElement("canvas");
+    sprite.width = size;
+    sprite.height = size;
+    const spriteCtx = sprite.getContext("2d", { alpha: true });
+    const gradient = spriteCtx.createRadialGradient(radius, radius, 0, radius, radius, radius);
+    gradient.addColorStop(0, `rgb(${color})`);
+    gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+    spriteCtx.fillStyle = gradient;
+    spriteCtx.fillRect(0, 0, size, size);
+    return sprite;
+  }
+
+  const hubHaloSprite = createGlowSprite(FX_NODE, 32);
+  const travellerGlowSprite = createGlowSprite(FX_ORBIT, 32);
 
   // Cached window metrics — updated only on resize, never read inside
   // the rAF loop.
@@ -196,6 +219,7 @@ export function initTechNetwork() {
   const grid = new Map();
   const cellPool = []; // pool of empty arrays we can hand out
   const activeCells = []; // cells currently in grid — cleared at start of buildGrid
+  const linkBuckets = Array.from({ length: LINK_ALPHA_BUCKETS }, () => []);
 
   function buildGrid() {
     // Return every active cell to the pool (length=0 preserves capacity).
@@ -249,18 +273,20 @@ export function initTechNetwork() {
   function drawLinks() {
     buildGrid();
 
-    ctx.lineWidth = 1;
     const linkDistSq = LINK_DIST * LINK_DIST;
     const hubLinkDistSq = HUB_LINK_DIST * HUB_LINK_DIST;
+    const alphaStep = LINK_ALPHA_MAX / LINK_ALPHA_BUCKETS;
+
+    // Reuse flattened coordinate arrays. Grouping by closely spaced alpha
+    // values turns hundreds of beginPath/stroke calls into at most 24 without
+    // changing link geometry, colour or the perceived falloff.
+    for (let i = 0; i < linkBuckets.length; i++) linkBuckets[i].length = 0;
 
     for (let i = 0; i < nodes.length; i++) {
       const a = nodes[i];
       const cx = a._cellX;
       const cy = a._cellY;
 
-      // Iterate the 3x3 neighbourhood. j > i uniqueness makes a per-frame
-      // Set unnecessary (previous implementation allocated ~O(n) entries
-      // in a Set every frame, dominating the About-page cost).
       for (let ox = -1; ox <= 1; ox++) {
         const cxo = (cx + ox) * 100000;
         for (let oy = -1; oy <= 1; oy++) {
@@ -275,34 +301,48 @@ export function initTechNetwork() {
             const ddx = a.x - b.x;
             const ddy = a.y - b.y;
             const distSq = ddx * ddx + ddy * ddy;
-
-            // Use extended reach only when at least one endpoint is a hub.
             const eitherHub = a.hub || b.hub;
             const limitSq = eitherHub ? hubLinkDistSq : linkDistSq;
             if (distSq > limitSq) continue;
 
             const limit = eitherHub ? HUB_LINK_DIST : LINK_DIST;
-            const dist = Math.sqrt(distSq);
-            const falloff = 1 - dist / limit;
-
-            // Depth-aware: fainter links between deeper nodes.
+            const falloff = 1 - Math.sqrt(distSq) / limit;
             const depthFactor = 0.45 + ((a.z + b.z) * 0.5) * 0.55;
-            const alpha = falloff * 0.22 * depthFactor;
+            const alpha = falloff * LINK_ALPHA_MAX * depthFactor;
             if (alpha < 0.005) continue;
 
-            ctx.strokeStyle = `rgba(${FX_LINK}, ${alpha})`;
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.stroke();
+            const bucketIndex = Math.min(
+              LINK_ALPHA_BUCKETS - 1,
+              Math.floor(alpha / alphaStep)
+            );
+            const bucket = linkBuckets[bucketIndex];
+            bucket.push(a.x, a.y, b.x, b.y);
           }
         }
       }
     }
+
+    ctx.strokeStyle = LINK_COLOR;
+    ctx.lineWidth = 1;
+    for (let i = 0; i < linkBuckets.length; i++) {
+      const bucket = linkBuckets[i];
+      if (!bucket.length) continue;
+
+      ctx.globalAlpha = Math.min(LINK_ALPHA_MAX, (i + 0.5) * alphaStep);
+      ctx.beginPath();
+      for (let j = 0; j < bucket.length; j += 4) {
+        ctx.moveTo(bucket[j], bucket[j + 1]);
+        ctx.lineTo(bucket[j + 2], bucket[j + 3]);
+      }
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
   }
 
   function drawNodes(now) {
     const breathT = now * BREATH_FREQ;
+    ctx.fillStyle = NODE_COLOR;
+
     for (let i = 0; i < nodes.length; i++) {
       const n = nodes[i];
       if (n.x < -12 || n.x > width + 12 || n.y < -12 || n.y > height + 12) continue;
@@ -313,24 +353,19 @@ export function initTechNetwork() {
       const alpha = (0.22 + n.z * 0.32) * breath;
 
       if (n.hub) {
-        // Hub halo: a whisper of a glow, no bright core. Radial gradient
-        // is unavoidable here (per-node varying centre), but it's only
-        // built for ~8% of nodes, not all of them.
         const haloR = radius * 4;
-        const halo = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, haloR);
-        halo.addColorStop(0, `rgba(${FX_NODE}, ${0.18 * breath})`);
-        halo.addColorStop(1, `rgba(${FX_NODE}, 0)`);
-        ctx.fillStyle = halo;
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, haloR, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.globalAlpha = 0.18 * breath;
+        ctx.drawImage(hubHaloSprite, n.x - haloR, n.y - haloR, haloR * 2, haloR * 2);
       }
 
+      ctx.fillStyle = NODE_COLOR;
+      ctx.globalAlpha = alpha;
       ctx.beginPath();
-      ctx.fillStyle = `rgba(${FX_NODE}, ${alpha})`;
       ctx.arc(n.x, n.y, radius, 0, Math.PI * 2);
       ctx.fill();
     }
+
+    ctx.globalAlpha = 1;
   }
 
   function drawOrbits(now) {
@@ -363,22 +398,19 @@ export function initTechNetwork() {
       // Trail: a short arc behind the traveller for gentle motion cue.
       ctx.save();
       const trailFrom = t - 0.28;
-      const grad = ctx.createRadialGradient(tx, ty, 0, tx, ty, 22);
-      grad.addColorStop(0, `rgba(${FX_ORBIT}, 0.55)`);
-      grad.addColorStop(1, `rgba(${FX_ORBIT}, 0)`);
       ctx.strokeStyle = `rgba(${FX_ORBIT}, 0.22)`;
       ctx.lineWidth = 1.2;
       ctx.beginPath();
       ctx.ellipse(cx, cy, rx, ry, 0, trailFrom, t);
       ctx.stroke();
 
-      // Traveller glow + core.
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(tx, ty, 22, 0, Math.PI * 2);
-      ctx.fill();
+      // Traveller glow + core. The glow colour profile is static, so only
+      // its destination position changes from frame to frame.
+      ctx.globalAlpha = 0.55;
+      ctx.drawImage(travellerGlowSprite, tx - 22, ty - 22, 44, 44);
 
-      ctx.fillStyle = `rgba(${FX_NODE}, 0.9)`;
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = NODE_COLOR;
       ctx.beginPath();
       ctx.arc(tx, ty, 2.1, 0, Math.PI * 2);
       ctx.fill();

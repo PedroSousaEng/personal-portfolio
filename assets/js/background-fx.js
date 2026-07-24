@@ -51,6 +51,7 @@ export function initBackgroundFX() {
   if (typeof window.requestAnimationFrame !== "function") return;
   // Belt-and-braces: never run on non-home pages even if the caller forgot to gate.
   if (document.body && document.body.dataset.page && document.body.dataset.page !== "home") return;
+  if (document.querySelector(".bg-fx")) return;
 
   // ---- Tunables ---------------------------------------------------------
   const PENDULUM_PERIOD_MS = 14000; // full swing cycle — slow & giant
@@ -189,10 +190,21 @@ export function initBackgroundFX() {
   // Instead of O(n²) pairwise checks, bucket particles into grid cells
   // and only compare neighbours within adjacent cells.
   const GRID_CELL = PARTICLE_LINK_DIST; // cell size = link distance
-  let grid = new Map();
+  const grid = new Map();
+  const gridCellPool = [];
+  const activeGridCells = [];
 
   function buildGrid() {
+    // Reuse cell arrays so the spatial hash remains allocation-free after
+    // warm-up. Node membership is rebuilt, but storage is retained.
+    for (let i = 0; i < activeGridCells.length; i++) {
+      const cell = activeGridCells[i];
+      cell.length = 0;
+      gridCellPool.push(cell);
+    }
+    activeGridCells.length = 0;
     grid.clear();
+
     for (let i = 0; i < particles.length; i++) {
       const p = particles[i];
       const cx = Math.floor(p.x / GRID_CELL);
@@ -200,8 +212,9 @@ export function initBackgroundFX() {
       const key = cx * 100000 + cy;
       let cell = grid.get(key);
       if (!cell) {
-        cell = [];
+        cell = gridCellPool.pop() || [];
         grid.set(key, cell);
+        activeGridCells.push(cell);
       }
       cell.push(i);
     }
@@ -283,11 +296,12 @@ export function initBackgroundFX() {
 
   // Ambient light: slowly drifts in a Lissajous-like path across the
   // viewport, independent of pointer. Gives the scene life when idle.
-  function ambientLightPos(now) {
+  const ambientLight = { x: 0, y: 0 };
+
+  function updateAmbientLightPosition(now) {
     const t = (now / AMBIENT_DRIFT_PERIOD_MS) * Math.PI * 2;
-    const x = width * (0.5 + 0.32 * Math.sin(t));
-    const y = height * (0.5 + 0.28 * Math.sin(t * 1.3 + 0.7));
-    return { x, y };
+    ambientLight.x = width * (0.5 + 0.32 * Math.sin(t));
+    ambientLight.y = height * (0.5 + 0.28 * Math.sin(t * 1.3 + 0.7));
   }
 
   // ---- Particle update + draw -------------------------------------------
@@ -380,8 +394,6 @@ export function initBackgroundFX() {
     // particles per grid cell neighbourhood.
     buildGrid();
     ctx.lineWidth = 1;
-    const drawn = new Set();
-
     for (let i = 0; i < particles.length; i++) {
       const a = particles[i];
       const cx = Math.floor(a.x / GRID_CELL);
@@ -397,9 +409,6 @@ export function initBackgroundFX() {
           for (let ci = 0; ci < cell.length; ci++) {
             const j = cell[ci];
             if (j <= i) continue; // avoid duplicate pairs
-
-            const pairKey = i * 100000 + j;
-            if (drawn.has(pairKey)) continue;
 
             const b = particles[j];
             const ddx = a.x - b.x;
@@ -419,7 +428,6 @@ export function initBackgroundFX() {
               ctx.moveTo(a.x, a.y);
               ctx.lineTo(b.x, b.y);
               ctx.stroke();
-              drawn.add(pairKey);
             }
           }
         }
@@ -442,10 +450,10 @@ export function initBackgroundFX() {
 
     // Ambient roaming light — gives the scene life even when the pointer
     // is idle. Strength oscillates gently so it's never flat.
-    const ambient = ambientLightPos(now);
+    updateAmbientLightPosition(now);
     const ambientStrength = 0.35 + 0.15 * Math.sin(now / 6000);
 
-    drawAmbientLight(ambient.x, ambient.y, AMBIENT_LIGHT_RADIUS, FX_GLOW_AMBIENT, ambientStrength);
+    drawAmbientLight(ambientLight.x, ambientLight.y, AMBIENT_LIGHT_RADIUS, FX_GLOW_AMBIENT, ambientStrength);
     drawAmbientLight(pointer.x, pointer.y, MOUSE_LIGHT_RADIUS, FX_GLOW_CURSOR, mouseStrength);
     drawAmbientLight(pendulum.bobX, pendulum.bobY, PENDULUM_LIGHT_RADIUS, FX_GLOW_PENDULUM, 0.7);
 
@@ -466,27 +474,39 @@ export function initBackgroundFX() {
     }
   }
 
-  document.addEventListener("visibilitychange", () => {
+  let resizeTimer = null;
+  const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  function onVisibilityChange() {
     if (document.hidden) stop();
     else start();
-  });
+  }
 
-  let resizeTimer = null;
-  window.addEventListener("resize", () => {
+  function onResize() {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(resize, 150);
-  });
+  }
 
-  // If reduced-motion is enabled mid-session, stop the loop and let
-  // base.css hide the canvas.
-  const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-  reduceMotionQuery.addEventListener("change", (event) => {
-    if (event.matches) {
-      stop();
-      window.removeEventListener("pointermove", onPointerMove);
-      window.removeEventListener("pointerleave", onPointerLeave);
-    }
-  });
+  function destroy() {
+    stop();
+    clearTimeout(resizeTimer);
+    window.removeEventListener("pointermove", onPointerMove);
+    window.removeEventListener("pointerleave", onPointerLeave);
+    window.removeEventListener("resize", onResize);
+    document.removeEventListener("visibilitychange", onVisibilityChange);
+    reduceMotionQuery.removeEventListener("change", onReduceMotionChange);
+    if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
+  }
+
+  function onReduceMotionChange(event) {
+    // If reduced-motion is enabled mid-session, fully release the canvas
+    // and listeners instead of only stopping the frame loop.
+    if (event.matches) destroy();
+  }
+
+  document.addEventListener("visibilitychange", onVisibilityChange);
+  window.addEventListener("resize", onResize, { passive: true });
+  reduceMotionQuery.addEventListener("change", onReduceMotionChange);
 
   resize();
   start();
