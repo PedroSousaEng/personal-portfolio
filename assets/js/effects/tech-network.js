@@ -421,7 +421,18 @@ export function initTechNetwork() {
   // ---- Main loop --------------------------------------------------------
   let rafId = null;
 
+  // Ambient/decorative effect: capping to ~30fps halves CPU/GPU cost with
+  // no perceptible loss of smoothness for slow orbital/parallax motion.
+  const FRAME_INTERVAL_MS = 1000 / 30;
+  let lastFrameTime = 0;
+
   function frame(now) {
+    if (now - lastFrameTime < FRAME_INTERVAL_MS) {
+      rafId = window.requestAnimationFrame(frame);
+      return;
+    }
+    lastFrameTime = now;
+
     ctx.clearRect(0, 0, width, height);
     updateNodes(now);
     drawOrbits(now);

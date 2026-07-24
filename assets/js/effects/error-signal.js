@@ -103,6 +103,11 @@ export function initErrorSignal() {
   let rafId = null;
   let resizeTimer = null;
 
+  // Ambient/decorative effect: capping to ~30fps halves CPU/GPU cost with
+  // no perceptible loss of smoothness for drifting interference lines.
+  const FRAME_INTERVAL_MS = 1000 / 30;
+  let lastFrameTime = 0;
+
   const pointer = {
     x: width * 0.5,
     y: height * 0.5,
@@ -292,6 +297,12 @@ export function initErrorSignal() {
   }
 
   function frame(now) {
+    if (now - lastFrameTime < FRAME_INTERVAL_MS) {
+      rafId = window.requestAnimationFrame(frame);
+      return;
+    }
+    lastFrameTime = now;
+
     if (now >= nextGlitchAt) {
       glitchUntil = now + GLITCH_DURATION_MS;
       scheduleNextGlitch(now);

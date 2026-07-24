@@ -72,6 +72,11 @@ export function initProjectsSpotlight() {
   let rafId = null;
   let resizeTimer = null;
 
+  // Ambient/decorative effect: capping to ~30fps halves CPU/GPU cost with
+  // no perceptible loss of smoothness for a slow-tracking spotlight.
+  const FRAME_INTERVAL_MS = 1000 / 30;
+  let lastFrameTime = 0;
+
   // The base wash (top gradient + top-right corner glow) is completely
   // static: it depends only on width/height. Rendering it into an
   // offscreen canvas once per resize and blitting via drawImage every
@@ -216,6 +221,12 @@ export function initProjectsSpotlight() {
   }
 
   function frame(now) {
+    if (now - lastFrameTime < FRAME_INTERVAL_MS) {
+      rafId = window.requestAnimationFrame(frame);
+      return;
+    }
+    lastFrameTime = now;
+
     ctx.clearRect(0, 0, width, height);
     updatePointer(now);
     // Blit the pre-rendered static base wash instead of rebuilding it.

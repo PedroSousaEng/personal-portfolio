@@ -99,6 +99,11 @@ export function initContactRadar() {
   let rafId = null;
   let resizeTimer = null;
 
+  // Ambient/decorative effect: capping to ~30fps halves CPU/GPU cost with
+  // no perceptible loss of smoothness for a slow radar sweep.
+  const FRAME_INTERVAL_MS = 1000 / 30;
+  let lastFrameTime = 0;
+
   const pointer = {
     x: width * 0.7,
     y: height * 0.52,
@@ -321,6 +326,12 @@ export function initContactRadar() {
   }
 
   function drawFrame(now) {
+    if (now - lastFrameTime < FRAME_INTERVAL_MS) {
+      rafId = window.requestAnimationFrame(drawFrame);
+      return;
+    }
+    lastFrameTime = now;
+
     ctx.clearRect(0, 0, width, height);
     updateTracking(now);
 

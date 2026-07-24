@@ -377,23 +377,26 @@ export function initBackgroundFX() {
       const radius = (p.r + brightness * 1.8) * depthScale;
       const alpha = (0.25 + p.z * 0.25 + brightness * 0.5) * depthScale;
 
-      ctx.save();
-      if (brightness > 0.55) {
-        ctx.shadowColor = `rgba(${FX_PARTICLE}, 0.8)`;
-        ctx.shadowBlur = 8;
-      }
+      // Bright particles get a slightly larger/softer radius instead of a
+      // real shadowBlur pass — shadowBlur forces a per-draw blur convolution
+      // on the canvas compositor and was the single most expensive line in
+      // this loop when dozens of particles were lit at once.
       ctx.beginPath();
       ctx.fillStyle = `rgba(${FX_PARTICLE}, ${alpha})`;
       ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
       ctx.fill();
-      ctx.restore();
     }
 
     // Faint constellation links between nearby particles — spatial grid
     // reduces this from O(n²) to roughly O(n·k) where k is the average
-    // particles per grid cell neighbourhood.
+    // particles per grid cell neighbourhood. Links are grouped into a
+    // handful of alpha buckets and drawn as one path per bucket instead of
+    // one beginPath/stroke pair per link — previously the biggest source of
+    // draw-call overhead on a dense particle field.
     buildGrid();
-    ctx.lineWidth = 1;
+    const alphaStep = 0.22 / LINK_ALPHA_BUCKETS;
+    for (let i = 0; i < LINK_ALPHA_BUCKETS; i++) linkBuckets[i].length = 0;
+
     for (let i = 0; i < particles.length; i++) {
       const a = particles[i];
       const cx = Math.floor(a.x / GRID_CELL);
@@ -422,23 +425,55 @@ export function initBackgroundFX() {
               // Depth-aware link opacity: links between distant (far)
               // particles are fainter, reinforcing the depth illusion.
               const depthFactor = 0.5 + ((a.z + b.z) * 0.5) * 0.5;
+              const finalAlpha = alpha * depthFactor;
+              if (finalAlpha < 0.006) continue;
 
-              ctx.strokeStyle = `rgba(${FX_PARTICLE_LINK}, ${alpha * depthFactor})`;
-              ctx.beginPath();
-              ctx.moveTo(a.x, a.y);
-              ctx.lineTo(b.x, b.y);
-              ctx.stroke();
+              const bucketIndex = Math.min(
+                LINK_ALPHA_BUCKETS - 1,
+                Math.floor(finalAlpha / alphaStep)
+              );
+              linkBuckets[bucketIndex].push(a.x, a.y, b.x, b.y);
             }
           }
         }
       }
     }
+
+    ctx.lineWidth = 1;
+    for (let i = 0; i < LINK_ALPHA_BUCKETS; i++) {
+      const bucket = linkBuckets[i];
+      if (!bucket.length) continue;
+      ctx.globalAlpha = Math.min(0.22, (i + 0.5) * alphaStep);
+      ctx.strokeStyle = `rgb(${FX_PARTICLE_LINK})`;
+      ctx.beginPath();
+      for (let j = 0; j < bucket.length; j += 4) {
+        ctx.moveTo(bucket[j], bucket[j + 1]);
+        ctx.lineTo(bucket[j + 2], bucket[j + 3]);
+      }
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
   }
+
+  // ---- Link draw batching (alpha-bucketed, single path per bucket) -----
+  const LINK_ALPHA_BUCKETS = 16;
+  const linkBuckets = Array.from({ length: LINK_ALPHA_BUCKETS }, () => []);
 
   // ---- Main loop --------------------------------------------------------
   let rafId = null;
 
+  // Ambient/decorative effect: capping to ~30fps halves CPU/GPU cost with
+  // no perceptible loss of smoothness for slow drifting motion like this.
+  const FRAME_INTERVAL_MS = 1000 / 30;
+  let lastFrameTime = 0;
+
   function frame(now) {
+    if (now - lastFrameTime < FRAME_INTERVAL_MS) {
+      rafId = window.requestAnimationFrame(frame);
+      return;
+    }
+    lastFrameTime = now;
+
     ctx.clearRect(0, 0, width, height);
 
     updatePendulum(now);
