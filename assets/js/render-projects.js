@@ -55,7 +55,7 @@ function buildCard(project) {
     card.tabIndex = 0;
     card.setAttribute(
       "aria-label",
-      `Ver ${project.title} no GitHub (abre numa nova aba)`
+      `View ${project.title} on GitHub (opens in a new tab)`
     );
 
     const openRepo = () => {
@@ -100,7 +100,7 @@ function buildCard(project) {
   if (project.featured) {
     const badge = document.createElement("span");
     badge.className = "tag tag--featured";
-    badge.textContent = "Destaque";
+    badge.textContent = "Featured";
     titleRow.appendChild(badge);
   }
 
@@ -136,10 +136,10 @@ function buildCard(project) {
     githubLink.target = "_blank";
     githubLink.rel = "noopener noreferrer";
     githubLink.innerHTML = GITHUB_ICON;
-    githubLink.append(" Código");
+    githubLink.append(" Resources");
     githubLink.setAttribute(
       "aria-label",
-      `Ver código de ${project.title} no GitHub (abre numa nova aba)`
+      `View ${project.title} resources on GitHub (opens in a new tab)`
     );
     links.appendChild(githubLink);
   }
@@ -151,10 +151,10 @@ function buildCard(project) {
     demoLink.target = "_blank";
     demoLink.rel = "noopener noreferrer";
     demoLink.innerHTML = EXTERNAL_ICON;
-    demoLink.append(" Ver demo");
+    demoLink.append(" View demo");
     demoLink.setAttribute(
       "aria-label",
-      `Ver demonstração de ${project.title} (abre numa nova aba)`
+      `View ${project.title} demo (opens in a new tab)`
     );
     links.appendChild(demoLink);
   }
@@ -194,7 +194,7 @@ export async function renderProjects(containerEl, options = {}) {
       : projects;
 
     if (list.length === 0) {
-      renderFallback(containerEl, "Ainda não há projetos para mostrar — volte em breve.");
+      renderFallback(containerEl, "No projects to show yet — check back soon.");
       return;
     }
 
@@ -207,7 +207,7 @@ export async function renderProjects(containerEl, options = {}) {
     console.error("renderProjects:", error);
     renderFallback(
       containerEl,
-      "Não foi possível carregar os projetos agora. Tente atualizar a página."
+      "Couldn't load the projects right now. Try refreshing the page."
     );
   }
 }
