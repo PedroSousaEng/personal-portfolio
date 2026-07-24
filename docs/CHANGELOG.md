@@ -3,35 +3,6 @@
 All notable changes to this project are documented here. Format loosely
 follows [Keep a Changelog](https://keepachangelog.com).
 
-## [1.1.0] — Signature element
-
-### Added
-- `assets/css/signature.css`: the site's one signature visual system — a
-  near-invisible CAD blueprint backdrop, slow floating dust, and the
-  `[data-reveal]` scroll-transition classes. Linked on every page.
-- `assets/js/pendulum.js`: physically-simulated pendulum (small-angle,
-  scroll-driven angular velocity, eases to rest near page end) rendered to
-  a fixed canvas, colors sourced from `--pendulum-*` tokens. Dispatches
-  `pendulum:cross` on `document` each time the bob crosses center.
-- `assets/js/scroll-reveal.js`: reveals `[data-reveal]` section headings on
-  intersection, flushed on `pendulum:cross` so page motion and the pendulum
-  read as one synchronized system; falls back to a timer if that event
-  never fires.
-- New tokens in `tokens.css`: `--pendulum-*` (rod/bob/shadow colors),
-  `--blueprint-line`, `--blueprint-opacity`, `--dust-color`,
-  `--reveal-distance`, `--signature-z`.
-- `docs/DESIGN_SYSTEM.md`: "Signature element" section documenting the
-  above, including the content-stacking fix (`#main`/`.site-footer` need
-  `position: relative` to paint above the fixed decorative layers).
-
-### Changed
-- All five pages (`index`, `about`, `projects`, `contact`, `404`) now load
-  `signature.css` and both new scripts, and carry the blueprint/dust/
-  pendulum markup right after `<body>`.
-- Everything in this layer respects `prefers-reduced-motion: reduce`: the
-  pendulum freezes at rest with no scroll listener, dust/blueprint are
-  hidden outright, and `[data-reveal]` content shows immediately.
-
 ## [1.0.0] — Initial build
 
 ### Added

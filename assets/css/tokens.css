@@ -20,7 +20,7 @@
 
 :root {
   /* ---- Color: ink scale (background/surface) ---- */
-  --color-ink-950: #0b0d12;
+  --color-ink-950: #050505; /* absolute black page background */
   --color-ink-900: #14171f;
   --color-ink-800: #1b1f2a;
   --color-ink-700: #232838;
@@ -37,6 +37,13 @@
   --color-accent-indigo-tint: #6c7cff1a; /* 10% alpha, for glows/fills */
   --color-accent-amber: #ffb347;
   --color-accent-amber-tint: #ffb3471a;
+
+  /* ---- Color: background-fx (canvas pendulum/particles/lighting) ---- */
+  --fx-particle: #aeb8ff;
+  --fx-particle-dim: #5b6376;
+  --fx-pendulum-rod: #333a4d;
+  --fx-glow-cursor: #6c7cff;
+  --fx-glow-pendulum: #ffb347;
 
   /* ---- Color: state ---- */
   --color-success: #4ade80;
@@ -109,26 +116,6 @@
   /* ---- Layout ---- */
   --container-max: 1120px;
   --nav-height: 68px;
-
-  /*
-   * ---- Signature element: pendulum + blueprint + atmosphere ----
-   * See docs/DESIGN_SYSTEM.md, "Signature element" for the reasoning.
-   * These are the only tokens the pendulum/blueprint/dust layer
-   * (assets/css/signature.css, assets/js/pendulum.js) is allowed to read —
-   * no bare colors in that layer either.
-   */
-  --pendulum-rod-light: #d8dbe2;
-  --pendulum-rod-mid: #9096a3;
-  --pendulum-rod-dark: #5b6070;
-  --pendulum-bob-light: #eef0f4;
-  --pendulum-bob-mid: #aeb3c0;
-  --pendulum-bob-dark: #33364a;
-  --pendulum-shadow: rgba(0, 0, 0, 0.45);
-  --blueprint-line: #6c7cff;
-  --blueprint-opacity: 0.05;
-  --dust-color: rgba(242, 244, 248, 0.5);
-  --reveal-distance: 14px;
-  --signature-z: 3; /* stacking level content must clear — see signature.css */
 
   /*
    * Breakpoints cannot live in a custom property because @media conditions

@@ -42,28 +42,8 @@
   <link rel="stylesheet" href="assets/css/layout.css">
   <link rel="stylesheet" href="assets/css/components.css">
   <link rel="stylesheet" href="assets/css/pages.css">
-  <link rel="stylesheet" href="assets/css/signature.css">
 </head>
 <body data-page="about">
-  <div class="blueprint-bg" aria-hidden="true"></div>
-  <div class="dust" aria-hidden="true">
-      <span class="dust__mote" style="left:32.4%; --mote-size:1.7px; --mote-duration:28.4s; --mote-delay:-2.2s; --mote-drift:1.1px; --mote-opacity:0.26"></span>
-      <span class="dust__mote" style="left:7.5%; --mote-size:2.3px; --mote-duration:18.6s; --mote-delay:-13.0s; --mote-drift:-13.8px; --mote-opacity:0.2"></span>
-      <span class="dust__mote" style="left:41.9%; --mote-size:2.7px; --mote-duration:20.0s; --mote-delay:-6.7s; --mote-drift:4.1px; --mote-opacity:0.39"></span>
-      <span class="dust__mote" style="left:56.2%; --mote-size:2.1px; --mote-duration:33.6s; --mote-delay:-1.4s; --mote-drift:11.5px; --mote-opacity:0.24"></span>
-      <span class="dust__mote" style="left:15.6%; --mote-size:1.7px; --mote-duration:22.9s; --mote-delay:-24.5s; --mote-drift:-10.2px; --mote-opacity:0.31"></span>
-      <span class="dust__mote" style="left:62.1%; --mote-size:2.1px; --mote-duration:26.8s; --mote-delay:-1.9s; --mote-drift:-14.1px; --mote-opacity:0.23"></span>
-      <span class="dust__mote" style="left:66.0%; --mote-size:2.1px; --mote-duration:23.0s; --mote-delay:-17.6s; --mote-drift:-1.5px; --mote-opacity:0.25"></span>
-      <span class="dust__mote" style="left:76.7%; --mote-size:2.5px; --mote-duration:21.9s; --mote-delay:-17.2s; --mote-drift:0.8px; --mote-opacity:0.37"></span>
-      <span class="dust__mote" style="left:70.6%; --mote-size:1.9px; --mote-duration:33.7s; --mote-delay:-3.5s; --mote-drift:-2.6px; --mote-opacity:0.35"></span>
-      <span class="dust__mote" style="left:16.3%; --mote-size:2.2px; --mote-duration:18.6s; --mote-delay:-20.0s; --mote-drift:8.5px; --mote-opacity:0.31"></span>
-      <span class="dust__mote" style="left:84.3%; --mote-size:2.0px; --mote-duration:29.1s; --mote-delay:-17.8s; --mote-drift:2.6px; --mote-opacity:0.28"></span>
-      <span class="dust__mote" style="left:81.0%; --mote-size:2.9px; --mote-duration:25.6s; --mote-delay:-19.9s; --mote-drift:-14.1px; --mote-opacity:0.33"></span>
-  </div>
-  <div class="pendulum" aria-hidden="true">
-    <canvas></canvas>
-  </div>
-
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
@@ -82,7 +62,7 @@
   </header>
 
   <main id="main">
-    <section class="section container">
+    <section class="section container" data-reveal>
       <div class="grid grid--2 items-center">
         <div class="stack">
           <p class="eyebrow">About</p>
@@ -112,18 +92,18 @@
       </div>
     </section>
 
-    <section class="section section--tight container" aria-labelledby="skills-heading">
-      <div class="section-heading" data-reveal>
+    <section class="section section--tight container" aria-labelledby="skills-heading" data-reveal>
+      <div class="section-heading">
         <p class="eyebrow">Toolbox</p>
         <h2 id="skills-heading" class="text-2xl mt-2">Skills</h2>
       </div>
-      <div class="stack" data-skills data-reveal aria-live="polite">
+      <div class="stack" data-skills aria-live="polite">
         <p class="empty-state">Loading skills…</p>
       </div>
     </section>
 
-    <section class="section section--tight container" aria-labelledby="experience-heading">
-      <div class="section-heading" data-reveal>
+    <section class="section section--tight container" aria-labelledby="experience-heading" data-reveal>
+      <div class="section-heading">
         <p class="eyebrow">Career</p>
         <h2 id="experience-heading" class="text-2xl mt-2">Experience</h2>
       </div>
@@ -132,8 +112,8 @@
       </div>
     </section>
 
-    <section class="section section--tight container" aria-labelledby="timeline-heading">
-      <div class="section-heading" data-reveal>
+    <section class="section section--tight container" aria-labelledby="timeline-heading" data-reveal>
+      <div class="section-heading">
         <p class="eyebrow">Along the way</p>
         <h2 id="timeline-heading" class="text-2xl mt-2">Milestones</h2>
       </div>
@@ -157,8 +137,6 @@
     </div>
   </footer>
 
-  <script type="module" src="assets/js/pendulum.js"></script>
-  <script type="module" src="assets/js/scroll-reveal.js"></script>
   <script type="module" src="assets/js/main.js"></script>
 </body>
 </html>

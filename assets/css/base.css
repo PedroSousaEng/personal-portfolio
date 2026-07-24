@@ -46,6 +46,21 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* ---- Background FX canvas (pendulum / particles / lighting) ----
+ * Injected by assets/js/background-fx.js as the first child of <body>.
+ * Fixed + negative z-index keeps it painted above the html/body black
+ * background but below every normal-flow element on the page.
+ */
+.bg-fx {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  display: block;
+  pointer-events: none;
+}
+
 img,
 picture,
 svg,
@@ -147,8 +162,13 @@ p {
     scroll-behavior: auto !important;
   }
 
-  [data-animate] {
+  [data-animate],
+  [data-reveal] {
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  .bg-fx {
+    display: none;
   }
 }

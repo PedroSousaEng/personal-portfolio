@@ -90,6 +90,22 @@
 [data-animate="3"] { animation-delay: 180ms; }
 [data-animate="4"] { animation-delay: 270ms; }
 
+/* Scroll-based reveal: sections start hidden/offset and settle into place
+   as they enter the viewport (assets/js/scroll-reveal.js toggles
+   .is-visible via IntersectionObserver). Reduced-motion guard lives in
+   base.css alongside [data-animate]. */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity var(--duration-slow) var(--ease-standard),
+              transform var(--duration-slow) var(--ease-standard);
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* =========================================================
    Section heading pattern (used on About / Projects / Home)
    ========================================================= */
