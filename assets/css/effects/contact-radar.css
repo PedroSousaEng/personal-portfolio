@@ -1,0 +1,59 @@
+/**
+ * PURPOSE
+ *   Contact-page-only static surface layer that supports the JS-driven radar
+ *   background. Keeps all contact-specific visuals isolated from shared page
+ *   styles.
+ *
+ * RESPONSIBILITIES
+ *   - Scope every selector to body[data-page="contact"].
+ *   - Add subtle grid/ring washes behind the radar canvas.
+ *   - Slightly lift the radar canvas with a screen blend.
+ */
+
+body[data-page="contact"] {
+  background-image:
+    radial-gradient(circle at 74% 52%, rgba(108, 124, 255, 0.12), transparent 22%),
+    radial-gradient(circle at 80% 58%, rgba(174, 184, 255, 0.06), transparent 36%),
+    linear-gradient(to right, var(--fx-contact-grid) 0, var(--fx-contact-grid) 1px, transparent 1px, transparent var(--fx-contact-grid-size)),
+    linear-gradient(to bottom, var(--fx-contact-grid) 0, var(--fx-contact-grid) 1px, transparent 1px, transparent var(--fx-contact-grid-size)),
+    radial-gradient(ellipse 78% 82% at 50% 50%, transparent 0%, transparent 58%, var(--fx-depth-vignette) 100%);
+  background-size:
+    100% 100%,
+    100% 100%,
+    var(--fx-contact-grid-size) var(--fx-contact-grid-size),
+    var(--fx-contact-grid-size) var(--fx-contact-grid-size),
+    100% 100%;
+  background-attachment: fixed;
+}
+
+body[data-page="contact"]::before,
+body[data-page="contact"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+body[data-page="contact"]::before {
+  background:
+    radial-gradient(circle at 74% 54%, rgba(108, 124, 255, 0.06), transparent 18%),
+    radial-gradient(circle at 74% 54%, rgba(108, 124, 255, 0.02), transparent 30%);
+}
+
+body[data-page="contact"]::after {
+  background:
+    linear-gradient(90deg, rgba(91, 99, 118, 0.04) 0%, transparent 18%, transparent 100%),
+    linear-gradient(180deg, rgba(5, 5, 5, 0) 0%, rgba(5, 5, 5, 0.18) 100%);
+}
+
+body[data-page="contact"] .bg-fx--contact {
+  mix-blend-mode: screen;
+  opacity: 0.95;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-page="contact"] .bg-fx--contact {
+    display: none;
+  }
+}

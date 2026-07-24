@@ -11,7 +11,8 @@
  *
  * DEPENDENCIES
  *   render-projects.js, render-about.js, background-fx.js, scroll-reveal.js,
- *   cursor.js, magnetic.js, text-decode.js, tilt.js
+ *   cursor.js, magnetic.js, text-decode.js, tilt.js,
+ *   effects/{tech-network,projects-spotlight,contact-radar,error-signal}.js
  *
  * SAFE EDITS
  *   To wire up a new page's data rendering, add a case to initPageData()
@@ -24,6 +25,8 @@ import { renderContact } from "./render-contact.js";
 import { initBackgroundFX } from "./background-fx.js";
 import { initTechNetwork } from "./effects/tech-network.js";
 import { initProjectsSpotlight } from "./effects/projects-spotlight.js";
+import { initContactRadar } from "./effects/contact-radar.js";
+import { initErrorSignal } from "./effects/error-signal.js";
 import { initScrollReveal } from "./scroll-reveal.js";
 import { initCursor } from "./cursor.js";
 import { initMagneticButtons } from "./magnetic.js";
@@ -110,10 +113,11 @@ function initPageData() {
 
 /**
  * Route the page to the correct ambient background effect.
- *   home    -> initBackgroundFX() : pendulum + particle field + lighting
- *   about   -> initTechNetwork()      : nodes / links / slow orbits + parallax
- *   projects-> initProjectsSpotlight(): mouse-led spotlight wash
- *   others  -> no background canvas (will be added in later phases)
+ *   home    -> initBackgroundFX()      : pendulum + particle field + lighting
+ *   about   -> initTechNetwork()       : nodes / links / slow orbits + parallax
+ *   projects-> initProjectsSpotlight() : mouse-led spotlight wash
+ *   contact -> initContactRadar()      : slow radar sweep + signal blips
+ *   404     -> initErrorSignal()       : broken signal lines + interference
  *
  * Each effect module is self-contained: it injects its own <canvas>,
  * owns its own rAF loop, and honours prefers-reduced-motion internally.
@@ -121,12 +125,17 @@ function initPageData() {
  */
 function initPageBackground() {
   const page = document.body.dataset.page;
+
   if (page === "home") {
     initBackgroundFX();
   } else if (page === "about") {
     initTechNetwork();
   } else if (page === "projects") {
     initProjectsSpotlight();
+  } else if (page === "contact") {
+    initContactRadar();
+  } else if (page === "404") {
+    initErrorSignal();
   }
 }
 

@@ -1,0 +1,52 @@
+/**
+ * PURPOSE
+ *   404-page-only static visual layer that supports the JS interference
+ *   canvas. Adds scanline texture, dark vignette and restrained signal-loss
+ *   atmosphere without leaking styles into other pages.
+ */
+
+body[data-page="404"] {
+  background-image:
+    radial-gradient(circle at 52% 42%, rgba(108, 124, 255, 0.08), transparent 26%),
+    linear-gradient(180deg, rgba(91, 99, 118, 0.04) 0%, rgba(5, 5, 5, 0) 28%),
+    radial-gradient(ellipse 78% 84% at 50% 50%, transparent 0%, transparent 55%, rgba(20, 23, 31, 0.62) 100%);
+  background-attachment: fixed;
+}
+
+body[data-page="404"]::before,
+body[data-page="404"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+body[data-page="404"]::before {
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.018) 0,
+      rgba(255, 255, 255, 0.018) 1px,
+      transparent 1px,
+      transparent 6px
+    );
+  opacity: 0.32;
+}
+
+body[data-page="404"]::after {
+  background:
+    linear-gradient(90deg, rgba(108, 124, 255, 0.03) 0%, transparent 16%, transparent 84%, rgba(108, 124, 255, 0.03) 100%),
+    linear-gradient(180deg, rgba(5, 5, 5, 0) 0%, rgba(5, 5, 5, 0.26) 100%);
+}
+
+body[data-page="404"] .bg-fx--404 {
+  mix-blend-mode: screen;
+  opacity: 0.92;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-page="404"] .bg-fx--404 {
+    display: none;
+  }
+}

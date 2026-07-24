@@ -69,6 +69,24 @@
   --fx-projects-spotlight-soft: #aeb8ff;
   --fx-projects-line: #5b6376;
 
+  /* ---- Contact page: radar field ----
+     Consumed by:
+       - assets/js/effects/contact-radar.js
+       - assets/css/effects/contact-radar.css */
+  --fx-contact-ring: #6c7cff;
+  --fx-contact-sweep: #aeb8ff;
+  --fx-contact-line: #5b6376;
+  --fx-contact-grid: rgba(120, 130, 170, 0.04);
+  --fx-contact-grid-size: 72px;
+
+  /* ---- 404 page: error / interference field ----
+     Consumed by:
+       - assets/js/effects/error-signal.js
+       - assets/css/effects/error-signal.css */
+  --fx-404-line: #5b6376;
+  --fx-404-glitch: #6c7cff;
+  --fx-404-soft: #aeb8ff;
+
   /* ---- Color: state ---- */
   --color-success: #4ade80;
   --color-danger: #ff6b6b;
