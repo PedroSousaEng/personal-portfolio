@@ -10,7 +10,8 @@
  *     on the `data-page` attribute on <body>.
  *
  * DEPENDENCIES
- *   render-projects.js, render-about.js, background-fx.js, scroll-reveal.js
+ *   render-projects.js, render-about.js, background-fx.js, scroll-reveal.js,
+ *   cursor.js, magnetic.js, text-decode.js, tilt.js
  *
  * SAFE EDITS
  *   To wire up a new page's data rendering, add a case to initPageData()
@@ -22,6 +23,10 @@ import { renderSkills, renderExperience, renderTimeline } from "./render-about.j
 import { renderContact } from "./render-contact.js";
 import { initBackgroundFX } from "./background-fx.js";
 import { initScrollReveal } from "./scroll-reveal.js";
+import { initCursor } from "./cursor.js";
+import { initMagneticButtons } from "./magnetic.js";
+import { initTextDecode } from "./text-decode.js";
+import { initCardTilt } from "./tilt.js";
 
 /** Wires up the mobile navigation toggle button and overlay menu. */
 function initNav() {
@@ -107,6 +112,10 @@ function init() {
   initPageData();
   initBackgroundFX();
   initScrollReveal();
+  initCursor();
+  initMagneticButtons();
+  initTextDecode();
+  initCardTilt();
 }
 
 document.addEventListener("DOMContentLoaded", init);

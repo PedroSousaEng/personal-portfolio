@@ -4,12 +4,16 @@
     projects (data-driven), and a path to Projects/Contact.
 
   DEPENDENCIES
-    assets/css/{tokens,base,layout,components,pages}.css
-    assets/js/main.js (renders featured projects via render-projects.js)
+    assets/css/{tokens,base,layout,components,pages,micro-interactions}.css
+    assets/js/main.js (renders featured projects via render-projects.js;
+      also drives cursor/magnetic/tilt fx and the hero text-decode effect)
     assets/data/projects.json (for the featured cards)
 
   SAFE EDITS
     Copy edits: hero name/role/lede text below, and the CTA button labels.
+    Keep the hero name wrapped in <span data-decode> — that's what
+    text-decode.js scrambles/resolves on load; editing the text inside it
+    is fine, removing the attribute just turns the effect off.
     Do NOT hand-edit the featured project cards — they're generated from
     assets/data/projects.json; edit that file instead.
 -->
@@ -44,6 +48,7 @@
   <link rel="stylesheet" href="assets/css/layout.css">
   <link rel="stylesheet" href="assets/css/components.css">
   <link rel="stylesheet" href="assets/css/pages.css">
+  <link rel="stylesheet" href="assets/css/micro-interactions.css">
 
   <script type="application/ld+json">
   {
@@ -86,7 +91,7 @@
       </p>
 
       <h1 class="hero__name" data-animate="2">
-        Alex Rivera<span class="hero__cursor" aria-hidden="true"></span>
+        <span data-decode>Alex Rivera</span><span class="hero__cursor" aria-hidden="true"></span>
       </h1>
 
       <p class="eyebrow mt-2" data-animate="2">Software Engineer</p>
