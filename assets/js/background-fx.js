@@ -68,13 +68,14 @@ export function initBackgroundFX() {
   const BOB_GLOW_BREATH_AMP = 12; // ±px variation in glow radius
   const BOB_GLOW_BREATH_PERIOD_MS = 5200;
 
-  // Pendulum clickable wave — MASSIVE VERSION
-  const WAVE_COOLDOWN_MS = 800; // Min time between clicks
+  // Pendulum clickable wave — slow ocean-swell version
+  const WAVE_COOLDOWN_MS = 1400; // Min time between clicks (waves now last longer)
   const WAVE_CLICK_RADIUS = 16; // Detect click within this radius of bob
   const WAVE_MAX_RADIUS = Math.max(window.innerWidth, window.innerHeight) * 1.5; // Goes to screen corners
-  const WAVE_DURATION_MS = 1800; // How long the wave lasts (longer to reach corners)
-  const WAVE_LINE_WIDTH = 2; // 2mm thickness
-  const WAVE_COLOR = "rgba(107, 124, 255, "; // Indigo blue
+  const WAVE_DURATION_MS = 6500; // Slow, rolling pace — like a swell crossing open water
+  const WAVE_LINE_WIDTH = 3;
+  const WAVE_GLOW_BLUR = 20; // soft halo around the ring, drawn via shadowBlur
+  const WAVE_COLOR = "107, 124, 255"; // Indigo blue, as an "r, g, b" triplet
 
   const PARTICLE_AREA_DIVISOR = 14000; // lower = more particles
   const PARTICLE_MIN = 40;
@@ -258,15 +259,31 @@ export function initBackgroundFX() {
       const elapsed = now - wave.createdAt;
       if (elapsed > WAVE_DURATION_MS) continue; // Wave disappears after duration
 
-      const progress = elapsed / WAVE_DURATION_MS;
-      const radius = progress * WAVE_MAX_RADIUS;
-      const alpha = Math.max(0, 1 - progress); // Fades as it grows
+      const linear = elapsed / WAVE_DURATION_MS;
 
-      ctx.strokeStyle = `${WAVE_COLOR}${alpha * 0.8})`;
+      // Ease-out cubic: the ring pushes out quickly at first, then keeps
+      // decelerating for most of its life — the rolling, losing-energy
+      // feel of a real swell rather than a ripple expanding at constant
+      // speed.
+      const eased = 1 - Math.pow(1 - linear, 3);
+      const radius = eased * WAVE_MAX_RADIUS;
+
+      // Quick fade-in, then hold near-full brightness through the middle,
+      // then fade out over the back half — keeps the ring clearly readable
+      // for most of its life instead of thinning out from frame one.
+      const fadeIn = Math.min(1, linear * 6);
+      const fadeOut = 1 - Math.max(0, (linear - 0.55) / 0.45);
+      const alpha = Math.max(0, Math.min(fadeIn, fadeOut));
+
+      ctx.save();
+      ctx.shadowColor = `rgba(${WAVE_COLOR}, ${alpha * 0.9})`;
+      ctx.shadowBlur = WAVE_GLOW_BLUR;
+      ctx.strokeStyle = `rgba(${WAVE_COLOR}, ${alpha * 0.85})`;
       ctx.lineWidth = WAVE_LINE_WIDTH;
       ctx.beginPath();
       ctx.arc(wave.originX, wave.originY, radius, 0, Math.PI * 2);
       ctx.stroke();
+      ctx.restore();
 
       activeWaves.push(wave);
     }
@@ -590,7 +607,6 @@ export function initBackgroundFX() {
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
 
-
     // pendulum.bobX/bobY are already in CSS-pixel space (the canvas
     // context is scaled once via ctx.setTransform(dpr, ...) in resize(),
     // and updatePendulum() derives bobX/bobY from `width`/`height`, which
@@ -599,7 +615,6 @@ export function initBackgroundFX() {
     // (e.g. Retina/high-DPI displays), so clicks on the actual bob missed.
     const bobX = pendulum.bobX;
     const bobY = pendulum.bobY;
-
     const dx = x - bobX;
     const dy = y - bobY;
     const dist = Math.sqrt(dx * dx + dy * dy);

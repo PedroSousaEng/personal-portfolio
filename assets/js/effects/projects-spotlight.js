@@ -37,10 +37,12 @@ export function initProjectsSpotlight() {
   const IDLE_DRIFT_PERIOD_MS = 22000;
   const PULSE_PERIOD_MS = 3600;
 
-  // Ultra-subtle dust particles
-  const DUST_COUNT = 12; // Very sparse
-  const DUST_MAX_RADIUS = 0.8; // Tiny particles (sub-pixel)
-  const DUST_BASE_SPEED = 0.008; // Barely perceptible drift
+  // Floating dust particles — drift around randomly rather than in
+  // straight lines, and visible enough to actually notice.
+  const DUST_COUNT = 42;
+  const DUST_MAX_RADIUS = 2.4;
+  const DUST_BASE_SPEED = 0.05; // base wander speed
+  const DUST_TURN_RATE = 0.06; // max radians/frame the heading can drift by
   const DUST_TWINKLE_PERIOD_MS = 4200;
 
   const rootStyles = getComputedStyle(document.documentElement);
@@ -131,16 +133,18 @@ export function initProjectsSpotlight() {
     lastMove: 0,
   };
 
-  // ---- Ultra-subtle dust particles ----
+  // ---- Floating dust particles ----
   let dustParticles = [];
 
   function makeDustParticle() {
+    const heading = Math.random() * Math.PI * 2;
+    const speed = DUST_BASE_SPEED * (0.5 + Math.random());
     return {
       x: Math.random() * width,
       y: Math.random() * height,
-      vx: (Math.random() - 0.5) * DUST_BASE_SPEED,
-      vy: (Math.random() - 0.5) * DUST_BASE_SPEED * 0.7, // Slightly slower vertical drift
-      r: Math.random() * DUST_MAX_RADIUS,
+      heading, // direction of travel, in radians — wanders over time
+      speed,
+      r: 0.8 + Math.random() * DUST_MAX_RADIUS,
       twinklePhase: Math.random() * Math.PI * 2,
       life: Math.random(), // Random start opacity
     };
@@ -154,9 +158,12 @@ export function initProjectsSpotlight() {
     for (let i = 0; i < dustParticles.length; i++) {
       const p = dustParticles[i];
 
-      // Drift randomly
-      p.x += p.vx;
-      p.y += p.vy;
+      // Random-walk the heading a little each frame instead of drifting in
+      // a straight line — this is what actually reads as "flying around
+      // randomly" rather than gentle linear drift.
+      p.heading += (Math.random() - 0.5) * DUST_TURN_RATE;
+      p.x += Math.cos(p.heading) * p.speed;
+      p.y += Math.sin(p.heading) * p.speed;
 
       // Wrap around edges
       if (p.x < -5) p.x = width + 5;
@@ -164,11 +171,11 @@ export function initProjectsSpotlight() {
       if (p.y < -5) p.y = height + 5;
       if (p.y > height + 5) p.y = -5;
 
-      // Subtle twinkle: very faint pulsing
+      // Twinkle: gentle pulsing brightness
       const twinkle = 0.5 + 0.5 * Math.sin(now / DUST_TWINKLE_PERIOD_MS + p.twinklePhase);
 
-      // Draw dust mote (ultra-subtle, barely visible)
-      ctx.fillStyle = `rgba(${FX_SOFT}, ${twinkle * 0.08})`; // Very low opacity
+      // Draw dust mote — visible, but still soft and ambient.
+      ctx.fillStyle = `rgba(${FX_SOFT}, ${twinkle * 0.4})`;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
       ctx.fill();

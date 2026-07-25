@@ -15,7 +15,7 @@
  *   render-projects.js, render-about.js, background-fx.js, scroll-reveal.js,
  *   cursor.js, magnetic.js, text-decode.js, tilt.js, reduced-motion.js,
  *   page-transitions.js, svg-line-draw.js,
- *   effects/{tech-network,projects-spotlight,contact-radar,error-signal}.js
+ *   effects/{tech-network,about-rocket,projects-spotlight,contact-radar,error-signal}.js
  *
  * SAFE EDITS
  *   To wire up a new page's data rendering, add a case to initPageData()
@@ -28,6 +28,7 @@ import { renderContact } from "./render-contact.js";
 import { initSiteIdentity } from "./render-site.js";
 import { initBackgroundFX } from "./background-fx.js";
 import { initTechNetwork } from "./effects/tech-network.js";
+import { initAboutRocket } from "./effects/about-rocket.js";
 import { initProjectsSpotlight } from "./effects/projects-spotlight.js";
 import { initContactRadar } from "./effects/contact-radar.js";
 import { initErrorSignal } from "./effects/error-signal.js";
@@ -143,6 +144,7 @@ function initPageBackground() {
     initBackgroundFX();
   } else if (page === "about") {
     initTechNetwork();
+    initAboutRocket();
   } else if (page === "projects") {
     initProjectsSpotlight();
   } else if (page === "contact") {
