@@ -22,12 +22,18 @@
  *   assets/css/micro-interactions.css (.cursor-dot / .cursor-ring rules).
  *
  * SAFE EDITS
- *   Tune EASE / element sizes via the CSS file, not here. Add more hover
- *   targets to HOVER_SELECTOR below rather than adding new listeners.
+ *   Tune EASE_TAU_MS below for ring catch-up speed; tune element sizes via
+ *   the CSS file instead. Add more hover targets to HOVER_SELECTOR below
+ *   rather than adding new listeners.
  */
 
 const HOVER_SELECTOR = "a, button, .btn, .card--interactive, [data-cursor-hover]";
-const EASE = 0.18;
+// Time-constant (ms) for the ring's catch-up smoothing — frame-rate
+// independent (see tick() below), so the ring reaches the pointer in the
+// same wall-clock time whether the page is running at 60fps or has
+// dropped to 24fps under a heavier ambient background effect. Lower =
+// snappier.
+const EASE_TAU_MS = 40;
 // Distance below which the ring is considered "settled" on the dot and
 // the rAF loop can safely pause until the pointer moves again.
 const SETTLE_DIST_SQ = 0.25;
@@ -121,6 +127,7 @@ export function initCursor() {
   let ringX = targetX;
   let ringY = targetY;
   let rafId = null;
+  let lastTickTime = null;
   let running = false;
   let visible = false;
   let hoverActive = false;
@@ -128,6 +135,7 @@ export function initCursor() {
   function ensureRunning() {
     if (rafId === null) {
       running = true;
+      lastTickTime = null;
       rafId = requestAnimationFrame(tick);
     }
   }
@@ -174,11 +182,25 @@ export function initCursor() {
     ring.dataset.hover = "false";
   }
 
-  function tick() {
+  function tick(now) {
+    if (lastTickTime === null) {
+      // First frame after (re)starting the loop — establish the clock
+      // without moving, so a stale timestamp never produces a fake jump.
+      lastTickTime = now;
+      rafId = requestAnimationFrame(tick);
+      return;
+    }
+
+    // Clamp so a long pause (backgrounded tab, big jank spike) doesn't
+    // make the ring leap discontinuously on the next visible frame.
+    const dt = Math.min(now - lastTickTime, 100);
+    lastTickTime = now;
+
+    const factor = 1 - Math.exp(-dt / EASE_TAU_MS);
     const dx = targetX - ringX;
     const dy = targetY - ringY;
-    ringX += dx * EASE;
-    ringY += dy * EASE;
+    ringX += dx * factor;
+    ringY += dy * factor;
     ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0)`;
 
     // Sleep the rAF loop once the ring has caught up with the dot. It

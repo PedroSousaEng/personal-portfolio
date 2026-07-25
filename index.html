@@ -89,9 +89,18 @@
   <div class="boot-intro" aria-hidden="true">
     <div class="boot-intro__grid"></div>
     <div class="boot-intro__panel">
+      <svg class="boot-intro__mark" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <path class="boot-intro__mark-hex" d="M32,10 L51,21 L51,43 L32,54 L13,43 L13,21 Z"/>
+        <circle class="boot-intro__mark-circle" cx="32" cy="32" r="7"/>
+      </svg>
       <p class="boot-intro__label font-mono">SYSTEM</p>
-      <p class="boot-intro__line font-mono">Pedro Sousa<span class="boot-intro__caret"></span></p>
+      <p class="boot-intro__line font-mono"><span class="boot-intro__type">Pedro Sousa</span><span class="boot-intro__caret"></span></p>
       <div class="boot-intro__bar"><div class="boot-intro__bar-fill"></div></div>
+      <div class="boot-intro__status font-mono text-sm" aria-hidden="true">
+        <span class="boot-intro__status-step boot-intro__status-step--1">Initializing engine</span>
+        <span class="boot-intro__status-step boot-intro__status-step--2">Assembling components</span>
+        <span class="boot-intro__status-step boot-intro__status-step--3">Ready</span>
+      </div>
     </div>
   </div>
 

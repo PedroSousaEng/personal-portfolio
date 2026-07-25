@@ -7,8 +7,10 @@
  * RESPONSIBILITIES
  *   - Track the pointer document-wide, cache the avatar's rect (refreshed
  *     on resize/scroll only, never read inside the move handler).
- *   - Ease the rotation toward its target with a lerp, so the motion reads
- *     as a gentle drift rather than a snap.
+ *   - Ease the rotation toward its target using delta-time-based smoothing
+ *     (not a fixed per-frame factor), so the motion reaches its target in
+ *     the same wall-clock time regardless of the page's actual frame
+ *     rate — matches the fix in cursor.js.
  *   - Pause the rAF loop once the tilt has settled near its target and the
  *     pointer is idle, matching the idle-stop pattern in cursor.js.
  *   - No-op entirely on touch/coarse-pointer devices and under
@@ -16,12 +18,12 @@
  *     changes mid-session.
  *
  * SAFE EDITS
- *   Tune MAX_TILT_DEG / EASE below. This module only ever writes
+ *   Tune MAX_TILT_DEG / EASE_TAU_MS below. This module only ever writes
  *   transform on the avatar element — no other file should set it.
  */
 
 const MAX_TILT_DEG = 7;
-const EASE = 0.08;
+const EASE_TAU_MS = 70;
 const SETTLE_DEG_SQ = 0.01;
 
 export function initAvatarTilt() {
@@ -40,6 +42,7 @@ export function initAvatarTilt() {
   let rotX = 0;
   let rotY = 0;
   let rafId = null;
+  let lastTickTime = null;
 
   function refreshRect() {
     rect = avatar.getBoundingClientRect();
@@ -57,14 +60,27 @@ export function initAvatarTilt() {
     targetRotY = Math.max(-1, Math.min(1, nx)) * MAX_TILT_DEG;
     targetRotX = Math.max(-1, Math.min(1, -ny)) * MAX_TILT_DEG;
 
-    if (rafId === null) rafId = requestAnimationFrame(tick);
+    if (rafId === null) {
+      lastTickTime = null;
+      rafId = requestAnimationFrame(tick);
+    }
   }
 
-  function tick() {
+  function tick(now) {
+    if (lastTickTime === null) {
+      lastTickTime = now;
+      rafId = requestAnimationFrame(tick);
+      return;
+    }
+
+    const dt = Math.min(now - lastTickTime, 100);
+    lastTickTime = now;
+
+    const factor = 1 - Math.exp(-dt / EASE_TAU_MS);
     const dx = targetRotX - rotX;
     const dy = targetRotY - rotY;
-    rotX += dx * EASE;
-    rotY += dy * EASE;
+    rotX += dx * factor;
+    rotY += dy * factor;
 
     avatar.style.transform = `perspective(700px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg)`;
 

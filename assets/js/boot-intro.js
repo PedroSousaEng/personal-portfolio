@@ -22,7 +22,10 @@
  */
 
 const INTRO_SESSION_KEY = "pf-boot-intro-seen";
-const INTRO_HOLD_MS = 1000;
+// Matches the sequence timed in assets/css/boot-intro.css (mark draw,
+// typewriter name, staged status, progress bar) — keep these in sync if
+// either changes.
+const INTRO_HOLD_MS = 1950;
 const INTRO_FADE_MS = 420;
 
 export function initBootIntro() {
