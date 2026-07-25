@@ -310,3 +310,42 @@ body[data-page="404"] .cursor-ring-shape {
     display: none;
   }
 }
+
+/* =========================================================
+   Social buttons (footer .btn[data-social]): a soft ring pulse on
+   hover — deliberately a single pulse rather than a loop, since these
+   are small footer icons on every page and a repeating animation would
+   be a constant, distracting presence rather than a one-time response
+   to the hover itself.
+   ========================================================= */
+
+.btn[data-social] {
+  position: relative;
+}
+
+.btn[data-social]::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-accent-indigo-dim);
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn[data-social]:hover::after {
+    animation: social-ring-pulse 900ms var(--ease-standard);
+  }
+}
+
+@keyframes social-ring-pulse {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.25);
+  }
+}
