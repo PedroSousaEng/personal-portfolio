@@ -1,20 +1,30 @@
 /**
  * PURPOSE
- *   3D tilt + subtle cursor-tracking glow for interactive project cards.
+ *   Cursor-tracking glow for interactive project cards.
  *
- *   The module uses delegated pointer entry/exit to identify one active card,
- *   then uses a single rAF-coalesced pointer path while that card is active.
+ * FIX (buttons "run away" from the cursor)
+ *   This used to also apply a 3D tilt to the whole card
+ *   (`perspective() rotateX() rotateY()`). Because .card__links sits
+ *   inside that same 3D-transformed element, rotating the card displaced
+ *   the button row in 3D depth in a way that no longer matched the flat
+ *   2D screen position the pointer math was computed against — the
+ *   buttons visibly drifted away from the cursor and created a
+ *   disconnected-looking gap under the card. Flattening the rotation only
+ *   while hovering the link row (a previous attempt at this fix) still
+ *   left a moving target everywhere else on the card.
+ *
+ *   The rotation is removed entirely. The card lift on hover is handled
+ *   declaratively by CSS (`.card--interactive:hover { transform:
+ *   translateY(-4px) }` in components.css), which never touches 3D space,
+ *   so buttons/links always sit exactly where they're laid out — no
+ *   chasing, no click-freeze, and no separate "flush" transform write per
+ *   frame (only the two custom properties below, which are cheap and never
+ *   move the element or its children).
  */
 
 const SELECTOR = ".card--interactive";
-const MAX_TILT_DEG = 6;
-const LIFT_PX = 6;
 
 let destroyTilt = null;
-
-function clamp(value, min, max) {
-  return Math.min(Math.max(value, min), max);
-}
 
 export function initCardTilt() {
   // Project cards are rendered dynamically on Home and Projects. A static
@@ -31,8 +41,6 @@ export function initCardTilt() {
 
   let activeCard = null;
   let activeRect = null;
-  let pendingRotX = 0;
-  let pendingRotY = 0;
   let pendingTiltX = 0;
   let pendingTiltY = 0;
   let rafId = null;
@@ -50,9 +58,9 @@ export function initCardTilt() {
   function flush() {
     rafId = null;
     if (!activeCard?.isConnected) return;
-
-    activeCard.style.transform =
-      `perspective(900px) rotateX(${pendingRotX}deg) rotateY(${pendingRotY}deg) translate3d(0, -${LIFT_PX}px, 0)`;
+    // Custom-property-only write: never touches transform, so the card
+    // and everything inside it (including the link row) stays exactly
+    // where CSS laid it out.
     activeCard.style.setProperty("--tilt-x", `${pendingTiltX}%`);
     activeCard.style.setProperty("--tilt-y", `${pendingTiltY}%`);
   }
@@ -62,18 +70,9 @@ export function initCardTilt() {
     rafId = window.requestAnimationFrame(flush);
   }
 
-  function resetCard(card) {
-    card.style.transition =
-      "transform var(--duration-base) var(--ease-standard), " +
-      "box-shadow var(--duration-base) var(--ease-standard), " +
-      "border-color var(--duration-base) var(--ease-standard)";
-    card.style.transform = "";
-    delete card.dataset.tilting;
-  }
-
   function deactivateCard() {
     cancelFrame();
-    if (activeCard?.isConnected) resetCard(activeCard);
+    if (activeCard?.isConnected) delete activeCard.dataset.tilting;
     activeCard = null;
     activeRect = null;
   }
@@ -84,10 +83,9 @@ export function initCardTilt() {
 
     deactivateCard();
     activeCard = card;
-    activeCard.style.transition = "none";
     activeCard.dataset.tilting = "true";
     // One layout read when the pointer enters the card; the move path below
-    // only reads cached numbers and writes transforms/custom properties.
+    // only reads cached numbers and writes custom properties.
     activeRect = activeCard.getBoundingClientRect();
   }
 
@@ -107,22 +105,6 @@ export function initCardTilt() {
     const px = (event.clientX - activeRect.left) / activeRect.width;
     const py = (event.clientY - activeRect.top) / activeRect.height;
 
-    // Bug fix (buttons "run away" / click-freeze): while the pointer is
-    // over the card's link row, freeze rotation at flat instead of
-    // continuing to tilt. Previously the whole card kept rotating in 3D
-    // as the pointer approached "Open project"/"Resources", so the button
-    // physically moved between pointerdown and pointerup — hard to aim at,
-    // and often ate the click entirely because the target moved out from
-    // under the pointer mid-click.
-    const overLinks = event.target.closest ? event.target.closest(".card__links") : null;
-
-    if (overLinks) {
-      pendingRotX = 0;
-      pendingRotY = 0;
-    } else {
-      pendingRotY = clamp((px - 0.5) * MAX_TILT_DEG * 2, -MAX_TILT_DEG, MAX_TILT_DEG);
-      pendingRotX = clamp((0.5 - py) * MAX_TILT_DEG * 2, -MAX_TILT_DEG, MAX_TILT_DEG);
-    }
     pendingTiltX = px * 100;
     pendingTiltY = py * 100;
     scheduleFlush();

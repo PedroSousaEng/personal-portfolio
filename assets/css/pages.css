@@ -226,7 +226,6 @@ body[data-page="projects"] [data-all-projects] > .card {
   position: relative;
   min-height: 100%;
   isolation: isolate;
-  transform-style: preserve-3d;
   background:
     linear-gradient(180deg, rgba(27, 31, 42, 0.92) 0%, rgba(20, 23, 31, 0.98) 100%);
   box-shadow: 0 24px 56px -40px rgba(0, 0, 0, 0.9);
