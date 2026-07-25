@@ -36,7 +36,7 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: var(--blueprint-opacity);
+  opacity: var(--blueprint-opacity, 0.05);
   background-image:
     linear-gradient(var(--blueprint-line) 1px, transparent 1px),
     linear-gradient(90deg, var(--blueprint-line) 1px, transparent 1px),
@@ -72,7 +72,7 @@
   width: var(--mote-size, 2px);
   height: var(--mote-size, 2px);
   border-radius: 50%;
-  background: var(--dust-color);
+  background: var(--dust-color, rgba(174, 184, 255, 0.5));
   opacity: 0;
   animation: dust-rise var(--mote-duration, 26s) linear infinite;
   animation-delay: var(--mote-delay, 0s);
@@ -143,7 +143,7 @@
 #main,
 .site-footer {
   position: relative;
-  z-index: var(--signature-z);
+  z-index: var(--signature-z, 10);
 }
 
 /* =========================================================
@@ -156,7 +156,7 @@
 
 [data-reveal] {
   opacity: 0;
-  transform: translateY(var(--reveal-distance));
+  transform: translateY(var(--reveal-distance, 28px));
   transition:
     opacity var(--duration-slow) var(--ease-standard),
     transform var(--duration-slow) var(--ease-standard);

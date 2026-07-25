@@ -590,9 +590,14 @@ export function initBackgroundFX() {
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
 
-    // Check if click is within range of pendulum bob (accounting for DPR)
-    const bobX = pendulum.bobX / dpr;
-    const bobY = pendulum.bobY / dpr;
+    // pendulum.bobX/bobY are already in CSS-pixel space (the canvas
+    // context is scaled once via ctx.setTransform(dpr, ...) in resize(),
+    // and updatePendulum() derives bobX/bobY from `width`/`height`, which
+    // are themselves CSS pixels). Dividing by dpr again here shrank the
+    // click target toward the top-left on any screen with dpr > 1
+    // (e.g. Retina/high-DPI displays), so clicks on the actual bob missed.
+    const bobX = pendulum.bobX;
+    const bobY = pendulum.bobY;
     const dx = x - bobX;
     const dy = y - bobY;
     const dist = Math.sqrt(dx * dx + dy * dy);

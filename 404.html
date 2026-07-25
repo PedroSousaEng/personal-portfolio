@@ -27,6 +27,7 @@
   <link rel="stylesheet" href="assets/css/components.css">
   <link rel="stylesheet" href="assets/css/pages.css">
   <link rel="stylesheet" href="assets/css/micro-interactions.css">
+  <link rel="stylesheet" href="assets/css/signature.css">
   <link rel="stylesheet" href="assets/css/scrollbar.css">
   <link rel="stylesheet" href="assets/css/scroll-progress.css">
   <link rel="stylesheet" href="assets/css/page-transitions.css">
@@ -35,6 +36,10 @@
   <link rel="stylesheet" href="assets/css/effects/error-signal.css">
 </head>
 <body data-page="404">
+  <div class="pendulum" aria-hidden="true">
+    <canvas></canvas>
+  </div>
+
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
@@ -76,6 +81,7 @@
     </div>
   </footer>
 
+  <script src="assets/js/pendulum.js"></script>
   <script type="module" src="assets/js/main.js"></script>
   <div class="noise" aria-hidden="true"></div>
 </body>
