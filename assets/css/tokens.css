@@ -19,19 +19,19 @@
  */
 
 :root {
-  /* ---- Color: ink scale (background/surface) ---- */
-  --color-ink-950: #050505; /* absolute black page background */
-  --color-ink-900: #14171f;
-  --color-ink-800: #1b1f2a;
-  --color-ink-700: #232838;
-  --color-line: #262b38;
+  /* ---- Color: ink scale (background/surface) — Premium Obsidian Black ---- */
+  --color-ink-950: #000000; /* pure black page background */
+  --color-ink-900: #0a0a0a; /* ultra-dark surface, barely visible */
+  --color-ink-800: #121212; /* frosted glass elevated surface */
+  --color-ink-700: #1a1a1a; /* hover/subtle fill */
+  --color-line: #1f1f1f; /* hairline borders, ultra-subtle */
 
-  /* ---- Color: text ---- */
-  --color-text-100: #f2f4f8;
-  --color-text-400: #8b93a7;
-  --color-text-600: #5b6376;
+  /* ---- Color: text — Pure White & Grays ---- */
+  --color-text-100: #ffffff; /* pure white, maximum contrast */
+  --color-text-400: #b0b0b0; /* bright gray for secondary text */
+  --color-text-600: #707070; /* muted gray for tertiary text */
 
-  /* ---- Color: accents ---- */
+  /* ---- Color: accents (keep the indigo + amber from products) ---- */
   --color-accent-indigo: #6c7cff;
   --color-accent-indigo-dim: #4b57b8;
   --color-accent-indigo-tint: #6c7cff1a; /* 10% alpha, for glows/fills */
@@ -42,13 +42,12 @@
   --fx-particle: #aeb8ff;
   --fx-particle-dim: #5b6376;
   --fx-particle-link: #a0a8c8;
-  --fx-pendulum-rod: #333a4d;
+  --fx-pendulum-rod: #2a2a2a; /* darker rod for obsidian look */
   --fx-glow-cursor: #6c7cff;
   --fx-glow-pendulum: #ffb347;
 
-  /* Depth vignette: very subtle radial gradient on the page background
-     to give the canvas particle field a sense of spatial depth. */
-  --fx-depth-vignette: rgba(20, 23, 31, 0.5);
+  /* Depth vignette: subtle spotlight gradient in top corners (obsidian aesthetic) */
+  --fx-depth-vignette: rgba(50, 70, 120, 0.08);
 
   /* ---- About page: technological network layer ----
      Consumed by:
@@ -56,7 +55,8 @@
        - assets/css/effects/tech-network.css (schematic grid wash)
      Kept in tokens so the About effect is themable from one place. */
   --fx-network-orbit: #6c7cff;
-  --fx-network-grid: rgba(120, 130, 170, 0.035);
+  --fx-network-grid: rgba(120, 130, 170, 0.02); /* even more subtle */
+
   --fx-network-grid-size: 56px;
 
   /* ---- Projects page: spotlight wash ----
@@ -76,7 +76,7 @@
   --fx-contact-ring: #6c7cff;
   --fx-contact-sweep: #aeb8ff;
   --fx-contact-line: #5b6376;
-  --fx-contact-grid: rgba(120, 130, 170, 0.04);
+  --fx-contact-grid: rgba(120, 130, 170, 0.02); /* more subtle */
   --fx-contact-grid-size: 72px;
 
   /* ---- 404 page: error / interference field ----
@@ -140,8 +140,8 @@
   --radius-lg: 16px;
   --radius-full: 999px;
 
-  /* ---- Elevation ---- */
-  --shadow-1: 0 8px 24px -12px rgba(0, 0, 0, 0.6);
+  /* ---- Elevation: Glassmorphism with soft glows ---- */
+  --shadow-1: 0 8px 24px -12px rgba(0, 0, 0, 0.8);
   --shadow-glow-indigo: 0 0 0 1px var(--color-accent-indigo-dim), 0 0 24px -4px var(--color-accent-indigo-tint);
 
   /* ---- Motion ---- */
