@@ -212,9 +212,9 @@
   "type": "gallery",
   "heading": "Showcase",
   "images": [
-    { "src": "assets/images/fw-0", "caption": "Real Model" },
-    { "src": "assets/images/fw-1", "caption": "CAD Model" },
-    { "src": "assets/images/fw-2", "caption": "Stress Analysis" }
+    { "src": "assets/images/fw-0.jpeg", "caption": "Real Model" },
+    { "src": "assets/images/fw-1.png", "caption": "CAD Model" },
+    { "src": "assets/images/fw-2.png", "caption": "Stress Analysis" }
   ]
 },
       {
@@ -304,8 +304,8 @@
   "type": "gallery",
   "heading": "Showcase",
   "images": [
-    { "src": "assets/images/dlt-0", "caption": "Real Lock" },
-    { "src": "assets/images/dlt-1", "caption": "CAD Model - Exploded View" }
+    { "src": "assets/images/dlt-0.jpeg", "caption": "Real Lock" },
+    { "src": "assets/images/dlt-1.jpeg", "caption": "CAD Model - Exploded View" }
   ]
 },
       {
@@ -384,9 +384,9 @@
   "type": "gallery",
   "heading": "Showcase",
   "images": [
-    { "src": "assets/images/fs-0", "caption": "Real Piece" },
-    { "src": "assets/images/fs-1", "caption": "Mechanism where the piece is used" },
-    { "src": "assets/images/fs-2", "caption": "Stress Analysis" }
+    { "src": "assets/images/fs-0.jpeg", "caption": "Real Piece" },
+    { "src": "assets/images/fs-1.jpeg", "caption": "Mechanism where the piece is used" },
+    { "src": "assets/images/fs-2.png", "caption": "Stress Analysis" }
   ]
 },
       {
