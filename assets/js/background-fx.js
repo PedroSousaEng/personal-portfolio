@@ -69,12 +69,12 @@ export function initBackgroundFX() {
   const BOB_GLOW_BREATH_PERIOD_MS = 5200;
 
   // Pendulum clickable wave — slow ocean-swell version
-  const WAVE_COOLDOWN_MS = 1400; // Min time between clicks (waves now last longer)
+  const WAVE_COOLDOWN_MS = 1600; // Min time between clicks (waves now last longer)
   const WAVE_CLICK_RADIUS = 16; // Detect click within this radius of bob
   const WAVE_MAX_RADIUS = Math.max(window.innerWidth, window.innerHeight) * 1.5; // Goes to screen corners
-  const WAVE_DURATION_MS = 6500; // Slow, rolling pace — like a swell crossing open water
+  const WAVE_DURATION_MS = 8000; // Slow, rolling pace — like a swell crossing open water
   const WAVE_LINE_WIDTH = 3;
-  const WAVE_GLOW_BLUR = 20; // soft halo around the ring, drawn via shadowBlur
+  const WAVE_GLOW_BLUR = 30; // soft halo around the ring, drawn via shadowBlur
   const WAVE_COLOR = "107, 124, 255"; // Indigo blue, as an "r, g, b" triplet
 
   const PARTICLE_AREA_DIVISOR = 14000; // lower = more particles
@@ -272,7 +272,7 @@ export function initBackgroundFX() {
       // then fade out over the back half — keeps the ring clearly readable
       // for most of its life instead of thinning out from frame one.
       const fadeIn = Math.min(1, linear * 6);
-      const fadeOut = 1 - Math.max(0, (linear - 0.55) / 0.45);
+      const fadeOut = 1 - Math.max(0, (linear - 0.65) / 0.35);
       const alpha = Math.max(0, Math.min(fadeIn, fadeOut));
 
       ctx.save();

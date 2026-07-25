@@ -36,11 +36,13 @@ export function initAboutRocket() {
   // ---- Tunables ---------------------------------------------------------
   const SPAWN_DELAY_MIN_MS = 7000;  // shortest gap between flights
   const SPAWN_DELAY_MAX_MS = 18000; // longest gap between flights
-  const CROSS_TIME_MIN_MS = 4200;   // slowest crossing (big, unhurried ship)
-  const CROSS_TIME_MAX_MS = 6800;
-  const ROCKET_LENGTH_RATIO = 0.09; // of min(width, height)
-  const ROCKET_LENGTH_MIN = 70;
-  const ROCKET_LENGTH_MAX = 150;
+  const CROSS_TIME_MIN_MS = 14000;  // slow, unhurried crossing — ~15s on screen
+  const CROSS_TIME_MAX_MS = 16000;
+  const ROCKET_LENGTH_RATIO = 0.045; // of min(width, height) — half the previous size
+  const ROCKET_LENGTH_MIN = 35;
+  const ROCKET_LENGTH_MAX = 75;
+  const CURVE_STRENGTH_MIN = 0.18; // how far the flight path bows out, as a
+  const CURVE_STRENGTH_MAX = 0.40; // fraction of the straight-line distance
   const TRAIL_POINTS = 26; // how many past positions feed the exhaust tail
 
   // ---- Colour tokens ------------------------------------------------------
@@ -62,7 +64,7 @@ export function initAboutRocket() {
 
   const FX_HULL = parseColorTriplet(tok("--fx-particle", "#aeb8ff")) || "174, 184, 255";
   const FX_HULL_DIM = parseColorTriplet(tok("--fx-particle-dim", "#5b6376")) || "91, 99, 118";
-  const FX_FLAME = parseColorTriplet(tok("--color-accent-amber", "#ffb347")) || "255, 179, 71";
+  const FX_FLAME = parseColorTriplet(tok("--fx-glow-cursor", "#6c7cff")) || "108, 124, 255";
   const FX_WINDOW = parseColorTriplet(tok("--color-accent-indigo", "#6c7cff")) || "108, 124, 255";
 
   // ---- Canvas setup -------------------------------------------------------
@@ -125,15 +127,29 @@ export function initAboutRocket() {
       guard += 1;
     }
 
+    // Curvy path: bow the flight out to one side via a single control
+    // point, offset perpendicular to the straight from->to line. The ship
+    // then follows a quadratic bezier instead of a straight segment.
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const dist = Math.hypot(dx, dy) || 1;
+    const perpX = -dy / dist;
+    const perpY = dx / dist;
+    const curveAmount = dist * rand(CURVE_STRENGTH_MIN, CURVE_STRENGTH_MAX) * (Math.random() < 0.5 ? -1 : 1);
+    const control = {
+      x: (from.x + to.x) / 2 + perpX * curveAmount,
+      y: (from.y + to.y) / 2 + perpY * curveAmount,
+    };
+
     const duration = rand(CROSS_TIME_MIN_MS, CROSS_TIME_MAX_MS);
-    const angle = Math.atan2(to.y - from.y, to.x - from.x);
 
     rocket = {
       from,
       to,
+      control,
       startedAt: now,
       duration,
-      angle,
+      angle: Math.atan2(dy, dx), // overwritten every frame once flight starts
       length,
       trail: [], // { x, y } most-recent-first, capped at TRAIL_POINTS
     };
@@ -152,8 +168,23 @@ export function initAboutRocket() {
       return;
     }
 
-    const x = rocket.from.x + (rocket.to.x - rocket.from.x) * progress;
-    const y = rocket.from.y + (rocket.to.y - rocket.from.y) * progress;
+    const t = progress;
+    const oneMinusT = 1 - t;
+    const { from, to, control } = rocket;
+
+    // Position on the quadratic bezier from -> control -> to.
+    const x =
+      oneMinusT * oneMinusT * from.x + 2 * oneMinusT * t * control.x + t * t * to.x;
+    const y =
+      oneMinusT * oneMinusT * from.y + 2 * oneMinusT * t * control.y + t * t * to.y;
+
+    // Tangent (derivative) of the same curve — used to orient the ship so
+    // it visibly noses into the curve rather than sliding sideways.
+    const tx = 2 * oneMinusT * (control.x - from.x) + 2 * t * (to.x - control.x);
+    const ty = 2 * oneMinusT * (control.y - from.y) + 2 * t * (to.y - control.y);
+    if (tx !== 0 || ty !== 0) {
+      rocket.angle = Math.atan2(ty, tx);
+    }
 
     rocket.trail.unshift({ x, y });
     if (rocket.trail.length > TRAIL_POINTS) rocket.trail.length = TRAIL_POINTS;

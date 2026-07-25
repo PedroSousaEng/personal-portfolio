@@ -120,6 +120,11 @@ export function initContactRadar() {
   };
 
   let blips = [];
+  // Center position the static bg layer (rings/crosshair/halo) was baked
+  // at in resize(). The live `center` object keeps drifting afterwards to
+  // track the pointer, so the two fall out of sync unless we correct for
+  // the difference when blitting (see drawFrame).
+  const bgBakedAt = { x: 0, y: 0 };
 
   function resize() {
     width = window.innerWidth;
@@ -141,6 +146,8 @@ export function initContactRadar() {
     center.tx = center.x;
     center.ty = center.y;
     maxRadius = Math.min(width, height) * 0.3;
+    bgBakedAt.x = center.x;
+    bgBakedAt.y = center.y;
 
     // Rebuild the cached static layer: rings + crosshair axes.
     bgCanvas.width = Math.round(width * dpr);
@@ -318,8 +325,14 @@ export function initContactRadar() {
     ctx.clearRect(0, 0, width, height);
     updateTracking(now);
 
-    // Blit the pre-rendered static layer (grid + rings + crosshair).
-    ctx.drawImage(bgCanvas, 0, 0, width, height);
+    // Blit the pre-rendered static layer (grid + rings + crosshair),
+    // shifted by however far the live center has drifted from where it
+    // was baked — otherwise the rings/crosshair stay frozen at the resting
+    // position while the sweep/dot track the pointer, and the two visibly
+    // fall out of alignment as soon as the pointer moves.
+    const bgOffsetX = center.x - bgBakedAt.x;
+    const bgOffsetY = center.y - bgBakedAt.y;
+    ctx.drawImage(bgCanvas, bgOffsetX, bgOffsetY, width, height);
 
     const rotation = drawSweep(now);
     drawBlips(now, rotation);
