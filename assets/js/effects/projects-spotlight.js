@@ -74,7 +74,7 @@ export function initProjectsSpotlight() {
 
   // Ambient/decorative effect: capping to ~30fps halves CPU/GPU cost with
   // no perceptible loss of smoothness for a slow-tracking spotlight.
-  const FRAME_INTERVAL_MS = 1000 / 30;
+  const FRAME_INTERVAL_MS = 1000 / 24;
   let lastFrameTime = 0;
 
   // The base wash (top gradient + top-right corner glow) is completely

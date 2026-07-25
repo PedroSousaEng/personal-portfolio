@@ -33,7 +33,6 @@ export function initContactRadar() {
   const BLIP_MIN = 8;
   const BLIP_MAX = 18;
   const BLIP_PING_WINDOW = 0.28;
-  const GRID_STEP = 72;
   const TAU = Math.PI * 2;
 
   const rootStyles = getComputedStyle(document.documentElement);
@@ -101,7 +100,7 @@ export function initContactRadar() {
 
   // Ambient/decorative effect: capping to ~30fps halves CPU/GPU cost with
   // no perceptible loss of smoothness for a slow radar sweep.
-  const FRAME_INTERVAL_MS = 1000 / 30;
+  const FRAME_INTERVAL_MS = 1000 / 24;
   let lastFrameTime = 0;
 
   const pointer = {
@@ -143,27 +142,11 @@ export function initContactRadar() {
     center.ty = center.y;
     maxRadius = Math.min(width, height) * 0.3;
 
-    // Rebuild the cached static layer: grid + rings + crosshair axes.
+    // Rebuild the cached static layer: rings + crosshair axes.
     bgCanvas.width = Math.round(width * dpr);
     bgCanvas.height = Math.round(height * dpr);
     bgCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
     bgCtx.clearRect(0, 0, width, height);
-
-    // Grid.
-    bgCtx.lineWidth = 1;
-    bgCtx.strokeStyle = `rgba(${FX_LINE}, 0.08)`;
-    for (let x = Math.ceil(width * 0.48 / GRID_STEP) * GRID_STEP; x < width + GRID_STEP; x += GRID_STEP) {
-      bgCtx.beginPath();
-      bgCtx.moveTo(x, 0);
-      bgCtx.lineTo(x, height);
-      bgCtx.stroke();
-    }
-    for (let y = 0; y < height + GRID_STEP; y += GRID_STEP) {
-      bgCtx.beginPath();
-      bgCtx.moveTo(width * 0.44, y);
-      bgCtx.lineTo(width, y);
-      bgCtx.stroke();
-    }
 
     // Radar halo (radial fill) — static because it's centred on the
     // resting center; the animated center drift is small enough that

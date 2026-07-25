@@ -41,8 +41,8 @@ body[data-page="404"]::after {
 }
 
 body[data-page="404"] .bg-fx--404 {
-  mix-blend-mode: screen;
-  isolation: isolate;
+  /* Plain alpha compositing — see tech-network.css for why mix-blend-mode
+     was dropped here. */
   opacity: 0.92;
 }
 

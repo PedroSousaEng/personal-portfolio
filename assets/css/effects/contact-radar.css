@@ -44,8 +44,8 @@ body[data-page="contact"]::after {
 }
 
 body[data-page="contact"] .bg-fx--contact {
-  mix-blend-mode: screen;
-  isolation: isolate;
+  /* Plain alpha compositing — see tech-network.css for why mix-blend-mode
+     was dropped here. */
   opacity: 0.95;
 }
 

@@ -44,7 +44,7 @@ export function initTechNetwork() {
   // ---- Tunables ---------------------------------------------------------
   const NODE_AREA_DIVISOR = 16000; // lower = more nodes
   const NODE_MIN = 46;
-  const NODE_MAX = 120;
+  const NODE_MAX = 90;
   const HUB_RATIO = 0.08; // proportion of nodes promoted to "hub"
 
   const LINK_DIST = 138;         // px, threshold for drawing a link
@@ -423,7 +423,7 @@ export function initTechNetwork() {
 
   // Ambient/decorative effect: capping to ~30fps halves CPU/GPU cost with
   // no perceptible loss of smoothness for slow orbital/parallax motion.
-  const FRAME_INTERVAL_MS = 1000 / 30;
+  const FRAME_INTERVAL_MS = 1000 / 24;
   let lastFrameTime = 0;
 
   function frame(now) {

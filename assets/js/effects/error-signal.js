@@ -105,7 +105,7 @@ export function initErrorSignal() {
 
   // Ambient/decorative effect: capping to ~30fps halves CPU/GPU cost with
   // no perceptible loss of smoothness for drifting interference lines.
-  const FRAME_INTERVAL_MS = 1000 / 30;
+  const FRAME_INTERVAL_MS = 1000 / 24;
   let lastFrameTime = 0;
 
   const pointer = {

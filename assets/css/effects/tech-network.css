@@ -60,12 +60,12 @@
 /* Canvas variant: same base .bg-fx rules; this variant hook lets us
    tweak blend / composition without touching base.css. */
 [data-page="about"] .bg-fx--network {
-  /* Screen blend keeps dark backgrounds intact while letting the faint
-     node/link colour additively sit on top of the grid wash. Isolated so
-     the browser can composite this layer on its own each frame instead
-     of re-blending the whole page stack behind it. */
-  mix-blend-mode: screen;
-  isolation: isolate;
+  /* Plain alpha compositing (no mix-blend-mode): a blended layer that
+     redraws 30x/sec is measurably more expensive to composite than a
+     normal one, which is the likely source of pointer lag reported on
+     this page. Home and Projects don't use a blend mode and don't show
+     the same issue. */
+  opacity: 0.9;
 }
 
 /* Bio card: sits on the network layer, so we lift it with a hair-thin
