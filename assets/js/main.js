@@ -12,7 +12,7 @@
  *     transitions and SVG line-draw.
  *
  * DEPENDENCIES
- *   render-projects.js, render-about.js, background-fx.js, scroll-reveal.js,
+ *   render-projects.js, render-project-detail.js, render-about.js, background-fx.js, scroll-reveal.js,
  *   cursor.js, magnetic.js, text-decode.js, tilt.js, reduced-motion.js,
  *   page-transitions.js, svg-line-draw.js,
  *   effects/{tech-network,about-rocket,projects-spotlight,contact-radar,error-signal}.js
@@ -22,7 +22,8 @@
  *   below rather than adding a script tag/logic to that page's HTML.
  */
 
-import { renderProjects } from "./render-projects.js";
+import { renderProjects, renderProjectsPage } from "./render-projects.js";
+import { renderProjectDetail } from "./render-project-detail.js";
 import { renderSkills, renderExperience, renderTimeline } from "./render-about.js";
 import { renderContact } from "./render-contact.js";
 import { initSiteIdentity } from "./render-site.js";
@@ -106,8 +107,18 @@ function initPageData() {
   }
 
   if (page === "projects") {
+    const featuredEl = document.querySelector("[data-featured-projects]");
+    if (featuredEl) renderProjects(featuredEl, { featuredOnly: true });
+
     const allEl = document.querySelector("[data-all-projects]");
-    if (allEl) renderProjects(allEl, { featuredOnly: false });
+    const filterBarEl = document.querySelector("[data-project-filters]");
+    if (allEl) renderProjectsPage(allEl, filterBarEl);
+  }
+
+  if (page === "project") {
+    const detailEl = document.querySelector("[data-project-detail]");
+    const breadcrumbEl = document.querySelector("[data-project-breadcrumb]");
+    if (detailEl) renderProjectDetail(detailEl, breadcrumbEl);
   }
 
   if (page === "about") {

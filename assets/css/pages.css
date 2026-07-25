@@ -609,3 +609,11 @@ body[data-page="projects"] [data-all-projects] > .card[data-tilting="true"] .car
     display: none;
   }
 }
+
+/* =========================================================
+   Project detail page (project.html)
+   ========================================================= */
+
+.project-hero {
+  max-width: 720px;
+}

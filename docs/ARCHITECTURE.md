@@ -6,7 +6,8 @@
 /
 ├── index.html          Home page (hero, highlights, featured projects, CTA)
 ├── about.html           Bio, skills grid, experience + timeline
-├── projects.html        Full project grid, rendered from projects.json
+├── projects.html        Featured strip + filterable grid, rendered from projects.json
+├── project.html          Dedicated project page template (project.html?id=<slug>)
 ├── contact.html         Contact via mailto: + socials, no form/backend
 ├── 404.html              Static not-found page (GitHub Pages convention)
 ├── sitemap.xml           SEO: page list for crawlers
@@ -22,7 +23,8 @@
     ├── js/
     │   ├── config.js              Site-wide constants (paths, breakpoints mirrored from CSS)
     │   ├── data-loader.js         Generic fetch()-and-cache helper for JSON data
-    │   ├── render-projects.js     Turns projects.json into the project card markup
+    │   ├── render-projects.js     Turns projects.json into card markup + the Projects page's category filter bar
+    │   ├── render-project-detail.js  Renders one project (via ?id=) into project.html
     │   ├── render-about.js        Turns skills.json + experience.json + timeline.json into markup
     │   ├── render-contact.js      Turns socials.json into the mailto CTA + social link list
     │   └── main.js                Entry point: nav toggle, active-link state, footer year, init calls
@@ -99,7 +101,11 @@ it, not duplicated here where it could drift out of sync.
 ## Extending the site safely
 
 - **New project:** add an object to `assets/data/projects.json`. Nothing else
-  changes — `render-projects.js` already handles any count of projects.
+  changes — `render-projects.js` already handles any count of projects, and
+  it automatically gets its own page at `project.html?id=<id>` via
+  `render-project-detail.js`. Set `category` so it's covered by the Projects
+  page filter bar (a new category value automatically gets its own filter
+  pill — no code change needed).
 - **New page:** copy the shared `<head>`/nav/footer block from an existing
   page (this is the one deliberate duplication in the project — see note in
   `DESIGN_SYSTEM.md` on why a shared-header include was not built), add the

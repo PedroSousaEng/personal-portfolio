@@ -8,7 +8,11 @@
     "image": "assets/images/project-vinted-os.svg",
     "featured": true,
     "github": "https://github.com/PedroSousaEng/vinted-os",
-    "demo": ""
+    "demo": "",
+    "category": "Software",
+    "year": "2024",
+    "status": "In Progress",
+    "highlights": ["Personal Project"]
   },
   {
     "id": "personal-portfolio",
@@ -19,7 +23,11 @@
     "image": "assets/images/project-portfolio.svg",
     "featured": true,
     "github": "https://github.com/PedroSousaEng/personal-portfolio",
-    "demo": ""
+    "demo": "",
+    "category": "Software",
+    "year": "2025 – 2026",
+    "status": "In Progress",
+    "highlights": ["Personal Project"]
   },
   {
     "id": "formula-water",
@@ -30,7 +38,11 @@
     "image": "assets/images/project-formula-water.svg",
     "featured": true,
     "github": "https://github.com/PedroSousaEng/formula-water",
-    "demo": ""
+    "demo": "",
+    "category": "Mechanical Engineering",
+    "year": "2023",
+    "status": "Completed",
+    "highlights": ["1st Place — University of Minho", "Team Project"]
   },
   {
     "id": "doorlock-teardown",
@@ -41,7 +53,11 @@
     "image": "assets/images/project-teardown.svg",
     "featured": false,
     "github": "https://github.com/PedroSousaEng/doorlock-teardown",
-    "demo": ""
+    "demo": "",
+    "category": "Mechanical Engineering",
+    "year": "2024",
+    "status": "Completed",
+    "highlights": ["Personal Project"]
   },
   {
     "id": "fatigue-study",
@@ -52,7 +68,11 @@
     "image": "assets/images/project-fatigue-study.svg",
     "featured": false,
     "github": "https://github.com/PedroSousaEng/fatigue-study",
-    "demo": ""
+    "demo": "",
+    "category": "Mechanical Engineering",
+    "year": "2024",
+    "status": "Completed",
+    "highlights": ["University Project"]
   },
   {
     "id": "pin-clutch",
@@ -63,6 +83,10 @@
     "image": "assets/images/project-embraiagem.svg",
     "featured": false,
     "github": "https://github.com/PedroSousaEng/pin-clutch",
-    "demo": ""
+    "demo": "",
+    "category": "Mechanical Engineering",
+    "year": "2023",
+    "status": "Completed",
+    "highlights": ["University Project"]
   }
 ]

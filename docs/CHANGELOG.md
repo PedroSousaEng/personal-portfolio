@@ -3,6 +3,89 @@
 All notable changes to this project are documented here. Format loosely
 follows [Keep a Changelog](https://keepachangelog.com).
 
+## [Unreleased] — Phase 2: Project Showcase Enhancement
+
+### Added
+- **Richer project cards**: each project now carries `category`, `year`,
+  `status`, and `highlights` fields in `projects.json`. Cards show a
+  category/year meta row, a status pill ("Completed" / "In Progress")
+  overlaid on the thumbnail, and highlight badges (e.g. "Team Project",
+  "1st Place — University of Minho") with small inline icons picked
+  automatically from the badge text.
+- **Dedicated project pages**: every card now opens `project.html?id=<slug>`
+  instead of linking straight to GitHub. `render-project-detail.js` reads
+  the `id` from the URL and renders that project's hero, overview, tags,
+  and links, with a "project not found" fallback for bad/old URLs. GitHub
+  remains one click away as a secondary "Code" link on the card and a
+  primary button on the project page. This is the foundation Phase 3 will
+  build the full case-study layout (Problem → Research → ... → Lessons
+  Learned) on top of.
+- **Category filter bar** on the Projects page — pills generated from the
+  distinct `category` values in `projects.json`, filtering the grid
+  client-side with no page reload. A new category value gets its own pill
+  automatically; no code change needed.
+- **Featured strip** at the top of the Projects page, surfacing the three
+  `featured: true` projects (Vinted OS, Formula Water, Personal Portfolio)
+  above the full filterable grid.
+- Card hover polish: thumbnail scales slightly and the "Open project" link
+  nudges right on hover/focus, layered on top of the existing tilt/glow
+  micro-interactions from Phase 1 — no existing animation was replaced.
+
+### Changed
+- `render-projects.js` split into `renderProjects()` (used by the home
+  page's featured strip, unchanged behavior) and `renderProjectsPage()`
+  (Projects page: featured-aware, filter-bar aware).
+
+## [Unreleased] — Phase 1: Stabilization & Performance
+
+### Fixed
+- **Click-freeze bug on first visit**: the home page's boot-intro overlay
+  (`assets/js/boot-intro.js`) dismisses on the visitor's first click/key
+  press, but because the overlay sits above the entire page until it
+  fades, that first click was being consumed entirely by the dismiss
+  handler — even when aimed at a real nav link or button. The intro would
+  close, but the intended action never fired, so the site looked
+  unresponsive until a second click. Fixed by forwarding the same
+  interaction to whatever element is underneath once the overlay stops
+  intercepting pointer events, so one click now both skips the intro and
+  performs the action the visitor meant to take. Verified with automated
+  browser tests (desktop + mobile viewport, click/keyboard/repeat-visit
+  paths) — zero console errors before and after.
+
+### Removed (dead code / unused assets)
+- `assets/js/pendulum.js` + `assets/css/signature.css` — an earlier
+  standalone pendulum/dust/blueprint implementation. Confirmed via git
+  history and a full-codebase reference scan that this was fully
+  superseded by the canvas-based system in `background-fx.js` (already
+  wired up correctly via `.bg-fx` in `base.css`) and had zero remaining
+  references anywhere — the markup it depended on was removed from every
+  page long ago, leaving the JS/CSS as inert dead weight.
+- `assets/js/counter-animate.js`, `assets/js/staggered-letters.js`,
+  `assets/js/tag-hover-scale.js` — three in-progress features (count-up
+  numbers, letter-by-letter heading reveal, tag hover scale) that were
+  written but never wired into `main.js`, and whose supporting CSS
+  (`.animate-letters`, `.tag--hover-active`) and markup (`[data-counter]`)
+  were never added either. Confirmed zero references anywhere in the
+  codebase before removal. Re-introducing any of these is a Phase 2+
+  decision (needs matching CSS/markup, not a Phase 1 stabilization fix).
+- Six leftover placeholder project images (`project-aurora.svg`,
+  `project-ledger-lite.svg`, `project-pathfinder.svg`,
+  `project-quiet-hours.svg`, `project-signal.svg`, `project-typeset.svg`)
+  from the original six-project template — `assets/data/projects.json`
+  has since been replaced with real project entries, but the old image
+  files were never deleted. Confirmed unreferenced anywhere before
+  removal.
+
+### Verified (no change needed)
+- Zero console errors/warnings/failed requests on all five pages
+  (Chromium, desktop + mobile viewport).
+- No broken `src`/`href` references in any HTML file or in
+  `projects.json`.
+- Scroll-progress bar math double-checked against real scroll positions
+  (0/25/50/75/100%) — accurate in every case.
+- Repeat-visit and reduced-motion paths for the boot intro re-tested
+  after the click-freeze fix — no regressions.
+
 ## [1.0.0] — Initial build
 
 ### Added

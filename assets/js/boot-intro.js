@@ -65,12 +65,33 @@ export function initBootIntro() {
     window.clearTimeout(holdTimer);
     window.removeEventListener("keydown", onSkip);
     window.removeEventListener("pointerdown", onSkip);
+    // Stop intercepting hits immediately (not just once the fade class
+    // lands) so a forwarded click below isn't swallowed a second time.
+    overlay.style.pointerEvents = "none";
     overlay.classList.add("is-leaving");
     window.setTimeout(() => overlay.remove(), INTRO_FADE_MS);
   }
 
-  function onSkip() {
+  // Bug fix (click-freeze): the overlay sits above everything
+  // (z-index 500) until it fades, so a visitor's very first click —
+  // even one aimed at a real nav link or button — used to be consumed
+  // entirely by this dismiss handler: the intro closed, but the link
+  // never received the click, so the site *looked* unresponsive and
+  // required a second click to actually do anything. We now forward
+  // that same interaction to whatever is underneath once the overlay
+  // stops intercepting pointer events, so one click both skips the
+  // intro and performs the action the visitor intended.
+  function onSkip(event) {
+    if (dismissed) return;
+    const isPointerSkip = event.type === "pointerdown" && event.button === 0;
+    const point = isPointerSkip ? { x: event.clientX, y: event.clientY } : null;
+
     dismiss();
+
+    if (!point) return;
+    const under = document.elementFromPoint(point.x, point.y);
+    const target = under && under.closest ? under.closest("a, button, [data-nav-toggle]") : null;
+    if (target) target.click();
   }
 
   window.addEventListener("keydown", onSkip);

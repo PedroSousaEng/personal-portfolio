@@ -1,33 +1,43 @@
 <!--
   PURPOSE
-    Projects page. Full grid of every project in projects.json.
+    Dedicated project page. Every card on projects.html / the home page's
+    featured strip now links here (project.html?id=<slug>) instead of
+    straight to GitHub.
+
+  PHASE NOTE
+    This is the Phase 2 foundation for Phase 3's full per-project case
+    studies (Problem → Research → Design → ... → Lessons Learned, with
+    real static URLs like /projects/formula-water/). For now it's a single
+    template that renders whatever projects.json has for the requested id:
+    hero, overview, tags, and links. No hand-editing needed per project —
+    add richer fields to projects.json and render-project-detail.js will
+    pick them up.
 
   DEPENDENCIES
     assets/css/{tokens,base,layout,components,pages,micro-interactions}.css
-    assets/js/main.js (renders all projects via render-projects.js)
+    assets/js/main.js (renders the project via render-project-detail.js)
 
   SAFE EDITS
-    Do NOT hand-edit project cards — add/edit/remove entries in
-    assets/data/projects.json instead; this page renders whatever is there.
+    Do NOT hand-edit project content here — edit assets/data/projects.json.
+    This file only provides the empty containers the renderer populates.
 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Projects — Pedro Sousa</title>
-  <meta name="description" content="A selection of mechanical engineering, prototyping, and AI-assisted development projects by Pedro Sousa.">
-  <link rel="canonical" href="https://pedrosousaeng.github.io/portfolio/projects.html">
+  <title>Project — Pedro Sousa</title>
+  <meta name="description" content="Engineering case study by Pedro Sousa.">
+  <link rel="canonical" href="https://pedrosousaeng.github.io/portfolio/project.html">
 
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Projects — Pedro Sousa">
-  <meta property="og:description" content="A selection of mechanical engineering, prototyping, and AI-assisted development projects.">
-  <meta property="og:url" content="https://pedrosousaeng.github.io/portfolio/projects.html">
+  <meta property="og:title" content="Project — Pedro Sousa">
   <meta property="og:image" content="https://pedrosousaeng.github.io/portfolio/assets/images/og-image.png">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Projects — Pedro Sousa">
   <meta name="twitter:image" content="https://pedrosousaeng.github.io/portfolio/assets/images/og-image.png">
+
+  <meta name="robots" content="noindex">
 
   <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
@@ -44,10 +54,9 @@
   <link rel="stylesheet" href="assets/css/page-transitions.css">
   <link rel="stylesheet" href="assets/css/svg-line-draw.css">
   <link rel="stylesheet" href="assets/css/noise.css">
-  <!-- Phase 5: Projects-only spotlight background + surface treatment. -->
   <link rel="stylesheet" href="assets/css/effects/projects-spotlight.css">
 </head>
-<body data-page="projects">
+<body data-page="project">
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
@@ -66,32 +75,22 @@
   </header>
 
   <main id="main">
-    <section class="section container" aria-labelledby="projects-heading" data-reveal>
-      <div class="section-heading">
-        <p class="eyebrow">Selected work</p>
-        <h1 id="projects-heading" class="text-3xl font-display mt-2">Projects</h1>
-        <p class="text-lg text-muted mt-4">
-          Projects that combine mechanical engineering, programming, and
-          artificial intelligence, from academic prototypes to
-          personal tools.
-        </p>
+    <section class="section container" data-reveal>
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="projects.html">Projects</a>
+        <span aria-hidden="true">/</span>
+        <span data-project-breadcrumb aria-current="page">…</span>
+      </nav>
+
+      <div data-project-detail>
+        <p class="empty-state">Loading project…</p>
       </div>
 
-      <div class="featured-strip mt-8">
-        <p class="eyebrow">Featured</p>
-        <div class="grid grid--3 mt-4" data-featured-projects aria-live="polite">
-          <p class="empty-state">Loading featured projects…</p>
-        </div>
-      </div>
-
-      <div class="split split--filters mt-16">
-        <h2 class="text-xl">All projects</h2>
-        <div class="filter-bar" data-project-filters role="group" aria-label="Filter projects by category"></div>
-      </div>
-
-      <div class="grid grid--3 mt-6" data-all-projects aria-live="polite">
-        <p class="empty-state">Loading projects…</p>
-      </div>
+      <p class="mt-8">
+        <a class="card__link" href="projects.html">← Back to all projects</a>
+      </p>
     </section>
   </main>
 

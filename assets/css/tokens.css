@@ -89,6 +89,7 @@
 
   /* ---- Color: state ---- */
   --color-success: #4ade80;
+  --color-success-tint: #4ade801a; /* 10% alpha, for glows/fills */
   --color-danger: #ff6b6b;
 
   /* ---- Typography: font stacks ---- */
@@ -151,6 +152,7 @@
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
 
   /* ---- Icon sizing ---- */
+  --icon-xs: 13px;
   --icon-sm: 16px;
   --icon-md: 20px;
   --icon-lg: 24px;

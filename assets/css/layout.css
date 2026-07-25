@@ -130,8 +130,23 @@
 .mt-6  { margin-top: var(--space-6); }
 .mt-8  { margin-top: var(--space-8); }
 .mt-10 { margin-top: var(--space-10); }
+.mt-12 { margin-top: var(--space-12); }
+.mt-16 { margin-top: var(--space-16); }
 
 .items-center { align-items: center; }
+
+/* Split variant that wraps onto its own line + left-aligns on narrow
+   viewports, used for the "All projects" heading + filter bar row. */
+.split--filters {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .split--filters {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
 
 /* ---- Visually hidden until focused (skip link) ---- */
 .skip-link {
