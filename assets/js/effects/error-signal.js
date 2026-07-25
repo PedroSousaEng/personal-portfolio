@@ -99,7 +99,7 @@ export function initErrorSignal() {
 
   let width = window.innerWidth;
   let height = window.innerHeight;
-  let dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let dpr = Math.min(window.devicePixelRatio || 1, 1.5);
   let rafId = null;
   let resizeTimer = null;
 
@@ -123,7 +123,7 @@ export function initErrorSignal() {
   function resize() {
     width = window.innerWidth;
     height = window.innerHeight;
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     canvas.width = Math.round(width * dpr);
     canvas.height = Math.round(height * dpr);
     canvas.style.width = `${width}px`;

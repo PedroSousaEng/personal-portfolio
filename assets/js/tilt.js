@@ -107,8 +107,22 @@ export function initCardTilt() {
     const px = (event.clientX - activeRect.left) / activeRect.width;
     const py = (event.clientY - activeRect.top) / activeRect.height;
 
-    pendingRotY = clamp((px - 0.5) * MAX_TILT_DEG * 2, -MAX_TILT_DEG, MAX_TILT_DEG);
-    pendingRotX = clamp((0.5 - py) * MAX_TILT_DEG * 2, -MAX_TILT_DEG, MAX_TILT_DEG);
+    // Bug fix (buttons "run away" / click-freeze): while the pointer is
+    // over the card's link row, freeze rotation at flat instead of
+    // continuing to tilt. Previously the whole card kept rotating in 3D
+    // as the pointer approached "Open project"/"Resources", so the button
+    // physically moved between pointerdown and pointerup — hard to aim at,
+    // and often ate the click entirely because the target moved out from
+    // under the pointer mid-click.
+    const overLinks = event.target.closest ? event.target.closest(".card__links") : null;
+
+    if (overLinks) {
+      pendingRotX = 0;
+      pendingRotY = 0;
+    } else {
+      pendingRotY = clamp((px - 0.5) * MAX_TILT_DEG * 2, -MAX_TILT_DEG, MAX_TILT_DEG);
+      pendingRotX = clamp((0.5 - py) * MAX_TILT_DEG * 2, -MAX_TILT_DEG, MAX_TILT_DEG);
+    }
     pendingTiltX = px * 100;
     pendingTiltY = py * 100;
     scheduleFlush();

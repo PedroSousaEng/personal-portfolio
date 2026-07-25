@@ -123,7 +123,7 @@ export function initTechNetwork() {
   // the rAF loop.
   let width = window.innerWidth;
   let height = window.innerHeight;
-  let dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let dpr = Math.min(window.devicePixelRatio || 1, 1.5);
   let minWH = Math.min(width, height);
 
   // Pre-computed per-orbit geometry, recomputed only on resize.
@@ -132,7 +132,7 @@ export function initTechNetwork() {
   function resize() {
     width = window.innerWidth;
     height = window.innerHeight;
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     minWH = Math.min(width, height);
     canvas.width = Math.round(width * dpr);
     canvas.height = Math.round(height * dpr);

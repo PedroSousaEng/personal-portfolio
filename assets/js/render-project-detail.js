@@ -122,7 +122,7 @@ function buildDetail(project) {
     githubLink.href = project.github;
     githubLink.target = "_blank";
     githubLink.rel = "noopener noreferrer";
-    githubLink.innerHTML = `${GITHUB_ICON} View GitHub`;
+    githubLink.innerHTML = `${GITHUB_ICON} Resources`;
     links.appendChild(githubLink);
   }
 

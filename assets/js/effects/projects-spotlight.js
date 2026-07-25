@@ -65,6 +65,11 @@ export function initProjectsSpotlight() {
   const FX_CORE = parseColorTriplet(tok("--fx-projects-spotlight-core", "#6c7cff")) || "108, 124, 255";
   const FX_SOFT = parseColorTriplet(tok("--fx-projects-spotlight-soft", "#aeb8ff")) || "174, 184, 255";
   const FX_LINE = parseColorTriplet(tok("--fx-projects-line", "#5b6376")) || "91, 99, 118";
+  // Perf: pre-format the two dust fill colours once instead of building a
+  // new template-string (and throwing it away) for every one of the 42
+  // dust particles on every single frame — that's ~2500 string
+  // allocations/sec feeding the GC for a purely cosmetic detail.
+  const DUST_FILL_BASE = `rgba(${FX_SOFT}, `;
 
   const canvas = document.createElement("canvas");
   canvas.className = "bg-fx bg-fx--projects";
@@ -76,7 +81,7 @@ export function initProjectsSpotlight() {
   // Cached window metrics — updated only on resize.
   let width = window.innerWidth;
   let height = window.innerHeight;
-  let dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let dpr = Math.min(window.devicePixelRatio || 1, 1.5);
   let rafId = null;
   let resizeTimer = null;
 
@@ -175,7 +180,7 @@ export function initProjectsSpotlight() {
       const twinkle = 0.5 + 0.5 * Math.sin(now / DUST_TWINKLE_PERIOD_MS + p.twinklePhase);
 
       // Draw dust mote — visible, but still soft and ambient.
-      ctx.fillStyle = `rgba(${FX_SOFT}, ${twinkle * 0.4})`;
+      ctx.fillStyle = `${DUST_FILL_BASE}${(twinkle * 0.4).toFixed(3)})`;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
       ctx.fill();
@@ -185,7 +190,7 @@ export function initProjectsSpotlight() {
   function resize() {
     width = window.innerWidth;
     height = window.innerHeight;
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     canvas.width = Math.round(width * dpr);
     canvas.height = Math.round(height * dpr);
     canvas.style.width = `${width}px`;

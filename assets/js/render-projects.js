@@ -223,10 +223,10 @@ function buildCard(project) {
     githubLink.target = "_blank";
     githubLink.rel = "noopener noreferrer";
     githubLink.innerHTML = GITHUB_ICON;
-    githubLink.append(" Code");
+    githubLink.append(" Resources");
     githubLink.setAttribute(
       "aria-label",
-      `View ${project.title} source on GitHub (opens in a new tab)`
+      `View ${project.title} resources on GitHub (opens in a new tab)`
     );
     links.appendChild(githubLink);
   }

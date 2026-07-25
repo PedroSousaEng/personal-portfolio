@@ -75,10 +75,10 @@ export function initCursor() {
   let lastTrailX = null;
   let lastTrailY = null;
   let trailRafId = null;
-  let trailDPR = Math.min(window.devicePixelRatio || 1, 2);
+  let trailDPR = Math.min(window.devicePixelRatio || 1, 1.5);
 
   function resizeTrailCanvas() {
-    trailDPR = Math.min(window.devicePixelRatio || 1, 2);
+    trailDPR = Math.min(window.devicePixelRatio || 1, 1.5);
     trailCanvas.width = window.innerWidth * trailDPR;
     trailCanvas.height = window.innerHeight * trailDPR;
     trailCanvas.style.width = `${window.innerWidth}px`;
