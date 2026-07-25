@@ -24,8 +24,9 @@
 
 import { renderProjects, renderProjectsPage } from "./render-projects.js";
 import { renderProjectDetail } from "./render-project-detail.js";
-import { renderSkills, renderExperience, renderTimeline } from "./render-about.js";
+import { renderSkills, renderExperience, renderTimeline, renderAwards } from "./render-about.js";
 import { renderContact } from "./render-contact.js";
+import { renderCv } from "./render-cv.js";
 import { initSiteIdentity } from "./render-site.js";
 import { initBackgroundFX } from "./background-fx.js";
 import { initTechNetwork } from "./effects/tech-network.js";
@@ -125,14 +126,21 @@ function initPageData() {
     const skillsEl = document.querySelector("[data-skills]");
     const experienceEl = document.querySelector("[data-experience]");
     const timelineEl = document.querySelector("[data-timeline]");
+    const awardsEl = document.querySelector("[data-awards]");
     if (skillsEl) renderSkills(skillsEl);
     if (experienceEl) renderExperience(experienceEl);
     if (timelineEl) renderTimeline(timelineEl);
+    if (awardsEl) renderAwards(awardsEl);
   }
 
   if (page === "contact") {
     const contactEl = document.querySelector("[data-contact]");
     if (contactEl) renderContact(contactEl);
+  }
+
+  if (page === "cv") {
+    const cvEl = document.querySelector("[data-cv]");
+    if (cvEl) renderCv(cvEl);
   }
 }
 

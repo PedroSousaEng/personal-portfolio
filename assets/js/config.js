@@ -23,6 +23,7 @@ export const DATA_PATHS = Object.freeze({
   experience: "assets/data/experience.json",
   timeline: "assets/data/timeline.json",
   socials: "assets/data/socials.json",
+  cv: "assets/data/cv.json",
 });
 
 // Mirrors the breakpoint table in docs/DESIGN_SYSTEM.md — keep in sync.

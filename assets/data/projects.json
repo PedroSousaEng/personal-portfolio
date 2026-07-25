@@ -46,6 +46,30 @@
         "stage": "Lessons Learned",
         "text": "Using AI as a development accelerator works best when I stay the one making architectural decisions — it's fastest for boilerplate and exploration, but the data model and priorities still need deliberate human design."
       }
+    ],
+    "modules": [
+      {
+        "type": "spec-groups",
+        "heading": "System Overview",
+        "groups": [
+          {
+            "label": "Architecture",
+            "items": ["Python core with a local data store", "Modular automation hooks (relisting, price suggestions)", "AI-assisted scripting for repetitive data tasks"]
+          },
+          {
+            "label": "Features",
+            "items": ["Inventory tracking with status/history", "Performance metrics per listing", "Foundation for scheduled relisting automation"]
+          }
+        ]
+      },
+      {
+        "type": "reflection",
+        "heading": "Reflection",
+        "items": [
+          { "label": "Challenges", "text": "Keeping the data model simple enough to maintain solo while still capturing enough history to make useful pricing/relisting suggestions." },
+          { "label": "Future Improvements", "text": "Fully automate the relisting cycle and add a lightweight dashboard view of inventory health instead of reading raw data." }
+        ]
+      }
     ]
   },
   {
@@ -94,6 +118,30 @@
       {
         "stage": "Lessons Learned",
         "text": "Treating the portfolio itself as an engineering project — with a real data model and iteration cycle — produced a much more maintainable result than hand-writing each page."
+      }
+    ],
+    "modules": [
+      {
+        "type": "spec-groups",
+        "heading": "System Overview",
+        "groups": [
+          {
+            "label": "Architecture",
+            "items": ["Static HTML pages + shared vanilla JS render modules", "Every project/site field driven by one JSON record", "No build step, no framework, no bundler"]
+          },
+          {
+            "label": "Software",
+            "items": ["Category filter bar on the Projects page", "Modular case-study system (this section is one such module)", "Print-ready CV page generated from its own JSON"]
+          }
+        ]
+      },
+      {
+        "type": "reflection",
+        "heading": "Reflection",
+        "items": [
+          { "label": "Challenges", "text": "Balancing ambient visual effects (canvas backgrounds, cursor, tilt) against real performance — several rounds of profiling were needed to remove jank without losing the premium feel." },
+          { "label": "Future Improvements", "text": "Add a lightweight build step for image optimization, and expand the modular project-content system with real photo galleries as projects gain documentation." }
+        ]
       }
     ]
   },
@@ -152,6 +200,41 @@
         "stage": "Lessons Learned",
         "text": "Simulating the system in Python before committing to manufacturing saved iteration cycles — most of the physical testing was spent fine-tuning rather than discovering fundamental design flaws."
       }
+    ],
+    "modules": [
+      {
+        "type": "spec-groups",
+        "heading": "Engineering Specifications",
+        "groups": [
+          {
+            "label": "CAD & Modeling",
+            "items": ["Full chassis and drivetrain assembly in SolidWorks/Solid Edge", "Gear ratio tuned via simulation before finalizing geometry"]
+          },
+          {
+            "label": "Simulation & Calculations",
+            "items": ["Python model of energy conversion and drivetrain losses", "Rolling-friction and stability/center-of-mass analysis"]
+          },
+          {
+            "label": "Manufacturing",
+            "items": ["Machined/assembled drivetrain and chassis components", "Bearing selection iterated to reduce friction losses"]
+          }
+        ]
+      },
+      {
+        "type": "achievements",
+        "heading": "Achievements",
+        "items": [
+          { "title": "1st Place — University of Minho Competition", "description": "Awarded for overall performance and engineering execution against other competing teams.", "year": "2023" }
+        ]
+      },
+      {
+        "type": "reflection",
+        "heading": "Reflection",
+        "items": [
+          { "label": "Challenges", "text": "Minimizing friction losses in the drivetrain while keeping the design simple enough to manufacture reliably within the competition's constraints." },
+          { "label": "Future Improvements", "text": "Instrument the prototype with real sensors during testing to capture a full speed/distance curve instead of only the final result." }
+        ]
+      }
     ]
   },
   {
@@ -201,6 +284,30 @@
         "stage": "Lessons Learned",
         "text": "Reverse engineering a finished product is one of the fastest ways to build intuition for manufacturing-aware design — tolerances and material choices that look arbitrary on paper usually have a clear cost or reliability reason once you see the assembled part."
       }
+    ],
+    "modules": [
+      {
+        "type": "spec-groups",
+        "heading": "Engineering Specifications",
+        "groups": [
+          {
+            "label": "Materials & Manufacturing",
+            "items": ["Stamped steel levers and pawl", "Injection-molded housing components", "Machined pin/actuation interfaces"]
+          },
+          {
+            "label": "Analysis",
+            "items": ["Component-by-component functional breakdown", "Manual force-path validation across sub-assemblies"]
+          }
+        ]
+      },
+      {
+        "type": "reflection",
+        "heading": "Reflection",
+        "items": [
+          { "label": "Challenges", "text": "Disassembling without damaging small spring-loaded components, and correctly inferring the intended force path before re-testing it manually." },
+          { "label": "Future Improvements", "text": "Reconstruct the mechanism in CAD from the teardown measurements to validate tolerances numerically instead of only by inspection." }
+        ]
+      }
     ]
   },
   {
@@ -249,6 +356,30 @@
       {
         "stage": "Lessons Learned",
         "text": "FEA results are only as trustworthy as the analytical checks behind them — validating critical stress values by hand caught a boundary-condition assumption that would have skewed the fatigue estimate."
+      }
+    ],
+    "modules": [
+      {
+        "type": "spec-groups",
+        "heading": "Engineering Specifications",
+        "groups": [
+          {
+            "label": "CAD & Modeling",
+            "items": ["Hub geometry modeled with fillets, keyway, and section transitions captured explicitly"]
+          },
+          {
+            "label": "FEA & Validation",
+            "items": ["Stress distribution mapped under cyclic loading", "Critical regions cross-checked against analytical solid-mechanics calculations", "Fatigue-life estimate via S-N curve approach"]
+          }
+        ]
+      },
+      {
+        "type": "reflection",
+        "heading": "Reflection",
+        "items": [
+          { "label": "Challenges", "text": "Setting boundary conditions in the FEA model that matched the real loading scenario closely enough for the analytical cross-check to be meaningful." },
+          { "label": "Future Improvements", "text": "Run a mesh-convergence study to quantify confidence in the stress values at the most critical fillet region." }
+        ]
       }
     ]
   },
@@ -306,6 +437,30 @@
       {
         "stage": "Lessons Learned",
         "text": "Even a small mechanism benefits from a real kinematic pass before printing — an early paper sketch of the linkage geometry would have caught a clearance issue I only found after the first print."
+      }
+    ],
+    "modules": [
+      {
+        "type": "spec-groups",
+        "heading": "Engineering Specifications",
+        "groups": [
+          {
+            "label": "CAD & Kinematics",
+            "items": ["Pedal-to-pin linkage modeled and sized via kinematic analysis", "Actuation travel tuned to guarantee reliable engagement"]
+          },
+          {
+            "label": "Manufacturing",
+            "items": ["3D-printed in PLA with print orientation chosen for pin sliding fit", "Clearances iterated across print revisions"]
+          }
+        ]
+      },
+      {
+        "type": "reflection",
+        "heading": "Reflection",
+        "items": [
+          { "label": "Challenges", "text": "Getting the pin-to-housing clearance right — too tight caused binding, too loose caused inconsistent engagement." },
+          { "label": "Future Improvements", "text": "Sketch and size the linkage geometry on paper before the first CAD pass, to catch clearance issues earlier than the first physical print." }
+        ]
       }
     ]
   }

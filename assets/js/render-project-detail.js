@@ -1,36 +1,53 @@
 /**
  * PURPOSE
  *   Render a single project's dedicated page (project.html?id=<slug>) from
- *   assets/data/projects.json as a complete engineering case study.
+ *   assets/data/projects.json as a complete, modular engineering case
+ *   study — every section below only appears if the project's data
+ *   actually has content for it.
  *
  * RESPONSIBILITIES
  *   - renderProjectDetail(detailEl, breadcrumbEl): read `id` from the URL's
  *     query string, find the matching project, and render:
  *       Hero -> Overview -> My Contribution -> Engineering Story
- *       -> Previous/Next project nav -> Related projects -> Footer CTA
+ *       -> Dynamic Modules (project.modules[]) -> Previous/Next nav
+ *       -> Related projects -> Footer CTA
  *     Falls back to a friendly "not found" state (with a link back to
  *     Projects) if the id is missing or unknown.
  *
- * DATA CONTRACT ADDITIONS (Phase 3, on top of the Phase 2 fields)
- *   objectives: string[]   // what the project set out to do
- *   outcome: string        // the final result, in one paragraph
- *   myRole: string[]       // short chips, e.g. "CAD Modeling", "Python Simulation"
- *   story: Array<{ stage: string, text: string }>
- *                          // e.g. Problem, Research, Design, Development,
- *                          // Manufacturing, Testing, Results, Lessons Learned
- *                          // — projects only include the stages that apply.
- *   report: string         // URL to a PDF report, or "" if none
+ * MODULAR CONTENT SYSTEM (Phase 5)
+ *   Every project always has: Hero, Overview, My Contribution, GitHub /
+ *   Resources link (these come from the always-present base fields on the
+ *   project record: title, description, myRole, github, etc.).
  *
- *   All of the above are optional — a project missing them still renders a
- *   complete card with those sections simply omitted, so nothing here
- *   breaks for a future entry that hasn't been filled in yet.
+ *   Everything else is optional and driven by `project.modules`, an array
+ *   of typed blocks. A project only renders the modules it actually has —
+ *   a software project skips CAD sections, a mechanical project skips API
+ *   docs, and no empty headings ever show up. Adding a new project only
+ *   ever means adding a new object to assets/data/projects.json; no
+ *   template code needs to change unless a genuinely new module TYPE is
+ *   introduced (in which case, add one renderer function + one registry
+ *   entry below — see MODULE_RENDERERS).
+ *
+ *   Supported module types today:
+ *     spec-groups   — grouped technical spec bullets (CAD, FEA, Software,
+ *                      Manufacturing, etc.) — { heading, groups: [{ label, items[] }] }
+ *     gallery       — photos/screenshots/renders grid — { heading, images: [{ src, caption }] }
+ *     resource-list — downloadable docs/links — { heading, items: [{ label, url }] }
+ *     achievements  — competitions/awards/certificates — { heading, items: [{ title, description, year }] }
+ *     reflection    — challenges / lessons / future improvements — { heading, items: [{ label, text }] }
+ *
+ *   A module block missing its `type`, or with an unrecognised `type`, or
+ *   with no content, is silently skipped rather than erroring — content
+ *   authors can add a module before it's fully filled in without breaking
+ *   the page.
  *
  * DEPENDENCIES
  *   data-loader.js
  *
  * SAFE EDITS
- *   To change what a project page displays, edit this file. To change what
- *   data is available, edit assets/data/projects.json.
+ *   To change what a project page displays, edit this file. To change
+ *   what data is available (including adding/removing modules for a
+ *   given project), edit assets/data/projects.json.
  */
 
 import { loadJSON } from "./data-loader.js";
@@ -63,6 +80,13 @@ function renderNotFound(detailEl) {
   wrap.appendChild(link);
 
   detailEl.replaceChildren(wrap);
+}
+
+function buildCaseHeading(text) {
+  const heading = document.createElement("h2");
+  heading.className = "text-xl";
+  heading.textContent = text;
+  return heading;
 }
 
 /** Builds the hero block: image, meta, title, subtitle, highlights, tags, links. */
@@ -154,15 +178,11 @@ function buildHero(project) {
   return hero;
 }
 
-/** Builds the Overview section: description, objectives, outcome. */
+/** Builds the Overview section: description, objectives, outcome. Always present. */
 function buildOverview(project) {
   const section = document.createElement("section");
   section.className = "case-section mt-12";
-
-  const heading = document.createElement("h2");
-  heading.className = "text-xl";
-  heading.textContent = "Overview";
-  section.appendChild(heading);
+  section.appendChild(buildCaseHeading("Overview"));
 
   const body = document.createElement("p");
   body.className = "text-base mt-4";
@@ -200,17 +220,13 @@ function buildOverview(project) {
   return section;
 }
 
-/** Builds the "My Contribution" section from project.myRole. */
+/** Builds the "My Contribution" section from project.myRole. Always present when set. */
 function buildContribution(project) {
   if (!Array.isArray(project.myRole) || project.myRole.length === 0) return null;
 
   const section = document.createElement("section");
   section.className = "case-section mt-12";
-
-  const heading = document.createElement("h2");
-  heading.className = "text-xl";
-  heading.textContent = "My Contribution";
-  section.appendChild(heading);
+  section.appendChild(buildCaseHeading("My Contribution"));
 
   const chips = document.createElement("div");
   chips.className = "role-chips mt-4";
@@ -225,17 +241,13 @@ function buildContribution(project) {
   return section;
 }
 
-/** Builds the "Engineering Story" section from project.story. */
+/** Builds the "Engineering Story" section from project.story. Always present when set. */
 function buildStory(project) {
   if (!Array.isArray(project.story) || project.story.length === 0) return null;
 
   const section = document.createElement("section");
   section.className = "case-section mt-12";
-
-  const heading = document.createElement("h2");
-  heading.className = "text-xl";
-  heading.textContent = "Engineering Story";
-  section.appendChild(heading);
+  section.appendChild(buildCaseHeading("Engineering Story"));
 
   const timeline = document.createElement("ol");
   timeline.className = "story-timeline mt-6";
@@ -267,6 +279,235 @@ function buildStory(project) {
 
   section.appendChild(timeline);
   return section;
+}
+
+/* =========================================================
+   Dynamic module registry (Phase 5)
+   Each renderer takes one module object and returns a <section> (or null
+   if the module has no usable content), so unknown/empty modules never
+   produce an empty heading.
+   ========================================================= */
+
+function renderSpecGroupsModule(module) {
+  if (!Array.isArray(module.groups) || module.groups.length === 0) return null;
+
+  const section = document.createElement("section");
+  section.className = "case-section mt-12";
+  section.appendChild(buildCaseHeading(module.heading || "Specifications"));
+
+  const grid = document.createElement("div");
+  grid.className = "spec-groups mt-6";
+
+  for (const group of module.groups) {
+    if (!Array.isArray(group.items) || group.items.length === 0) continue;
+
+    const groupEl = document.createElement("div");
+    groupEl.className = "spec-group";
+
+    if (group.label) {
+      const label = document.createElement("h3");
+      label.className = "text-sm font-mono text-muted";
+      label.textContent = group.label;
+      groupEl.appendChild(label);
+    }
+
+    const list = document.createElement("ul");
+    list.className = "case-list mt-3";
+    for (const specItem of group.items) {
+      const li = document.createElement("li");
+      li.textContent = specItem;
+      list.appendChild(li);
+    }
+    groupEl.appendChild(list);
+
+    grid.appendChild(groupEl);
+  }
+
+  if (!grid.childNodes.length) return null;
+  section.appendChild(grid);
+  return section;
+}
+
+function renderGalleryModule(module) {
+  if (!Array.isArray(module.images) || module.images.length === 0) return null;
+
+  const section = document.createElement("section");
+  section.className = "case-section mt-12";
+  section.appendChild(buildCaseHeading(module.heading || "Gallery"));
+
+  const grid = document.createElement("div");
+  grid.className = "case-gallery mt-6";
+
+  for (const image of module.images) {
+    if (!image.src) continue;
+
+    const figure = document.createElement("figure");
+    figure.className = "case-gallery__item";
+
+    const img = document.createElement("img");
+    img.src = image.src;
+    img.alt = image.caption || "";
+    img.loading = "lazy";
+    img.decoding = "async";
+    figure.appendChild(img);
+
+    if (image.caption) {
+      const caption = document.createElement("figcaption");
+      caption.className = "text-xs text-muted mt-2";
+      caption.textContent = image.caption;
+      figure.appendChild(caption);
+    }
+
+    grid.appendChild(figure);
+  }
+
+  if (!grid.childNodes.length) return null;
+  section.appendChild(grid);
+  return section;
+}
+
+function renderResourceListModule(module) {
+  if (!Array.isArray(module.items) || module.items.length === 0) return null;
+
+  const section = document.createElement("section");
+  section.className = "case-section mt-12";
+  section.appendChild(buildCaseHeading(module.heading || "Documentation"));
+
+  const list = document.createElement("div");
+  list.className = "resource-list mt-6";
+
+  for (const resource of module.items) {
+    if (!resource.label || !resource.url) continue;
+
+    const link = document.createElement("a");
+    link.className = "resource-list__item";
+    link.href = resource.url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.innerHTML = `${DOWNLOAD_ICON}<span>${resource.label}</span>`;
+    list.appendChild(link);
+  }
+
+  if (!list.childNodes.length) return null;
+  section.appendChild(list);
+  return section;
+}
+
+function renderAchievementsModule(module) {
+  if (!Array.isArray(module.items) || module.items.length === 0) return null;
+
+  const section = document.createElement("section");
+  section.className = "case-section mt-12";
+  section.appendChild(buildCaseHeading(module.heading || "Achievements"));
+
+  const list = document.createElement("div");
+  list.className = "stack stack--tight mt-6";
+
+  for (const achievement of module.items) {
+    if (!achievement.title) continue;
+
+    const item = document.createElement("div");
+    item.className = "cv-entry";
+
+    const header = document.createElement("div");
+    header.className = "split";
+
+    const title = document.createElement("h3");
+    title.className = "cv-entry__title";
+    title.textContent = achievement.title;
+    header.appendChild(title);
+
+    if (achievement.year) {
+      const year = document.createElement("span");
+      year.className = "text-sm font-mono text-muted";
+      year.textContent = achievement.year;
+      header.appendChild(year);
+    }
+
+    item.appendChild(header);
+
+    if (achievement.description) {
+      const description = document.createElement("p");
+      description.className = "text-sm text-muted mt-1";
+      description.textContent = achievement.description;
+      item.appendChild(description);
+    }
+
+    list.appendChild(item);
+  }
+
+  if (!list.childNodes.length) return null;
+  section.appendChild(list);
+  return section;
+}
+
+function renderReflectionModule(module) {
+  if (!Array.isArray(module.items) || module.items.length === 0) return null;
+
+  const section = document.createElement("section");
+  section.className = "case-section mt-12";
+  section.appendChild(buildCaseHeading(module.heading || "Reflection"));
+
+  const list = document.createElement("div");
+  list.className = "stack mt-6";
+
+  for (const entry of module.items) {
+    if (!entry.text) continue;
+
+    const block = document.createElement("div");
+
+    if (entry.label) {
+      const label = document.createElement("h3");
+      label.className = "text-sm font-mono text-muted";
+      label.textContent = entry.label;
+      block.appendChild(label);
+    }
+
+    const text = document.createElement("p");
+    text.className = "text-base mt-2";
+    text.textContent = entry.text;
+    block.appendChild(text);
+
+    list.appendChild(block);
+  }
+
+  if (!list.childNodes.length) return null;
+  section.appendChild(list);
+  return section;
+}
+
+/**
+ * Module type -> renderer function. Add a new entry here (plus its
+ * render*Module function above) to support a new module TYPE. Adding a
+ * new project — even one that uses these module types in a new
+ * combination — never requires touching this registry.
+ */
+const MODULE_RENDERERS = {
+  "spec-groups": renderSpecGroupsModule,
+  gallery: renderGalleryModule,
+  "resource-list": renderResourceListModule,
+  achievements: renderAchievementsModule,
+  reflection: renderReflectionModule,
+};
+
+/**
+ * Renders project.modules[] in order, skipping any module with an
+ * unrecognised type or with no usable content — a project's page only
+ * ever shows the sections it actually has data for.
+ * @param {object} project
+ * @returns {HTMLElement[]}
+ */
+function buildDynamicModules(project) {
+  if (!Array.isArray(project.modules)) return [];
+
+  const sections = [];
+  for (const module of project.modules) {
+    const renderer = module && MODULE_RENDERERS[module.type];
+    if (!renderer) continue;
+    const section = renderer(module);
+    if (section) sections.push(section);
+  }
+  return sections;
 }
 
 /** Builds a compact prev/next navigation row between two projects. */
@@ -320,11 +561,7 @@ function buildRelated(project, allProjects) {
 
   const section = document.createElement("section");
   section.className = "case-section mt-16";
-
-  const heading = document.createElement("h2");
-  heading.className = "text-xl";
-  heading.textContent = "Related projects";
-  section.appendChild(heading);
+  section.appendChild(buildCaseHeading("Related projects"));
 
   const grid = document.createElement("div");
   grid.className = "grid grid--3 mt-6";
@@ -363,11 +600,7 @@ function buildRelated(project, allProjects) {
 function buildFooterCta() {
   const section = document.createElement("section");
   section.className = "case-section case-cta mt-16";
-
-  const heading = document.createElement("h2");
-  heading.className = "text-xl";
-  heading.textContent = "Interested in working together?";
-  section.appendChild(heading);
+  section.appendChild(buildCaseHeading("Interested in working together?"));
 
   const body = document.createElement("p");
   body.className = "text-base text-muted mt-2";
@@ -403,6 +636,7 @@ function buildFooterCta() {
 function buildDetail(project, allProjects) {
   const fragment = document.createDocumentFragment();
 
+  // Always-present sections.
   fragment.appendChild(buildHero(project));
   fragment.appendChild(buildOverview(project));
 
@@ -411,6 +645,11 @@ function buildDetail(project, allProjects) {
 
   const story = buildStory(project);
   if (story) fragment.appendChild(story);
+
+  // Dynamic, per-project modules — only what this project actually has.
+  for (const moduleSection of buildDynamicModules(project)) {
+    fragment.appendChild(moduleSection);
+  }
 
   const index = allProjects.findIndex((item) => item.id === project.id);
   const prevProject = index > 0 ? allProjects[index - 1] : null;

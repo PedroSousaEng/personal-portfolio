@@ -1,17 +1,23 @@
 /**
  * PURPOSE
- *   Turn skills.json, experience.json, and timeline.json into the About
- *   page's skills grid, experience list, and milestone timeline.
+ *   Turn skills.json, experience.json, timeline.json, and cv.json's
+ *   awards into the About page's skills grid, experience list, milestone
+ *   timeline, and awards/achievements list.
  *
  * RESPONSIBILITIES
  *   - renderSkills(containerEl)
  *   - renderExperience(containerEl)
  *   - renderTimeline(containerEl)
+ *   - renderAwards(containerEl)
  *
  * DATA CONTRACTS
  *   skills.json:     Array<{ category: string, items: string[] }>
  *   experience.json: Array<{ id, role, company, period, location, summary, highlights: string[] }>
  *   timeline.json:   Array<{ id, year, title, description }>
+ *   cv.json:         { awards: Array<{ title, description, year }>, ... }
+ *                    — awards is read from cv.json (not duplicated into
+ *                    its own file) so the About page and the CV page
+ *                    always show the same list from one source.
  *
  * DEPENDENCIES
  *   data-loader.js
@@ -165,5 +171,56 @@ export async function renderTimeline(containerEl) {
   } catch (error) {
     console.error("renderTimeline:", error);
     renderFallback(containerEl, "Couldn't load the timeline right now.");
+  }
+}
+
+/** @param {HTMLElement} containerEl */
+export async function renderAwards(containerEl) {
+  try {
+    const cv = await loadJSON(DATA_PATHS.cv);
+    const awards = Array.isArray(cv.awards) ? cv.awards : [];
+
+    if (awards.length === 0) {
+      renderFallback(containerEl, "No awards yet — check back soon.");
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+
+    for (const award of awards) {
+      const item = document.createElement("article");
+      item.className = "card";
+
+      const header = document.createElement("div");
+      header.className = "split";
+
+      const title = document.createElement("h3");
+      title.className = "card__title";
+      title.textContent = award.title;
+      header.appendChild(title);
+
+      if (award.year) {
+        const year = document.createElement("span");
+        year.className = "text-sm font-mono text-muted";
+        year.textContent = award.year;
+        header.appendChild(year);
+      }
+
+      item.appendChild(header);
+
+      if (award.description) {
+        const description = document.createElement("p");
+        description.className = "text-sm text-muted";
+        description.textContent = award.description;
+        item.appendChild(description);
+      }
+
+      fragment.appendChild(item);
+    }
+
+    containerEl.replaceChildren(fragment);
+  } catch (error) {
+    console.error("renderAwards:", error);
+    renderFallback(containerEl, "Couldn't load the awards right now.");
   }
 }

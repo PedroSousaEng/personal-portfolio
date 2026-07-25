@@ -1,0 +1,43 @@
+{
+  "summary": "Mechanical Engineering undergraduate at the University of Minho with a strong interest in the intersection of engineering, technology, and artificial intelligence. Comfortable moving between CAD modeling, analytical/simulation work in Python, and AI-assisted software development, with a track record of applying that range to real prototypes — including a 1st-place competition vehicle — and to personal software projects built end-to-end.",
+  "education": [
+    {
+      "degree": "BSc in Mechanical Engineering",
+      "institution": "University of Minho",
+      "location": "Guimarães, Portugal",
+      "period": "Ongoing",
+      "details": "Coursework and projects spanning solid mechanics, dynamics, CAD/CAM, manufacturing processes, and simulation-driven design."
+    }
+  ],
+  "experienceSummary": "Independent, project-based experience rather than formal employment to date: every entry on this CV's Projects section was scoped, executed, and (where applicable) manufactured or tested by me, individually or as part of a competition team.",
+  "skills": [
+    { "category": "Programming", "items": ["Python", "Data Analysis", "Automation"] },
+    { "category": "Engineering & CAD", "items": ["SolidWorks", "Solid Edge", "Mechanical Modeling", "FEA", "Product Development"] },
+    { "category": "Manufacturing & Prototyping", "items": ["3D Printing", "PLA", "Mechanical Assembly"] },
+    { "category": "Software", "items": ["HTML5", "CSS3", "JavaScript", "Git"] },
+    { "category": "Artificial Intelligence", "items": ["Generative AI tools", "AI-assisted development", "AI-assisted learning"] }
+  ],
+  "projects": [
+    { "title": "Formula Water", "note": "1st place — University of Minho competition", "id": "formula-water" },
+    { "title": "Vinted OS", "note": "Personal productivity platform", "id": "vinted-os" },
+    { "title": "Fatigue Study", "note": "FEA-based fatigue life assessment", "id": "fatigue-study" },
+    { "title": "Pin Clutch", "note": "Pedal-actuated clutch mechanism", "id": "pin-clutch" },
+    { "title": "Door Lock Teardown", "note": "Reverse-engineering case study", "id": "doorlock-teardown" },
+    { "title": "Personal Portfolio", "note": "Framework-free engineering portfolio", "id": "personal-portfolio" }
+  ],
+  "awards": [
+    { "title": "1st Place — University of Minho Competition", "description": "Formula Water: gravity-powered vehicle prototype, awarded for overall performance and engineering execution.", "year": "2023" }
+  ],
+  "certifications": [],
+  "languages": [
+    { "language": "Portuguese", "level": "Native" },
+    { "language": "English", "level": "Fluent" }
+  ],
+  "interests": [
+    "Mechanical design",
+    "Artificial intelligence",
+    "Software development",
+    "Product teardown & reverse engineering",
+    "3D printing & prototyping"
+  ]
+}

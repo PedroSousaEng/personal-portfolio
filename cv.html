@@ -1,32 +1,38 @@
 <!--
   PURPOSE
-    Projects page. Full grid of every project in projects.json.
+    Full online résumé / CV page. Renders assets/data/cv.json into a
+    complete, printable professional profile: summary, education,
+    experience, technical skills, projects, awards, certifications,
+    languages, and interests — plus a Download CV (PDF) button and a
+    Print version button.
 
   DEPENDENCIES
-    assets/css/{tokens,base,layout,components,pages,micro-interactions}.css
-    assets/js/main.js (renders all projects via render-projects.js)
+    assets/css/{tokens,base,layout,components,pages,micro-interactions,cv}.css
+    assets/js/main.js (renders assets/data/cv.json via render-cv.js)
 
   SAFE EDITS
-    Do NOT hand-edit project cards — add/edit/remove entries in
-    assets/data/projects.json instead; this page renders whatever is there.
+    Do NOT hand-edit CV content here — edit assets/data/cv.json instead;
+    this page only provides the container the renderer populates.
+    To wire up a real PDF, drop it at assets/documents/cv-pedro-sousa.pdf
+    (or update the two hrefs below to point wherever it actually lives).
 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Projects — Pedro Sousa</title>
-  <meta name="description" content="A selection of mechanical engineering, prototyping, and AI-assisted development projects by Pedro Sousa.">
-  <link rel="canonical" href="https://pedrosousaeng.github.io/portfolio/projects.html">
+  <title>CV — Pedro Sousa</title>
+  <meta name="description" content="Online résumé of Pedro Sousa: education, technical skills, projects, and awards, with a downloadable PDF version.">
+  <link rel="canonical" href="https://pedrosousaeng.github.io/portfolio/cv.html">
 
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Projects — Pedro Sousa">
-  <meta property="og:description" content="A selection of mechanical engineering, prototyping, and AI-assisted development projects.">
-  <meta property="og:url" content="https://pedrosousaeng.github.io/portfolio/projects.html">
+  <meta property="og:title" content="CV — Pedro Sousa">
+  <meta property="og:description" content="Online résumé: education, technical skills, projects, and awards, with a downloadable PDF version.">
+  <meta property="og:url" content="https://pedrosousaeng.github.io/portfolio/cv.html">
   <meta property="og:image" content="https://pedrosousaeng.github.io/portfolio/assets/images/og-image.png">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Projects — Pedro Sousa">
+  <meta name="twitter:title" content="CV — Pedro Sousa">
   <meta name="twitter:image" content="https://pedrosousaeng.github.io/portfolio/assets/images/og-image.png">
 
   <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
@@ -44,10 +50,9 @@
   <link rel="stylesheet" href="assets/css/page-transitions.css">
   <link rel="stylesheet" href="assets/css/svg-line-draw.css">
   <link rel="stylesheet" href="assets/css/noise.css">
-  <!-- Phase 5: Projects-only spotlight background + surface treatment. -->
-  <link rel="stylesheet" href="assets/css/effects/projects-spotlight.css">
+  <link rel="stylesheet" href="assets/css/cv.css">
 </head>
-<body data-page="projects">
+<body data-page="cv">
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
@@ -59,44 +64,41 @@
       <nav class="nav__menu" id="primary-navigation" data-nav-menu data-open="false" aria-label="Primary">
         <a href="index.html">Home</a>
         <a href="about.html">About</a>
-        <a href="projects.html" aria-current="page">Projects</a>
-        <a href="cv.html">CV</a>
+        <a href="projects.html">Projects</a>
+        <a href="cv.html" aria-current="page">CV</a>
         <a href="contact.html">Contact</a>
       </nav>
     </div>
   </header>
 
   <main id="main">
-    <section class="section container" aria-labelledby="projects-heading" data-reveal>
-      <div class="section-heading">
-        <p class="eyebrow">Selected work</p>
-        <h1 id="projects-heading" class="text-3xl font-display mt-2">Projects</h1>
-        <p class="text-lg text-muted mt-4">
-          Projects that combine mechanical engineering, programming, and
-          artificial intelligence, from academic prototypes to
-          personal tools.
-        </p>
-      </div>
+    <section class="section container" aria-labelledby="cv-heading" data-reveal>
+      <div class="cv-header">
+        <div class="section-heading">
+          <p class="eyebrow">Résumé</p>
+          <h1 id="cv-heading" class="text-3xl font-display mt-2"><span data-site="name">Pedro Sousa</span></h1>
+          <p class="text-lg text-muted mt-2" data-site="role">Mechanical Engineering Student</p>
+        </div>
 
-      <div class="featured-strip mt-8">
-        <p class="eyebrow">Featured</p>
-        <div class="grid grid--3 mt-4" data-featured-projects aria-live="polite">
-          <p class="empty-state">Loading featured projects…</p>
+        <div class="cv-header__actions no-print">
+          <a class="btn btn--primary" href="assets/documents/cv-pedro-sousa.pdf" download>
+            <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-4.5-4.5M12 15l4.5-4.5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+            Download CV (PDF)
+          </a>
+          <button class="btn btn--secondary" type="button" data-print-cv>
+            <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+            Print version
+          </button>
         </div>
       </div>
 
-      <div class="split split--filters mt-16">
-        <h2 class="text-xl">All projects</h2>
-        <div class="filter-bar" data-project-filters role="group" aria-label="Filter projects by category"></div>
-      </div>
-
-      <div class="grid grid--3 mt-6" data-all-projects aria-live="polite">
-        <p class="empty-state">Loading projects…</p>
+      <div class="cv-body mt-10" data-cv aria-live="polite">
+        <p class="empty-state">Loading CV…</p>
       </div>
     </section>
   </main>
 
-  <footer class="site-footer">
+  <footer class="site-footer no-print">
     <div class="container split">
       <p class="text-sm text-muted">© <span data-current-year>2026</span> <span data-site="name">Pedro Sousa</span>. Built with HTML, CSS &amp; JS.</p>
       <div class="cluster" aria-label="Social links">
@@ -110,6 +112,11 @@
     </div>
   </footer>
 
+  <script>
+    document.addEventListener("click", (event) => {
+      if (event.target.closest("[data-print-cv]")) window.print();
+    });
+  </script>
   <script type="module" src="assets/js/main.js"></script>
   <div class="noise" aria-hidden="true"></div>
 </body>

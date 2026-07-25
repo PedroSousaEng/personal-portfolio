@@ -1,0 +1,144 @@
+/**
+ * PURPOSE
+ *   Page-specific composition for cv.html — the online résumé page.
+ *   Layout for the header (name/role + action buttons) and each CV
+ *   section (education, projects list, awards, etc.), plus the print
+ *   stylesheet used by the "Print version" button (window.print()).
+ *
+ * DEPENDENCIES
+ *   tokens.css, base.css, layout.css, components.css, pages.css.
+ *   Paired with assets/js/render-cv.js and cv.html's inline print handler.
+ *
+ * SAFE EDITS
+ *   Tune spacing/typography here using existing tokens only. Section
+ *   content itself lives in assets/data/cv.json — see render-cv.js.
+ */
+
+/* =========================================================
+   Header: name/role + Download CV / Print buttons
+   ========================================================= */
+
+.cv-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-6);
+}
+
+.cv-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   CV body: section rhythm
+   ========================================================= */
+
+.cv-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.cv-section__heading {
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-line);
+}
+
+/* =========================================================
+   Simple text lists (projects, certifications)
+   ========================================================= */
+
+.cv-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  font-size: var(--text-base);
+}
+
+.cv-list__link {
+  color: var(--color-accent-indigo);
+  font-weight: var(--weight-medium);
+}
+
+.cv-list a.cv-list__link:hover,
+.cv-list a.cv-list__link:focus-visible {
+  text-decoration: underline;
+}
+
+/* =========================================================
+   Print stylesheet
+   Triggered by window.print() from the "Print version" button, and
+   equally correct if a visitor uses the browser's native Ctrl/Cmd+P.
+   Strips every decorative/ambient layer down to a clean, single-column
+   document: no nav, no footer, no canvases, no custom cursor, no page
+   background — just the CV content in default black-on-white ink.
+   ========================================================= */
+
+@media print {
+  .site-header,
+  .site-footer,
+  .no-print,
+  .noise,
+  .bg-fx,
+  .cursor-dot,
+  .cursor-ring,
+  .click-ripple,
+  .scroll-progress,
+  .page-transition,
+  .skip-link {
+    display: none !important;
+  }
+
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  .container {
+    max-width: none;
+    padding: 0;
+  }
+
+  .section {
+    padding-block: 0;
+  }
+
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .cv-entry {
+    background: none;
+    border: 1px solid #ccc;
+    break-inside: avoid;
+  }
+
+  .cv-section {
+    break-inside: avoid;
+  }
+
+  .cv-section__heading {
+    border-bottom-color: #ccc;
+  }
+
+  .skill-chip,
+  .tag {
+    background: none;
+    border: 1px solid #ccc;
+    color: #111;
+  }
+
+  a {
+    color: #111 !important;
+  }
+
+  .cv-list__link {
+    color: #111 !important;
+    text-decoration: underline;
+  }
+}
