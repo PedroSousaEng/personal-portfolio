@@ -2,7 +2,8 @@
  * PURPOSE
  *   Ambient full-viewport spotlight background for the Projects page.
  *   A soft light pool follows the pointer with a smoothed response, plus
- *   faint tracking lines and a slow idle drift when the pointer stops.
+ *   ultra-subtle dust particles floating randomly in the deep background.
+ *   No tracking lines — just the dust and glow.
  *   The effect should feel premium and technical, never loud.
  *
  * RESPONSIBILITIES
@@ -34,8 +35,13 @@ export function initProjectsSpotlight() {
   const TRACKING_EASE = 0.085;
   const IDLE_AFTER_MS = 1400;
   const IDLE_DRIFT_PERIOD_MS = 22000;
-  const LINE_FADE_RADIUS = 180;
   const PULSE_PERIOD_MS = 3600;
+
+  // Ultra-subtle dust particles
+  const DUST_COUNT = 12; // Very sparse
+  const DUST_MAX_RADIUS = 0.8; // Tiny particles (sub-pixel)
+  const DUST_BASE_SPEED = 0.008; // Barely perceptible drift
+  const DUST_TWINKLE_PERIOD_MS = 4200;
 
   const rootStyles = getComputedStyle(document.documentElement);
   const tok = (name, fallback) => rootStyles.getPropertyValue(name).trim() || fallback;
@@ -125,6 +131,50 @@ export function initProjectsSpotlight() {
     lastMove: 0,
   };
 
+  // ---- Ultra-subtle dust particles ----
+  let dustParticles = [];
+
+  function makeDustParticle() {
+    return {
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: (Math.random() - 0.5) * DUST_BASE_SPEED,
+      vy: (Math.random() - 0.5) * DUST_BASE_SPEED * 0.7, // Slightly slower vertical drift
+      r: Math.random() * DUST_MAX_RADIUS,
+      twinklePhase: Math.random() * Math.PI * 2,
+      life: Math.random(), // Random start opacity
+    };
+  }
+
+  function initDustParticles() {
+    dustParticles = Array.from({ length: DUST_COUNT }, makeDustParticle);
+  }
+
+  function updateAndDrawDust(now) {
+    for (let i = 0; i < dustParticles.length; i++) {
+      const p = dustParticles[i];
+
+      // Drift randomly
+      p.x += p.vx;
+      p.y += p.vy;
+
+      // Wrap around edges
+      if (p.x < -5) p.x = width + 5;
+      if (p.x > width + 5) p.x = -5;
+      if (p.y < -5) p.y = height + 5;
+      if (p.y > height + 5) p.y = -5;
+
+      // Subtle twinkle: very faint pulsing
+      const twinkle = 0.5 + 0.5 * Math.sin(now / DUST_TWINKLE_PERIOD_MS + p.twinklePhase);
+
+      // Draw dust mote (ultra-subtle, barely visible)
+      ctx.fillStyle = `rgba(${FX_SOFT}, ${twinkle * 0.08})`; // Very low opacity
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
   function resize() {
     width = window.innerWidth;
     height = window.innerHeight;
@@ -156,6 +206,8 @@ export function initProjectsSpotlight() {
     cornerWash.addColorStop(1, `rgba(${FX_SOFT}, 0)`);
     bgCtx.fillStyle = cornerWash;
     bgCtx.fillRect(0, 0, width, height);
+
+    initDustParticles();
   }
 
   function onPointerMove(event) {
@@ -197,34 +249,6 @@ export function initProjectsSpotlight() {
     ctx.globalAlpha = 1;
   }
 
-  function drawTrackingLines() {
-    // Each original gradient was perpendicular to its one-pixel stroke, so
-    // the sampled colour was uniform along that stroke. Solid styles render
-    // identically while avoiding two gradient allocations per frame.
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = `rgba(${FX_LINE}, 0.22)`;
-    ctx.beginPath();
-    ctx.moveTo(pointer.x, 0);
-    ctx.lineTo(pointer.x, height);
-    ctx.stroke();
-
-    ctx.strokeStyle = `rgba(${FX_LINE}, 0.16)`;
-    ctx.beginPath();
-    ctx.moveTo(0, pointer.y);
-    ctx.lineTo(width, pointer.y);
-    ctx.stroke();
-
-    ctx.strokeStyle = `rgba(${FX_CORE}, 0.22)`;
-    const reticleHalf = 16;
-    ctx.beginPath();
-    if (typeof ctx.roundRect === "function") {
-      ctx.roundRect(pointer.x - reticleHalf, pointer.y - reticleHalf, reticleHalf * 2, reticleHalf * 2, 4);
-    } else {
-      ctx.rect(pointer.x - reticleHalf, pointer.y - reticleHalf, reticleHalf * 2, reticleHalf * 2);
-    }
-    ctx.stroke();
-  }
-
   function frame(now) {
     if (now - lastFrameTime < FRAME_INTERVAL_MS) {
       rafId = window.requestAnimationFrame(frame);
@@ -237,7 +261,7 @@ export function initProjectsSpotlight() {
     // Blit the pre-rendered static base wash instead of rebuilding it.
     ctx.drawImage(bgCanvas, 0, 0, width, height);
     drawSpotlight(now);
-    drawTrackingLines();
+    updateAndDrawDust(now);
     rafId = window.requestAnimationFrame(frame);
   }
 
