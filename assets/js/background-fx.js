@@ -610,9 +610,11 @@ export function initBackgroundFX() {
       updateAmbientLightPosition(now);
       const ambientStrength = 0.35 + 0.15 * Math.sin(now / 6000);
 
+
       drawAmbientLight(ambientLight.x, ambientLight.y, AMBIENT_LIGHT_RADIUS, ambientGlowSprite, ambientStrength);
       drawAmbientLight(pointer.x, pointer.y, MOUSE_LIGHT_RADIUS, cursorGlowSprite, mouseStrength);
       drawAmbientLight(pendulum.bobX, pendulum.bobY, PENDULUM_LIGHT_RADIUS, cursorGlowSprite, 0.7);
+
 
       drawPendulum(now);
       drawWaves(now);
