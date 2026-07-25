@@ -90,9 +90,34 @@
 }
 
 .card--interactive {
+  position: relative;
   transition: transform var(--duration-base) var(--ease-standard),
     box-shadow var(--duration-base) var(--ease-standard),
     border-color var(--duration-base) var(--ease-standard);
+}
+
+/* Glare sweep: a soft on-surface highlight that follows the pointer, using
+   the same --tilt-x/--tilt-y percentages tilt.js already writes each frame
+   while a card is active — no extra JS or event listeners needed. This
+   layers on top of the ambient halo glow defined in micro-interactions.css
+   (::before), which sits behind the card instead. */
+.card--interactive::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at var(--tilt-x, 50%) var(--tilt-y, 50%),
+    rgba(255, 255, 255, 0.12),
+    transparent 45%
+  );
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-standard);
+  pointer-events: none;
+}
+
+.card--interactive[data-tilting="true"]::after {
+  opacity: 1;
 }
 
 .card--interactive:hover,

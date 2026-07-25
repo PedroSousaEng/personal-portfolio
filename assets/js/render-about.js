@@ -37,6 +37,7 @@ export async function renderSkills(containerEl) {
   try {
     const groups = await loadJSON(DATA_PATHS.skills);
     const fragment = document.createDocumentFragment();
+    let chipIndex = 0;
 
     for (const group of groups) {
       const groupEl = document.createElement("div");
@@ -52,6 +53,8 @@ export async function renderSkills(containerEl) {
       for (const item of group.items) {
         const chip = document.createElement("span");
         chip.className = "skill-chip";
+        chip.style.setProperty("--chip-index", chipIndex);
+        chipIndex += 1;
         chip.textContent = item;
         chips.appendChild(chip);
       }

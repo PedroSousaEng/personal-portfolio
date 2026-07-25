@@ -54,6 +54,22 @@
   <link rel="stylesheet" href="assets/css/page-transitions.css">
   <link rel="stylesheet" href="assets/css/svg-line-draw.css">
   <link rel="stylesheet" href="assets/css/noise.css">
+  <link rel="stylesheet" href="assets/css/boot-intro.css">
+
+  <!-- Runs synchronously before the body is parsed: if this tab's session
+       already saw the boot intro, mark <html> immediately so the overlay
+       (see body, below) never gets a chance to paint. See
+       assets/js/boot-intro.js for the rest of the sequence. -->
+  <script>
+    try {
+      if (sessionStorage.getItem("pf-boot-intro-seen") === "1") {
+        document.documentElement.classList.add("no-boot-intro");
+      }
+    } catch (error) {
+      // Private mode etc — degrade silently, worst case the intro plays
+      // again this load.
+    }
+  </script>
 
   <script type="application/ld+json">
   {
@@ -70,6 +86,15 @@
   </script>
 </head>
 <body data-page="home">
+  <div class="boot-intro" aria-hidden="true">
+    <div class="boot-intro__grid"></div>
+    <div class="boot-intro__panel">
+      <p class="boot-intro__label font-mono">SYSTEM</p>
+      <p class="boot-intro__line font-mono">Pedro Sousa<span class="boot-intro__caret"></span></p>
+      <div class="boot-intro__bar"><div class="boot-intro__bar-fill"></div></div>
+    </div>
+  </div>
+
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">

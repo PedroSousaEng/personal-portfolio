@@ -36,6 +36,9 @@ import { initCursor } from "./cursor.js";
 import { initMagneticButtons } from "./magnetic.js";
 import { initTextDecode } from "./text-decode.js";
 import { initCardTilt } from "./tilt.js";
+import { initAvatarTilt } from "./avatar-tilt.js";
+import { initClickRipple } from "./click-ripple.js";
+import { initBootIntro } from "./boot-intro.js";
 import { initReducedMotion } from "./reduced-motion.js";
 import { initPageTransitions } from "./page-transitions.js";
 import { initSvgLineDraw } from "./svg-line-draw.js";
@@ -153,6 +156,8 @@ function init() {
   if (initialized) return;
   initialized = true;
 
+  initBootIntro();
+
   // Reduced-motion first so the boolean is mirrored on <body>
   // before any subsequent module inspects it.
   initReducedMotion();
@@ -167,6 +172,8 @@ function init() {
   initMagneticButtons();
   initTextDecode();
   initCardTilt();
+  initAvatarTilt();
+  initClickRipple();
 
   // Phase 8 polish: scroll progress, SVG line-draw, page fade.
   initScrollProgress();

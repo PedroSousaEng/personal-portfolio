@@ -55,7 +55,65 @@ export function initCursor() {
   ringShape.className = "cursor-ring-shape";
   ring.appendChild(ringShape);
 
-  document.body.append(dot, ring);
+  // Particle trail: a dedicated canvas rather than pooled DOM nodes, so
+  // spawning/fading points never triggers style recalc or layout — just
+  // cheap per-frame canvas painting, and only while points are alive.
+  const trailCanvas = document.createElement("canvas");
+  trailCanvas.className = "cursor-trail";
+  trailCanvas.setAttribute("aria-hidden", "true");
+  const trailCtx = trailCanvas.getContext("2d");
+  const TRAIL_MAX_POINTS = 14;
+  const TRAIL_MIN_DIST_SQ = 26 * 26;
+  const TRAIL_LIFE_MS = 380;
+  let trailPoints = [];
+  let lastTrailX = null;
+  let lastTrailY = null;
+  let trailRafId = null;
+  let trailDPR = Math.min(window.devicePixelRatio || 1, 2);
+
+  function resizeTrailCanvas() {
+    trailDPR = Math.min(window.devicePixelRatio || 1, 2);
+    trailCanvas.width = window.innerWidth * trailDPR;
+    trailCanvas.height = window.innerHeight * trailDPR;
+    trailCanvas.style.width = `${window.innerWidth}px`;
+    trailCanvas.style.height = `${window.innerHeight}px`;
+    trailCtx.setTransform(trailDPR, 0, 0, trailDPR, 0, 0);
+  }
+
+  function ensureTrailRunning() {
+    if (trailRafId === null) trailRafId = requestAnimationFrame(trailTick);
+  }
+
+  function trailTick(now) {
+    trailCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    trailPoints = trailPoints.filter((p) => now - p.born < TRAIL_LIFE_MS);
+    for (const p of trailPoints) {
+      const t = 1 - (now - p.born) / TRAIL_LIFE_MS;
+      trailCtx.beginPath();
+      trailCtx.fillStyle = `rgba(108, 124, 255, ${0.32 * t})`;
+      trailCtx.arc(p.x, p.y, 2.5 * t + 0.5, 0, Math.PI * 2);
+      trailCtx.fill();
+    }
+    trailRafId = trailPoints.length > 0 ? requestAnimationFrame(trailTick) : null;
+  }
+
+  function spawnTrailPoint(x, y) {
+    if (lastTrailX !== null) {
+      const dx = x - lastTrailX;
+      const dy = y - lastTrailY;
+      if (dx * dx + dy * dy < TRAIL_MIN_DIST_SQ) return;
+    }
+    lastTrailX = x;
+    lastTrailY = y;
+    trailPoints.push({ x, y, born: performance.now() });
+    if (trailPoints.length > TRAIL_MAX_POINTS) trailPoints.shift();
+    ensureTrailRunning();
+  }
+
+  resizeTrailCanvas();
+  window.addEventListener("resize", resizeTrailCanvas, { passive: true });
+
+  document.body.append(trailCanvas, dot, ring);
   document.body.dataset.customCursor = "active";
 
   let targetX = window.innerWidth / 2;
@@ -77,6 +135,7 @@ export function initCursor() {
   function onPointerMove(event) {
     targetX = event.clientX;
     targetY = event.clientY;
+    spawnTrailPoint(targetX, targetY);
 
     if (!visible) {
       visible = true;
@@ -143,12 +202,18 @@ export function initCursor() {
       cancelAnimationFrame(rafId);
       rafId = null;
     }
+    if (trailRafId !== null) {
+      cancelAnimationFrame(trailRafId);
+      trailRafId = null;
+    }
     running = false;
     window.removeEventListener("pointermove", onPointerMove);
+    window.removeEventListener("resize", resizeTrailCanvas);
     document.removeEventListener("pointerover", onPointerOver);
     document.removeEventListener("pointerout", onPointerOut);
     document.removeEventListener("mouseleave", onWindowLeave);
     reduceMotionQuery.removeEventListener("change", onReduceMotionChange);
+    trailCanvas.remove();
     dot.remove();
     ring.remove();
     delete document.body.dataset.customCursor;

@@ -1,0 +1,126 @@
+/**
+ * PURPOSE
+ *   Home page only, first visit of the browser session: a brief
+ *   "booting up" overlay before the hero is revealed. Skipped entirely
+ *   under prefers-reduced-motion and on repeat visits within the same
+ *   tab session (see the inline script in index.html <head> and
+ *   assets/js/boot-intro.js).
+ *
+ * DEPENDENCIES
+ *   assets/js/boot-intro.js drives timing/dismissal; the inline <script>
+ *   in index.html <head> adds .no-boot-intro to <html> before first paint
+ *   on repeat visits, so this never flashes on screen when skipped.
+ *
+ * SAFE EDITS
+ *   Tune colours/sizes here; timing constants live in boot-intro.js.
+ */
+
+.boot-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-ink-950);
+  cursor: default;
+  opacity: 1;
+  transition: opacity 420ms var(--ease-standard);
+}
+
+.boot-intro.is-leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.boot-intro__grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  background-image:
+    linear-gradient(to right, var(--color-line) 0, var(--color-line) 1px, transparent 1px, transparent 64px),
+    linear-gradient(to bottom, var(--color-line) 0, var(--color-line) 1px, transparent 1px, transparent 64px);
+  background-size: 64px 64px;
+}
+
+.boot-intro__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  opacity: 0;
+  transform: translateY(6px);
+  animation: boot-intro-panel-in 500ms var(--ease-standard) 120ms forwards;
+}
+
+.boot-intro__label {
+  font-size: var(--text-sm);
+  letter-spacing: 0.16em;
+  color: var(--color-text-400);
+}
+
+.boot-intro__line {
+  font-size: var(--text-lg);
+  color: var(--color-text-100);
+}
+
+.boot-intro__caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -0.15em;
+  background: var(--color-accent-indigo);
+  animation: boot-intro-caret-blink 800ms steps(1) infinite;
+}
+
+.boot-intro__bar {
+  width: 200px;
+  height: 2px;
+  background: var(--color-line);
+  overflow: hidden;
+  border-radius: var(--radius-full);
+}
+
+.boot-intro__bar-fill {
+  width: 0%;
+  height: 100%;
+  background: var(--color-accent-indigo);
+  animation: boot-intro-bar-fill 950ms var(--ease-standard) 120ms forwards;
+}
+
+@keyframes boot-intro-panel-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes boot-intro-bar-fill {
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes boot-intro-caret-blink {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+/* Set synchronously on <html> by the inline script in index.html <head>
+   when sessionStorage shows the intro already ran this session — this
+   guards against any flash of the overlay before boot-intro.js can act. */
+html.no-boot-intro .boot-intro {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boot-intro {
+    display: none;
+  }
+}
