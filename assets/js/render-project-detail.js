@@ -31,7 +31,13 @@
  *   Supported module types today:
  *     spec-groups   — grouped technical spec bullets (CAD, FEA, Software,
  *                      Manufacturing, etc.) — { heading, groups: [{ label, items[] }] }
- *     gallery       — photos/screenshots/renders grid — { heading, images: [{ src, caption }] }
+ *     gallery       — photos/videos/renders grid, click any item to open it
+ *                      full-size in a lightbox — { heading, images: [{ src,
+ *                      caption, type? }] }. Video files (.mp4/.webm/.mov/.ogg)
+ *                      are auto-detected from the src extension and play
+ *                      muted/looping as a hover preview; set "type": "video"
+ *                      explicitly if a video URL doesn't end in one of those
+ *                      extensions.
  *     resource-list — downloadable docs/links — { heading, items: [{ label, url }] }
  *     achievements  — competitions/awards/certificates — { heading, items: [{ title, description, year }] }
  *     reflection    — challenges / lessons / future improvements — { heading, items: [{ label, text }] }
@@ -58,6 +64,8 @@ const EXTERNAL_ICON = `<svg viewBox="0 0 24 24" class="icon icon--sm" aria-hidde
 const DOWNLOAD_ICON = `<svg viewBox="0 0 24 24" class="icon icon--sm" aria-hidden="true"><path d="M12 3v12m0 0-4.5-4.5M12 15l4.5-4.5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>`;
 const ARROW_LEFT_ICON = `<svg viewBox="0 0 24 24" class="icon icon--sm" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>`;
 const ARROW_RIGHT_ICON = `<svg viewBox="0 0 24 24" class="icon icon--sm" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`;
+const PLAY_ICON = `<svg viewBox="0 0 24 24" class="icon" aria-hidden="true"><path d="M8 5v14l11-7-11-7Z"/></svg>`;
+const CLOSE_ICON = `<svg viewBox="0 0 24 24" class="icon" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>`;
 
 /**
  * Renders a friendly "project not found" state, with a link back to the
@@ -328,6 +336,95 @@ function renderSpecGroupsModule(module) {
   return section;
 }
 
+const VIDEO_EXTENSIONS = /\.(mp4|webm|mov|ogg)$/i;
+
+function isVideoSrc(src) {
+  return VIDEO_EXTENSIONS.test(src);
+}
+
+let lightboxEl = null;
+let lightboxReturnFocusEl = null;
+
+function getLightboxEl() {
+  if (lightboxEl) return lightboxEl;
+
+  const overlay = document.createElement("div");
+  overlay.className = "lightbox";
+  overlay.hidden = true;
+  overlay.setAttribute("role", "dialog");
+  overlay.setAttribute("aria-modal", "true");
+  overlay.setAttribute("aria-label", "Media preview");
+
+  const closeButton = document.createElement("button");
+  closeButton.type = "button";
+  closeButton.className = "lightbox__close";
+  closeButton.setAttribute("aria-label", "Close");
+  closeButton.innerHTML = CLOSE_ICON;
+  overlay.appendChild(closeButton);
+
+  const media = document.createElement("div");
+  media.className = "lightbox__media";
+  overlay.appendChild(media);
+
+  const caption = document.createElement("p");
+  caption.className = "lightbox__caption text-sm text-muted";
+  overlay.appendChild(caption);
+
+  closeButton.addEventListener("click", closeLightbox);
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay) closeLightbox();
+  });
+
+  document.body.appendChild(overlay);
+  lightboxEl = overlay;
+  return overlay;
+}
+
+function closeLightbox() {
+  const overlay = getLightboxEl();
+  overlay.hidden = true;
+  overlay.querySelector(".lightbox__media").replaceChildren();
+  document.removeEventListener("keydown", handleLightboxKeydown);
+  if (lightboxReturnFocusEl) {
+    lightboxReturnFocusEl.focus();
+    lightboxReturnFocusEl = null;
+  }
+}
+
+function handleLightboxKeydown(event) {
+  if (event.key === "Escape") closeLightbox();
+}
+
+function openLightbox(media, isVideo) {
+  const overlay = getLightboxEl();
+  const mediaEl = overlay.querySelector(".lightbox__media");
+  const captionEl = overlay.querySelector(".lightbox__caption");
+
+  mediaEl.replaceChildren();
+
+  if (isVideo) {
+    const video = document.createElement("video");
+    video.src = media.src;
+    video.controls = true;
+    video.autoplay = true;
+    video.playsInline = true;
+    mediaEl.appendChild(video);
+  } else {
+    const img = document.createElement("img");
+    img.src = media.src;
+    img.alt = media.caption || "";
+    mediaEl.appendChild(img);
+  }
+
+  captionEl.textContent = media.caption || "";
+  captionEl.hidden = !media.caption;
+
+  lightboxReturnFocusEl = document.activeElement;
+  overlay.hidden = false;
+  overlay.querySelector(".lightbox__close").focus();
+  document.addEventListener("keydown", handleLightboxKeydown);
+}
+
 function renderGalleryModule(module) {
   if (!Array.isArray(module.images) || module.images.length === 0) return null;
 
@@ -338,23 +435,58 @@ function renderGalleryModule(module) {
   const grid = document.createElement("div");
   grid.className = "case-gallery mt-6";
 
-  for (const image of module.images) {
-    if (!image.src) continue;
+  for (const media of module.images) {
+    if (!media.src) continue;
+    const isVideo = media.type === "video" || isVideoSrc(media.src);
 
     const figure = document.createElement("figure");
     figure.className = "case-gallery__item";
 
-    const img = document.createElement("img");
-    img.src = image.src;
-    img.alt = image.caption || "";
-    img.loading = "lazy";
-    img.decoding = "async";
-    figure.appendChild(img);
+    const trigger = document.createElement("button");
+    trigger.type = "button";
+    trigger.className = "case-gallery__trigger";
+    trigger.setAttribute(
+      "aria-label",
+      media.caption ? `Expand: ${media.caption}` : "Expand media"
+    );
 
-    if (image.caption) {
+    if (isVideo) {
+      const video = document.createElement("video");
+      video.src = media.src;
+      video.muted = true;
+      video.loop = true;
+      video.playsInline = true;
+      video.preload = "metadata";
+      video.setAttribute("aria-hidden", "true");
+      trigger.appendChild(video);
+
+      const playBadge = document.createElement("span");
+      playBadge.className = "case-gallery__play-badge";
+      playBadge.setAttribute("aria-hidden", "true");
+      playBadge.innerHTML = PLAY_ICON;
+      trigger.appendChild(playBadge);
+
+      trigger.addEventListener("mouseenter", () => video.play().catch(() => {}));
+      trigger.addEventListener("mouseleave", () => {
+        video.pause();
+        video.currentTime = 0;
+      });
+    } else {
+      const img = document.createElement("img");
+      img.src = media.src;
+      img.alt = media.caption || "";
+      img.loading = "lazy";
+      img.decoding = "async";
+      trigger.appendChild(img);
+    }
+
+    trigger.addEventListener("click", () => openLightbox(media, isVideo));
+    figure.appendChild(trigger);
+
+    if (media.caption) {
       const caption = document.createElement("figcaption");
       caption.className = "text-xs text-muted mt-2";
-      caption.textContent = image.caption;
+      caption.textContent = media.caption;
       figure.appendChild(caption);
     }
 
