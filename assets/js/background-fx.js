@@ -20,6 +20,8 @@
  *     O(n²)), with early-out distance checks.
  *   - All colours are read from CSS custom properties via getComputedStyle,
  *     so the physics layer never hardcodes a colour.
+ *   - PENDULUM BOB IS NOW CLICKABLE: clicking triggers an expanding wave
+ *     that ripples through particles. Cooldown prevents spam.
  *
  * RESPONSIBILITIES
  *   - Inject and size a <canvas class="bg-fx"> as the first child of
@@ -66,6 +68,13 @@ export function initBackgroundFX() {
   const BOB_GLOW_BREATH_AMP = 12; // ±px variation in glow radius
   const BOB_GLOW_BREATH_PERIOD_MS = 5200;
 
+  // Pendulum clickable wave
+  const WAVE_COOLDOWN_MS = 800; // Min time between clicks
+  const WAVE_CLICK_RADIUS = 16; // Detect click within this radius of bob
+  const WAVE_MAX_RADIUS = 600; // How far the wave expands
+  const WAVE_DURATION_MS = 1200; // How long the wave lasts
+  const WAVE_COLOR = "rgba(107, 124, 255, "; // Indigo blue
+
   const PARTICLE_AREA_DIVISOR = 14000; // lower = more particles
   const PARTICLE_MIN = 40;
   const PARTICLE_MAX = 110;
@@ -109,7 +118,6 @@ export function initBackgroundFX() {
   const FX_PARTICLE_LINK = parseColorTriplet(tok("--fx-particle-link", "#a0a8c8")) || "160, 168, 200";
   const FX_PARTICLE_DIM = parseColorTriplet(tok("--fx-particle-dim", "#5b6376")) || "91, 99, 118";
   const FX_GLOW_CURSOR = parseColorTriplet(tok("--fx-glow-cursor", "#6c7cff")) || "108, 124, 255";
-  const FX_GLOW_PENDULUM = parseColorTriplet(tok("--fx-glow-pendulum", "#ffb347")) || "255, 179, 71";
   const FX_GLOW_AMBIENT = FX_PARTICLE; // ambient uses particle colour for cohesion
 
   // ---- Canvas setup -----------------------------------------------------
@@ -232,6 +240,38 @@ export function initBackgroundFX() {
     pendulum.bobY = pendulum.pivotY + Math.cos(pendulum.angle) * pendulum.rodLength;
   }
 
+  // ---- Clickable wave effect on pendulum --------------------------------
+  let waves = []; // { createdAt, originX, originY }
+  let lastWaveTime = 0;
+
+  function triggerWave() {
+    const now = performance.now();
+    if (now - lastWaveTime < WAVE_COOLDOWN_MS) return; // Cooldown
+    lastWaveTime = now;
+    waves.push({ createdAt: now, originX: pendulum.bobX, originY: pendulum.bobY });
+  }
+
+  function drawWaves(now) {
+    const activeWaves = [];
+    for (const wave of waves) {
+      const elapsed = now - wave.createdAt;
+      if (elapsed > WAVE_DURATION_MS) continue;
+
+      const progress = elapsed / WAVE_DURATION_MS;
+      const radius = progress * WAVE_MAX_RADIUS;
+      const alpha = Math.max(0, 1 - progress);
+
+      ctx.strokeStyle = `${WAVE_COLOR}${alpha * 0.6})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(wave.originX, wave.originY, radius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      activeWaves.push(wave);
+    }
+    waves = activeWaves;
+  }
+
   function drawPendulum(now) {
     const { pivotX, pivotY, bobX, bobY } = pendulum;
 
@@ -257,24 +297,25 @@ export function initBackgroundFX() {
     ctx.fill();
 
     // Bob glow: breathing halo — radius and intensity oscillate gently.
+    // Now using blue/white colors instead of amber
     const breath = Math.sin((now / BOB_GLOW_BREATH_PERIOD_MS) * Math.PI * 2);
     const glowR = BOB_GLOW_BASE_R + breath * BOB_GLOW_BREATH_AMP;
     const glowIntensity = 0.82 + breath * 0.12;
 
     const glow = ctx.createRadialGradient(bobX, bobY, 0, bobX, bobY, glowR);
-    glow.addColorStop(0, `rgba(${FX_GLOW_PENDULUM}, ${0.9 * glowIntensity})`);
-    glow.addColorStop(0.35, `rgba(${FX_GLOW_PENDULUM}, ${0.45 * glowIntensity})`);
-    glow.addColorStop(1, `rgba(${FX_GLOW_PENDULUM}, 0)`);
+    glow.addColorStop(0, `rgba(${FX_GLOW_CURSOR}, ${0.9 * glowIntensity})`);
+    glow.addColorStop(0.35, `rgba(${FX_GLOW_CURSOR}, ${0.45 * glowIntensity})`);
+    glow.addColorStop(1, `rgba(${FX_GLOW_CURSOR}, 0)`);
     ctx.fillStyle = glow;
     ctx.beginPath();
     ctx.arc(bobX, bobY, glowR, 0, Math.PI * 2);
     ctx.fill();
 
-    // Bob core.
+    // Bob core: WHITE/BLUISH instead of amber
     ctx.save();
-    ctx.shadowColor = `rgba(${FX_GLOW_PENDULUM}, ${0.9 * glowIntensity})`;
+    ctx.shadowColor = `rgba(${FX_GLOW_CURSOR}, ${0.9 * glowIntensity})`;
     ctx.shadowBlur = 18;
-    ctx.fillStyle = `rgba(255, 225, 180, 0.95)`;
+    ctx.fillStyle = `rgba(200, 220, 255, 0.95)`; // Bright blue-white
     ctx.beginPath();
     ctx.arc(bobX, bobY, 9, 0, Math.PI * 2);
     ctx.fill();
@@ -490,9 +531,10 @@ export function initBackgroundFX() {
 
     drawAmbientLight(ambientLight.x, ambientLight.y, AMBIENT_LIGHT_RADIUS, FX_GLOW_AMBIENT, ambientStrength);
     drawAmbientLight(pointer.x, pointer.y, MOUSE_LIGHT_RADIUS, FX_GLOW_CURSOR, mouseStrength);
-    drawAmbientLight(pendulum.bobX, pendulum.bobY, PENDULUM_LIGHT_RADIUS, FX_GLOW_PENDULUM, 0.7);
+    drawAmbientLight(pendulum.bobX, pendulum.bobY, PENDULUM_LIGHT_RADIUS, FX_GLOW_CURSOR, 0.7);
 
     drawPendulum(now);
+    drawWaves(now);
     updateAndDrawParticles(now, mouseStrength);
 
     rafId = window.requestAnimationFrame(frame);
@@ -528,6 +570,7 @@ export function initBackgroundFX() {
     window.removeEventListener("pointermove", onPointerMove);
     window.removeEventListener("pointerleave", onPointerLeave);
     window.removeEventListener("resize", onResize);
+    window.removeEventListener("click", onClick);
     document.removeEventListener("visibilitychange", onVisibilityChange);
     reduceMotionQuery.removeEventListener("change", onReduceMotionChange);
     if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
@@ -539,8 +582,28 @@ export function initBackgroundFX() {
     if (event.matches) destroy();
   }
 
+  // ---- Canvas click detection for pendulum ------
+  function onClick(event) {
+    // Get canvas position relative to viewport
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    // Check if click is within range of pendulum bob (accounting for DPR)
+    const bobX = pendulum.bobX / dpr;
+    const bobY = pendulum.bobY / dpr;
+    const dx = x - bobX;
+    const dy = y - bobY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (dist < WAVE_CLICK_RADIUS) {
+      triggerWave();
+    }
+  }
+
   document.addEventListener("visibilitychange", onVisibilityChange);
   window.addEventListener("resize", onResize, { passive: true });
+  window.addEventListener("click", onClick, { passive: true });
   reduceMotionQuery.addEventListener("change", onReduceMotionChange);
 
   resize();
