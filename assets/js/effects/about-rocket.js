@@ -323,17 +323,44 @@ export function initAboutRocket() {
     updateRocket(now);
     drawRocket();
 
+    // Perf fix: between flights (which is most of the time — a rocket is
+    // only in view for a fraction of each spawn cycle) there is nothing to
+    // draw and nothing changes frame-to-frame, yet this loop used to keep
+    // calling requestAnimationFrame forever anyway, paying a full-viewport
+    // clearRect 30x/sec for zero visual benefit. Once idle, sleep via
+    // setTimeout until the next scheduled spawn (clamped so a resize/spawn
+    // reschedule is never missed by more than ~250ms) instead of spinning
+    // the rAF loop.
+    if (rocket === null) {
+      const idleFor = Math.max(50, Math.min(nextSpawnAt - now, 250));
+      rafId = null;
+      idleTimer = window.setTimeout(() => {
+        idleTimer = null;
+        if (running) rafId = window.requestAnimationFrame(frame);
+      }, idleFor);
+      return;
+    }
+
     rafId = window.requestAnimationFrame(frame);
   }
 
+  let running = false;
+  let idleTimer = null;
+
   function start() {
-    if (rafId === null) rafId = window.requestAnimationFrame(frame);
+    running = true;
+    if (rafId === null && idleTimer === null) rafId = window.requestAnimationFrame(frame);
   }
 
   function stop() {
+    running = false;
     if (rafId !== null) {
       window.cancelAnimationFrame(rafId);
       rafId = null;
+    }
+    if (idleTimer !== null) {
+      window.clearTimeout(idleTimer);
+      idleTimer = null;
     }
   }
 

@@ -9,10 +9,44 @@
     "featured": true,
     "github": "https://github.com/PedroSousaEng/vinted-os",
     "demo": "",
+    "report": "",
     "category": "Software",
     "year": "2024",
     "status": "In Progress",
-    "highlights": ["Personal Project"]
+    "highlights": ["Personal Project"],
+    "objectives": [
+      "Centralize inventory and listing data that was previously scattered across the Vinted app and spreadsheets.",
+      "Reduce the manual effort of relisting and refreshing stale product listings.",
+      "Surface performance metrics (views, likes, sell-through time) to guide pricing and relisting decisions."
+    ],
+    "outcome": "A working personal tool that manages my own Vinted inventory end-to-end, with AI-assisted development used throughout to accelerate iteration and explore automation approaches I hadn't used before.",
+    "myRole": ["Product & Systems Design", "Python Development", "Data Modeling", "Workflow Automation"],
+    "story": [
+      {
+        "stage": "Problem",
+        "text": "Managing a growing catalogue of second-hand listings on Vinted by hand was slow and error-prone: tracking which items needed relisting, which were underpriced, and which had stopped getting views required constant manual checking with no central view of the inventory."
+      },
+      {
+        "stage": "Research",
+        "text": "I looked at how existing sellers organize inventory (spreadsheets, note apps) and identified the recurring pain points: no automation, no historical performance tracking, and no single source of truth for what's listed, sold, or pending."
+      },
+      {
+        "stage": "Design",
+        "text": "I designed a simple data model around listings, with fields for status, price history, and engagement metrics, and planned a set of automation hooks (relisting, price adjustment suggestions) that could be layered on top once the core system was stable."
+      },
+      {
+        "stage": "Development",
+        "text": "Built primarily in Python, using AI coding assistants to accelerate boilerplate, validate edge cases, and explore automation patterns for interacting with listing data. Development is iterative, with each session adding a well-scoped feature rather than a big-bang rewrite."
+      },
+      {
+        "stage": "Results",
+        "text": "The tool now organizes my inventory, tracks basic performance signals, and forms the base for future automation like scheduled relisting. It is in active, ongoing use."
+      },
+      {
+        "stage": "Lessons Learned",
+        "text": "Using AI as a development accelerator works best when I stay the one making architectural decisions — it's fastest for boilerplate and exploration, but the data model and priorities still need deliberate human design."
+      }
+    ]
   },
   {
     "id": "personal-portfolio",
@@ -24,10 +58,44 @@
     "featured": true,
     "github": "https://github.com/PedroSousaEng/personal-portfolio",
     "demo": "",
+    "report": "",
     "category": "Software",
     "year": "2025 – 2026",
     "status": "In Progress",
-    "highlights": ["Personal Project"]
+    "highlights": ["Personal Project"],
+    "objectives": [
+      "Present my engineering projects with the depth of real case studies, not just a list of links.",
+      "Build a fast, accessible, framework-free site that stays easy to extend as new projects are added.",
+      "Use AI as a genuine development accelerator while keeping full control over architecture and content."
+    ],
+    "outcome": "A production site with a reusable data-driven project system: every project page assembles itself from a single JSON record, so adding a new case study never requires touching the templates.",
+    "myRole": ["Frontend Architecture", "UI/UX Design", "Performance Optimization", "Content Strategy"],
+    "story": [
+      {
+        "stage": "Problem",
+        "text": "A generic portfolio template doesn't show how I actually think as an engineer — it lists projects instead of explaining the reasoning, trade-offs, and results behind them."
+      },
+      {
+        "stage": "Design",
+        "text": "I designed a component system (cards, status pills, highlight badges, filter bar) and a per-project data contract so every project — software or mechanical — renders a consistent, complete case study regardless of its content."
+      },
+      {
+        "stage": "Development",
+        "text": "Built with plain HTML5, CSS3, and vanilla JavaScript modules (no framework), with AI assistance used heavily for iteration speed, debugging, and refactors, while I directed the architecture and design decisions."
+      },
+      {
+        "stage": "Testing",
+        "text": "Iterated on performance (capping canvas pixel density, batching draw calls, removing expensive blur filters) after noticing jank on ambient background effects, and fixed an interaction bug where 3D card tilt made action buttons hard to click."
+      },
+      {
+        "stage": "Results",
+        "text": "A fast, accessible site where every project — regardless of discipline — gets a real case study page: overview, my contribution, an engineering story, and links to source/resources."
+      },
+      {
+        "stage": "Lessons Learned",
+        "text": "Treating the portfolio itself as an engineering project — with a real data model and iteration cycle — produced a much more maintainable result than hand-writing each page."
+      }
+    ]
   },
   {
     "id": "formula-water",
@@ -39,10 +107,52 @@
     "featured": true,
     "github": "https://github.com/PedroSousaEng/formula-water",
     "demo": "",
+    "report": "",
     "category": "Mechanical Engineering",
     "year": "2023",
     "status": "Completed",
-    "highlights": ["1st Place — University of Minho", "Team Project"]
+    "highlights": ["1st Place — University of Minho", "Team Project"],
+    "objectives": [
+      "Design a vehicle that converts the potential energy of falling water into forward motion as efficiently as possible.",
+      "Minimize friction and mass losses across the drivetrain to maximize distance travelled per unit of stored energy.",
+      "Validate the design analytically and experimentally before the competition run."
+    ],
+    "outcome": "1st place at the University of Minho competition, with a prototype whose measured performance closely matched the analytical and simulated predictions.",
+    "myRole": ["CAD Modeling", "Python Simulation & Analysis", "Drivetrain Design", "Testing & Validation"],
+    "story": [
+      {
+        "stage": "Problem",
+        "text": "The brief was to design a vehicle powered solely by the potential energy of a falling water mass, maximizing distance travelled — a problem that lives at the intersection of energy conversion, drivetrain efficiency, and mass/friction management."
+      },
+      {
+        "stage": "Research",
+        "text": "The team studied energy-conversion mechanisms (falling-mass-driven spools, gear trains) and prior competition designs to identify where energy is typically lost — mainly friction in bearings and inefficient torque transfer at low speeds."
+      },
+      {
+        "stage": "Design",
+        "text": "I worked on the CAD models in SolidWorks and Solid Edge for the chassis and drivetrain components, focusing on a lightweight structure with a gear ratio tuned to keep the falling mass near its optimal descent speed throughout the run."
+      },
+      {
+        "stage": "Development",
+        "text": "Used Python to model the system's dynamics — energy conversion, drivetrain losses, rolling friction, and stability/center-of-mass behavior — iterating the design parameters against the simulation before committing to physical builds."
+      },
+      {
+        "stage": "Manufacturing",
+        "text": "Translated the CAD models into manufactured components, assembling the drivetrain and chassis and iterating on tolerances and bearing selection to reduce friction losses identified in simulation."
+      },
+      {
+        "stage": "Testing",
+        "text": "Ran physical trials to validate the simulated performance, measuring actual distance travelled and comparing it against the analytical predictions, then made small adjustments to gear ratio and mass distribution based on the results."
+      },
+      {
+        "stage": "Results",
+        "text": "The prototype won 1st place at the University of Minho competition, with real-world performance closely tracking the Python simulation's predictions — validating the analytical approach taken from the start."
+      },
+      {
+        "stage": "Lessons Learned",
+        "text": "Simulating the system in Python before committing to manufacturing saved iteration cycles — most of the physical testing was spent fine-tuning rather than discovering fundamental design flaws."
+      }
+    ]
   },
   {
     "id": "doorlock-teardown",
@@ -54,10 +164,44 @@
     "featured": false,
     "github": "https://github.com/PedroSousaEng/doorlock-teardown",
     "demo": "",
+    "report": "",
     "category": "Mechanical Engineering",
     "year": "2024",
     "status": "Completed",
-    "highlights": ["Personal Project"]
+    "highlights": ["Personal Project"],
+    "objectives": [
+      "Fully disassemble an automotive door lock mechanism to understand every component's function.",
+      "Identify the materials and manufacturing processes behind each part and why they were chosen.",
+      "Document the mechanism well enough to explain the engineering decisions behind the design."
+    ],
+    "outcome": "A complete component-by-component breakdown of the mechanism, with documented reasoning for material and process choices and how each part contributes to the lock's function and reliability.",
+    "myRole": ["Disassembly & Inspection", "Materials Analysis", "Technical Documentation"],
+    "story": [
+      {
+        "stage": "Problem",
+        "text": "Consumer and automotive products are full of small mechanisms whose design intent isn't obvious from the outside — I wanted to understand how a real door lock actually works and why it was built the way it was."
+      },
+      {
+        "stage": "Research",
+        "text": "Before disassembly, I researched typical automotive lock mechanisms and common failure points to know what to look for once the parts were exposed."
+      },
+      {
+        "stage": "Development",
+        "text": "Carefully disassembled the mechanism, cataloguing every component, its material, and its interaction with neighboring parts — springs, levers, the actuation linkage, and the locking pawl."
+      },
+      {
+        "stage": "Testing",
+        "text": "Manually cycled sub-assemblies after disassembly to confirm how forces travel through the mechanism and validate my understanding of the actuation sequence."
+      },
+      {
+        "stage": "Results",
+        "text": "Produced a documented breakdown covering each component's material, manufacturing process (stamping, injection molding, machining), and its role in the overall mechanism — a clear map of the engineering decisions behind the product."
+      },
+      {
+        "stage": "Lessons Learned",
+        "text": "Reverse engineering a finished product is one of the fastest ways to build intuition for manufacturing-aware design — tolerances and material choices that look arbitrary on paper usually have a clear cost or reliability reason once you see the assembled part."
+      }
+    ]
   },
   {
     "id": "fatigue-study",
@@ -69,10 +213,44 @@
     "featured": false,
     "github": "https://github.com/PedroSousaEng/fatigue-study",
     "demo": "",
+    "report": "",
     "category": "Mechanical Engineering",
     "year": "2024",
     "status": "Completed",
-    "highlights": ["University Project"]
+    "highlights": ["University Project"],
+    "objectives": [
+      "Model a transmission hub in CAD and evaluate its stress distribution under cyclic loading.",
+      "Identify stress-concentration regions most likely to initiate fatigue failure.",
+      "Cross-validate the FEA results against analytical solid-mechanics calculations."
+    ],
+    "outcome": "A validated fatigue-life estimate for the hub, with FEA-identified critical regions confirmed against hand calculations, demonstrating a simulation-driven approach to structural assessment.",
+    "myRole": ["CAD Modeling", "FEA Setup & Analysis", "Analytical Validation"],
+    "story": [
+      {
+        "stage": "Problem",
+        "text": "Transmission hubs experience cyclic loading in service, and predicting where fatigue failure will initiate — and how long the part will last — requires more than a static-stress check."
+      },
+      {
+        "stage": "Research",
+        "text": "Reviewed fatigue theory (S-N curves, stress concentration factors, mean/alternating stress effects) to establish the correct approach for a component under cyclic, non-uniform loading."
+      },
+      {
+        "stage": "Design",
+        "text": "Built a CAD model of the hub capturing the geometric features most likely to concentrate stress — fillets, keyways, and section transitions."
+      },
+      {
+        "stage": "Development",
+        "text": "Ran Finite Element Analysis to map stress distribution under the expected loading cycle, then cross-checked the FEA output against analytical solid-mechanics calculations at the critical sections to confirm the simulation was physically reasonable."
+      },
+      {
+        "stage": "Results",
+        "text": "Identified the specific regions most at risk of fatigue initiation and produced a fatigue-life estimate consistent between the FEA and analytical methods, giving confidence in both approaches."
+      },
+      {
+        "stage": "Lessons Learned",
+        "text": "FEA results are only as trustworthy as the analytical checks behind them — validating critical stress values by hand caught a boundary-condition assumption that would have skewed the fatigue estimate."
+      }
+    ]
   },
   {
     "id": "pin-clutch",
@@ -84,9 +262,51 @@
     "featured": false,
     "github": "https://github.com/PedroSousaEng/pin-clutch",
     "demo": "",
+    "report": "",
     "category": "Mechanical Engineering",
     "year": "2023",
     "status": "Completed",
-    "highlights": ["University Project"]
+    "highlights": ["University Project"],
+    "objectives": [
+      "Design a simple, reliable mechanism to engage and disengage two shafts on demand via a pedal.",
+      "Keep the design manufacturable with additive manufacturing (3D printing) and simple materials.",
+      "Validate the mechanism through a functional physical prototype."
+    ],
+    "outcome": "A working PLA prototype that reliably engages and disengages the two shafts via pedal actuation and a connecting pin, validating the kinematic design.",
+    "myRole": ["Concept Design", "CAD Modeling", "Kinematic Analysis", "3D-Printed Prototyping"],
+    "story": [
+      {
+        "stage": "Problem",
+        "text": "The goal was a mechanism that lets an operator engage or disengage two rotating shafts on demand, using a simple pedal input rather than a complex clutch assembly."
+      },
+      {
+        "stage": "Research",
+        "text": "Looked at simple mechanical clutch principles — pin/dog clutches in particular — for a design that trades some smoothness for mechanical simplicity and manufacturability."
+      },
+      {
+        "stage": "Design",
+        "text": "Designed a pin-based engagement system actuated by a pedal-driven linkage: pressing the pedal drives a connecting pin into alignment between the two shafts, locking them together; releasing it withdraws the pin."
+      },
+      {
+        "stage": "Development",
+        "text": "Modeled the mechanism in CAD and ran a kinematic analysis of the pedal-to-pin linkage to size the actuation travel and confirm the pin would engage reliably across the expected range of motion."
+      },
+      {
+        "stage": "Manufacturing",
+        "text": "3D-printed the components in PLA, choosing print orientation and tolerances to keep the pin sliding smoothly in its housing without excessive play."
+      },
+      {
+        "stage": "Testing",
+        "text": "Cycled the prototype by hand to confirm repeatable engagement and disengagement, adjusting clearances where friction or misalignment caused inconsistent locking."
+      },
+      {
+        "stage": "Results",
+        "text": "A functional, low-cost prototype that consistently demonstrates the coupling/decoupling principle, validating the pedal-actuated pin-clutch concept end to end."
+      },
+      {
+        "stage": "Lessons Learned",
+        "text": "Even a small mechanism benefits from a real kinematic pass before printing — an early paper sketch of the linkage geometry would have caught a clearance issue I only found after the first print."
+      }
+    ]
   }
 ]

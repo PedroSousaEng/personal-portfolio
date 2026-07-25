@@ -35,13 +35,6 @@ body[data-custom-cursor="active"] .btn {
   cursor: none;
 }
 
-.cursor-trail {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 199;
-}
-
 .cursor-dot,
 .cursor-ring {
   position: fixed;
@@ -134,8 +127,7 @@ body[data-page="404"] .cursor-ring-shape {
 
 @media (prefers-reduced-motion: reduce) {
   .cursor-dot,
-  .cursor-ring,
-  .cursor-trail {
+  .cursor-ring {
     display: none;
   }
 }
