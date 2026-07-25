@@ -106,6 +106,18 @@ export function initPageTransitions() {
         }, durationMs);
       });
     });
+
+    // Safety net: on a slow first load (uncached page data/images, or a
+    // backgrounded tab throttling rAF), the two-frame delay above can be
+    // pushed back far enough that a visitor sees a fully opaque page for
+    // longer than expected — worst case, indefinitely, if anything ever
+    // prevents the chain above from completing. Force-clear the overlay
+    // unconditionally after a generous timeout so the page can never be
+    // stuck black; this is a no-op if the normal fade already finished.
+    window.setTimeout(() => {
+      overlay.classList.remove("is-clearing");
+      delete overlay.dataset.state;
+    }, durationMs + 2000);
   }
 
   // Guard: only auto-play the inbound fade on the very first visit if

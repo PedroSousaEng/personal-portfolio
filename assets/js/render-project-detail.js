@@ -344,6 +344,11 @@ function isVideoSrc(src) {
 
 let lightboxEl = null;
 let lightboxReturnFocusEl = null;
+// The full set of images/videos for whichever gallery is currently open,
+// plus the index of the one on screen — lets the arrows/keyboard step
+// through the same module's media without closing and reopening.
+let lightboxItems = [];
+let lightboxIndex = -1;
 
 function getLightboxEl() {
   if (lightboxEl) return lightboxEl;
@@ -362,15 +367,31 @@ function getLightboxEl() {
   closeButton.innerHTML = CLOSE_ICON;
   overlay.appendChild(closeButton);
 
+  const prevButton = document.createElement("button");
+  prevButton.type = "button";
+  prevButton.className = "lightbox__nav lightbox__nav--prev";
+  prevButton.setAttribute("aria-label", "Previous");
+  prevButton.innerHTML = ARROW_LEFT_ICON;
+  overlay.appendChild(prevButton);
+
   const media = document.createElement("div");
   media.className = "lightbox__media";
   overlay.appendChild(media);
+
+  const nextButton = document.createElement("button");
+  nextButton.type = "button";
+  nextButton.className = "lightbox__nav lightbox__nav--next";
+  nextButton.setAttribute("aria-label", "Next");
+  nextButton.innerHTML = ARROW_RIGHT_ICON;
+  overlay.appendChild(nextButton);
 
   const caption = document.createElement("p");
   caption.className = "lightbox__caption text-sm text-muted";
   overlay.appendChild(caption);
 
   closeButton.addEventListener("click", closeLightbox);
+  prevButton.addEventListener("click", () => showLightboxDelta(-1));
+  nextButton.addEventListener("click", () => showLightboxDelta(1));
   overlay.addEventListener("click", (event) => {
     if (event.target === overlay) closeLightbox();
   });
@@ -385,6 +406,8 @@ function closeLightbox() {
   overlay.hidden = true;
   overlay.querySelector(".lightbox__media").replaceChildren();
   document.removeEventListener("keydown", handleLightboxKeydown);
+  lightboxItems = [];
+  lightboxIndex = -1;
   if (lightboxReturnFocusEl) {
     lightboxReturnFocusEl.focus();
     lightboxReturnFocusEl = null;
@@ -393,12 +416,28 @@ function closeLightbox() {
 
 function handleLightboxKeydown(event) {
   if (event.key === "Escape") closeLightbox();
+  if (event.key === "ArrowLeft") showLightboxDelta(-1);
+  if (event.key === "ArrowRight") showLightboxDelta(1);
 }
 
-function openLightbox(media, isVideo) {
+/** Moves the lightbox forward/back by `delta` positions, wrapping around
+ * both ends so Next on the last image loops to the first (and vice versa). */
+function showLightboxDelta(delta) {
+  if (!lightboxItems.length) return;
+  const nextIndex =
+    (lightboxIndex + delta + lightboxItems.length) % lightboxItems.length;
+  renderLightboxItem(nextIndex);
+}
+
+function renderLightboxItem(index) {
   const overlay = getLightboxEl();
   const mediaEl = overlay.querySelector(".lightbox__media");
   const captionEl = overlay.querySelector(".lightbox__caption");
+  const media = lightboxItems[index];
+  if (!media) return;
+
+  lightboxIndex = index;
+  const isVideo = media.type === "video" || isVideoSrc(media.src);
 
   mediaEl.replaceChildren();
 
@@ -418,6 +457,23 @@ function openLightbox(media, isVideo) {
 
   captionEl.textContent = media.caption || "";
   captionEl.hidden = !media.caption;
+
+  const showNav = lightboxItems.length > 1;
+  overlay.querySelector(".lightbox__nav--prev").hidden = !showNav;
+  overlay.querySelector(".lightbox__nav--next").hidden = !showNav;
+}
+
+/**
+ * Opens the lightbox on `media`, with `allItems` (the full gallery this item
+ * belongs to) loaded alongside it so the arrows/keyboard can step through
+ * the rest of that gallery.
+ */
+function openLightbox(media, allItems) {
+  const overlay = getLightboxEl();
+
+  lightboxItems = allItems;
+  const startIndex = allItems.indexOf(media);
+  renderLightboxItem(startIndex >= 0 ? startIndex : 0);
 
   lightboxReturnFocusEl = document.activeElement;
   overlay.hidden = false;
@@ -480,7 +536,7 @@ function renderGalleryModule(module) {
       trigger.appendChild(img);
     }
 
-    trigger.addEventListener("click", () => openLightbox(media, isVideo));
+    trigger.addEventListener("click", () => openLightbox(media, module.images));
     figure.appendChild(trigger);
 
     if (media.caption) {

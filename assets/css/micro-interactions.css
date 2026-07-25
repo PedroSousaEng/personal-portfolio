@@ -41,7 +41,10 @@ body[data-custom-cursor="active"] .btn {
   top: 0;
   left: 0;
   pointer-events: none;
-  z-index: 200;
+  z-index: 1100; /* must stay above the lightbox (z-index: 1000) and the
+                    page-transition overlay (z-index: 180), or the custom
+                    cursor gets painted underneath them and the pointer
+                    appears to vanish while either is open. */
   opacity: 0;
   will-change: transform;
 }

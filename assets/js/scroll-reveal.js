@@ -48,4 +48,20 @@ export function initScrollReveal() {
   );
 
   targets.forEach((el) => observer.observe(el));
+
+  // Safety net: a section that sits at the very top of the page (e.g. the
+  // whole above-the-fold content on a page whose data loads asynchronously)
+  // should already intersect immediately, but if its geometry isn't what
+  // the observer expects on the very first measurement, it would otherwise
+  // stay at opacity: 0 forever with nothing left to trigger a re-check.
+  // Force every remaining target visible after a short grace period so a
+  // page section can never be stuck invisible.
+  window.setTimeout(() => {
+    targets.forEach((el) => {
+      if (!el.classList.contains("is-visible")) {
+        el.classList.add("is-visible");
+        observer.unobserve(el);
+      }
+    });
+  }, 2000);
 }
