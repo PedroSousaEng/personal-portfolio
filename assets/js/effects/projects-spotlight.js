@@ -215,8 +215,13 @@ export function initProjectsSpotlight() {
     ctx.stroke();
 
     ctx.strokeStyle = `rgba(${FX_CORE}, 0.22)`;
+    const reticleHalf = 16;
     ctx.beginPath();
-    ctx.arc(pointer.x, pointer.y, 18, 0, Math.PI * 2);
+    if (typeof ctx.roundRect === "function") {
+      ctx.roundRect(pointer.x - reticleHalf, pointer.y - reticleHalf, reticleHalf * 2, reticleHalf * 2, 4);
+    } else {
+      ctx.rect(pointer.x - reticleHalf, pointer.y - reticleHalf, reticleHalf * 2, reticleHalf * 2);
+    }
     ctx.stroke();
   }
 

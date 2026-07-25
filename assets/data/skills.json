@@ -1,6 +1,6 @@
 [
-  { "category": "Programação", "items": ["Python", "Análise de Dados", "Automação"] },
-  { "category": "Engenharia & CAD", "items": ["SolidWorks", "Solid Edge", "Modelação Mecânica", "Desenvolvimento de Produto"] },
-  { "category": "Fabrico & Prototipagem", "items": ["Impressão 3D", "PLA", "Montagem Mecânica"] },
-  { "category": "Inteligência Artificial", "items": ["Ferramentas de IA generativa", "Aceleração de desenvolvimento", "Aprendizagem assistida por IA"] }
+  { "category": "Programming", "items": ["Python", "Data Analysis", "Automation"] },
+  { "category": "Engineering & CAD", "items": ["SolidWorks", "Solid Edge", "Mechanical Modeling", "Product Development"] },
+  { "category": "Manufacturing & Prototyping", "items": ["3D Printing", "PLA", "Mechanical Assembly"] },
+  { "category": "Artificial Intelligence", "items": ["Generative AI tools", "Development acceleration", "AI-assisted learning"] }
 ]

@@ -43,7 +43,7 @@ export async function renderContact(containerEl) {
     const emailCta = document.createElement("a");
     emailCta.className = "btn btn--primary";
     emailCta.href = `mailto:${socials.email}`;
-    emailCta.textContent = `Enviar email para ${socials.email}`;
+    emailCta.textContent = `Send an email to ${socials.email}`;
     fragment.appendChild(emailCta);
 
     const methods = document.createElement("div");
@@ -56,7 +56,7 @@ export async function renderContact(containerEl) {
       item.href = link.url;
       item.target = "_blank";
       item.rel = "noopener noreferrer";
-      item.setAttribute("aria-label", `${link.platform} (abre numa nova aba)`);
+      item.setAttribute("aria-label", `${link.platform} (opens in a new tab)`);
 
       const iconWrap = document.createElement("span");
       iconWrap.className = "contact-method__icon";
@@ -77,7 +77,7 @@ export async function renderContact(containerEl) {
     console.error("renderContact:", error);
     renderFallback(
       containerEl,
-      "Não foi possível carregar os detalhes de contacto — tente atualizar a página."
+      "Couldn't load the contact details right now — try refreshing the page."
     );
   }
 }

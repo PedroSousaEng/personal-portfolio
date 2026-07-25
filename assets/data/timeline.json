@@ -1,7 +1,7 @@
 [
-  { "id": "formula-water", "year": "Projeto académico", "title": "Formula Water", "description": "Protótipo de veículo movido pela energia potencial da água, com estudo de dinâmica, transmissão de movimento, atritos, estabilidade e centro de massa." },
-  { "id": "teardown-fechadura", "year": "Projeto académico", "title": "Teardown de uma fechadura", "description": "Desmontagem e análise detalhada do mecanismo interno, dos materiais e dos processos de fabrico utilizados." },
-  { "id": "embraiagem-pla", "year": "Projeto académico", "title": "Embraiagem mecânica em PLA", "description": "Sistema de acoplamento e desacoplamento entre dois eixos, acionado por pedal e por um pino de ligação, modelado em CAD e impresso em 3D." },
-  { "id": "vinted-os", "year": "Projeto em pessoal", "title": "Vinted OS", "description": "Plataforma criada para otimizar a gestão de anúncios na Vinted, com apoio de ferramentas de inteligência artificial." },
-  { "id": "portfolio", "year": "Projeto em pessoal", "title": "Portefólio pessoal", "description": "Presença online moderna e diferenciadora, desenvolvida com o auxílio de inteligência artificial." }
+  { "id": "formula-water", "year": "Academic project", "title": "Formula Water", "description": "Vehicle prototype powered by water's potential energy, involving the study of dynamics, motion transmission, friction, stability, and center of mass." },
+  { "id": "doorlock-teardown", "year": "Academic project", "title": "Door Lock Teardown", "description": "Detailed disassembly and analysis of the internal mechanism, materials, and manufacturing processes used." },
+  { "id": "pin-clutch", "year": "Academic project", "title": "Pin Clutch", "description": "Engagement and disengagement system between two shafts, actuated by a pedal and a connecting pin, modeled in CAD and 3D printed." },
+  { "id": "vinted-os", "year": "Personal project", "title": "Vinted OS", "description": "Platform created to optimize listing management on Vinted, supported by artificial intelligence tools." },
+  { "id": "personal-portfolio", "year": "Personal project", "title": "Personal Portfolio", "description": "A modern, distinctive online presence, developed with the help of artificial intelligence." }
 ]

@@ -1,15 +1,15 @@
 [
   {
-    "id": "eng-mecanica-uminho",
-    "role": "Licenciatura em Engenharia Mecânica",
-    "company": "Universidade do Minho",
-    "period": "Em curso",
+    "id": "mechanical-eng-uminho",
+    "role": "BSc in Mechanical Engineering",
+    "company": "University of Minho",
+    "period": "Ongoing",
     "location": "Guimarães, Portugal",
-    "summary": "Percurso académico focado na interseção entre engenharia, tecnologia e inteligência artificial, combinando raciocínio analítico com ferramentas modernas de desenvolvimento.",
+    "summary": "Academic path focused on the intersection of engineering, technology, and artificial intelligence, combining analytical reasoning with modern development tools.",
     "highlights": [
-      "Desenvolvimento do Formula Water, um protótipo de veículo movido pela energia potencial da água.",
-      "Estudo de dinâmica de sistemas, transmissão de movimento, atritos, estabilidade e centro de massa.",
-      "Utilização de Python para simulações e análise de resultados, e de SolidWorks/Solid Edge para modelação de componentes mecânicos."
+      "Development of Formula Water, a vehicle prototype powered by water's potential energy.",
+      "Study of system dynamics, motion transmission, friction, stability, and center of mass.",
+      "Use of Python for simulations and results analysis, and SolidWorks/Solid Edge for modeling mechanical components."
     ]
   }
 ]
