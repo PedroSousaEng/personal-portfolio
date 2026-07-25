@@ -590,6 +590,7 @@ export function initBackgroundFX() {
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
 
+
     // pendulum.bobX/bobY are already in CSS-pixel space (the canvas
     // context is scaled once via ctx.setTransform(dpr, ...) in resize(),
     // and updatePendulum() derives bobX/bobY from `width`/`height`, which
@@ -598,6 +599,7 @@ export function initBackgroundFX() {
     // (e.g. Retina/high-DPI displays), so clicks on the actual bob missed.
     const bobX = pendulum.bobX;
     const bobY = pendulum.bobY;
+
     const dx = x - bobX;
     const dy = y - bobY;
     const dist = Math.sqrt(dx * dx + dy * dy);
