@@ -20,8 +20,8 @@
  *     O(n²)), with early-out distance checks.
  *   - All colours are read from CSS custom properties via getComputedStyle,
  *     so the physics layer never hardcodes a colour.
- *   - PENDULUM BOB IS NOW CLICKABLE: clicking triggers an expanding wave
- *     that ripples through particles. Cooldown prevents spam.
+ *   - PENDULUM BOB IS NOW CLICKABLE: clicking triggers a MASSIVE expanding wave
+ *     that travels to all screen corners. Cooldown prevents spam.
  *
  * RESPONSIBILITIES
  *   - Inject and size a <canvas class="bg-fx"> as the first child of
@@ -68,11 +68,12 @@ export function initBackgroundFX() {
   const BOB_GLOW_BREATH_AMP = 12; // ±px variation in glow radius
   const BOB_GLOW_BREATH_PERIOD_MS = 5200;
 
-  // Pendulum clickable wave
+  // Pendulum clickable wave — MASSIVE VERSION
   const WAVE_COOLDOWN_MS = 800; // Min time between clicks
   const WAVE_CLICK_RADIUS = 16; // Detect click within this radius of bob
-  const WAVE_MAX_RADIUS = 600; // How far the wave expands
-  const WAVE_DURATION_MS = 1200; // How long the wave lasts
+  const WAVE_MAX_RADIUS = Math.max(window.innerWidth, window.innerHeight) * 1.5; // Goes to screen corners
+  const WAVE_DURATION_MS = 1800; // How long the wave lasts (longer to reach corners)
+  const WAVE_LINE_WIDTH = 2; // 2mm thickness
   const WAVE_COLOR = "rgba(107, 124, 255, "; // Indigo blue
 
   const PARTICLE_AREA_DIVISOR = 14000; // lower = more particles
@@ -255,14 +256,14 @@ export function initBackgroundFX() {
     const activeWaves = [];
     for (const wave of waves) {
       const elapsed = now - wave.createdAt;
-      if (elapsed > WAVE_DURATION_MS) continue;
+      if (elapsed > WAVE_DURATION_MS) continue; // Wave disappears after duration
 
       const progress = elapsed / WAVE_DURATION_MS;
       const radius = progress * WAVE_MAX_RADIUS;
-      const alpha = Math.max(0, 1 - progress);
+      const alpha = Math.max(0, 1 - progress); // Fades as it grows
 
-      ctx.strokeStyle = `${WAVE_COLOR}${alpha * 0.6})`;
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = `${WAVE_COLOR}${alpha * 0.8})`;
+      ctx.lineWidth = WAVE_LINE_WIDTH;
       ctx.beginPath();
       ctx.arc(wave.originX, wave.originY, radius, 0, Math.PI * 2);
       ctx.stroke();
