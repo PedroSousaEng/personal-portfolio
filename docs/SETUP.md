@@ -33,8 +33,8 @@ Everything a real deployment needs to change lives in a short list:
 | Name, role, bio copy | `index.html` (hero), `about.html` (bio paragraphs) |
 | Projects | `assets/data/projects.json` |
 | Skills | `assets/data/skills.json` |
-| Work history | `assets/data/experience.json` |
-| Personal milestones | `assets/data/timeline.json` |
+| Work history / education | `assets/data/cv.json` (`education` array) — also shown on the About page |
+| Personal milestones | Generated automatically from `assets/data/projects.json` (year + title + subtitle) — nothing to edit separately |
 | Email + social links | `assets/data/socials.json` — **also update the footer markup** in each HTML page (four small `<a>` tags) and the `sameAs` array in `index.html`'s structured-data block, since those are static for reliability rather than data-driven. See the note in `ARCHITECTURE.md` if you want to make the footer JS-driven instead. |
 | Site URL (for SEO tags) | Every `<link rel="canonical">`, `og:url`, `og:image`, `twitter:image` tag currently points at the placeholder `https://alexrivera.github.io/portfolio/` — find-and-replace this with your real GitHub Pages URL across all five HTML files, plus `sitemap.xml` and `robots.txt`. |
 | Avatar / project images | Replace the placeholder SVGs in `assets/images/` with real photos/screenshots. Keep the same filenames to avoid touching `projects.json` or `about.html`, or update the `image` field / `src` attribute if you rename them. |

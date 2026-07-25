@@ -1,8 +1,9 @@
 /**
  * PURPOSE
- *   Turn skills.json, experience.json, timeline.json, and cv.json's
- *   awards into the About page's skills grid, experience list, milestone
- *   timeline, and awards/achievements list.
+ *   Turn skills.json, cv.json, and projects.json into the About page's
+ *   skills grid, background/education list, project milestone timeline,
+ *   and awards/achievements list — all sourced from the same files the
+ *   CV page uses, so nothing needs editing twice.
  *
  * RESPONSIBILITIES
  *   - renderSkills(containerEl)
@@ -11,13 +12,16 @@
  *   - renderAwards(containerEl)
  *
  * DATA CONTRACTS
- *   skills.json:     Array<{ category: string, items: string[] }>
- *   experience.json: Array<{ id, role, company, period, location, summary, highlights: string[] }>
- *   timeline.json:   Array<{ id, year, title, description }>
- *   cv.json:         { awards: Array<{ title, description, year }>, ... }
- *                    — awards is read from cv.json (not duplicated into
- *                    its own file) so the About page and the CV page
- *                    always show the same list from one source.
+ *   skills.json:      Array<{ category: string, items: string[] }>
+ *   cv.json:           { education: Array<{ degree, institution, location,
+ *                        period, details, highlights?: string[] }>,
+ *                        awards: Array<{ title, description, year }>, ... }
+ *                      — education and awards are read straight from
+ *                      cv.json (not duplicated into their own files) so
+ *                      the About page and the CV page always agree.
+ *   projects.json:     Array<{ id, title, subtitle, year, ... }>
+ *                      — drives the timeline directly; a project's
+ *                      milestone entry only ever needs editing here.
  *
  * DEPENDENCIES
  *   data-loader.js
@@ -75,13 +79,25 @@ export async function renderSkills(containerEl) {
   }
 }
 
-/** @param {HTMLElement} containerEl */
+/**
+ * Reads education straight from cv.json (the same array the CV page's
+ * Education section uses) so the About page's "Experience" block and the
+ * CV always agree — edit assets/data/cv.json once, both pages update.
+ * @param {HTMLElement} containerEl
+ */
 export async function renderExperience(containerEl) {
   try {
-    const roles = await loadJSON(DATA_PATHS.experience);
+    const cv = await loadJSON(DATA_PATHS.cv);
+    const entries = Array.isArray(cv.education) ? cv.education : [];
+
+    if (entries.length === 0) {
+      renderFallback(containerEl, "Couldn't load the background right now.");
+      return;
+    }
+
     const fragment = document.createDocumentFragment();
 
-    for (const role of roles) {
+    for (const entry of entries) {
       const item = document.createElement("article");
       item.className = "card";
 
@@ -90,35 +106,37 @@ export async function renderExperience(containerEl) {
 
       const roleTitle = document.createElement("h3");
       roleTitle.className = "card__title";
-      roleTitle.textContent = `${role.role} · ${role.company}`;
+      roleTitle.textContent = `${entry.degree} · ${entry.institution}`;
       header.appendChild(roleTitle);
 
       const period = document.createElement("span");
       period.className = "text-sm font-mono text-muted";
-      period.textContent = role.period;
+      period.textContent = entry.period;
       header.appendChild(period);
 
       item.appendChild(header);
 
       const location = document.createElement("p");
       location.className = "text-sm text-muted";
-      location.textContent = role.location;
+      location.textContent = entry.location;
       item.appendChild(location);
 
       const summary = document.createElement("p");
       summary.className = "text-sm";
-      summary.textContent = role.summary;
+      summary.textContent = entry.details;
       item.appendChild(summary);
 
-      const highlights = document.createElement("ul");
-      highlights.className = "stack stack--tight";
-      for (const highlight of role.highlights) {
-        const li = document.createElement("li");
-        li.className = "text-sm text-muted";
-        li.textContent = `— ${highlight}`;
-        highlights.appendChild(li);
+      if (Array.isArray(entry.highlights) && entry.highlights.length > 0) {
+        const highlights = document.createElement("ul");
+        highlights.className = "stack stack--tight";
+        for (const highlight of entry.highlights) {
+          const li = document.createElement("li");
+          li.className = "text-sm text-muted";
+          li.textContent = `— ${highlight}`;
+          highlights.appendChild(li);
+        }
+        item.appendChild(highlights);
       }
-      item.appendChild(highlights);
 
       fragment.appendChild(item);
     }
@@ -130,10 +148,19 @@ export async function renderExperience(containerEl) {
   }
 }
 
-/** @param {HTMLElement} containerEl */
+/**
+ * Builds the About page's milestone timeline straight from projects.json
+ * (year, title, subtitle) instead of a separately maintained file, so
+ * adding/editing a project only ever means touching projects.json.
+ * @param {HTMLElement} containerEl
+ */
 export async function renderTimeline(containerEl) {
   try {
-    const milestones = await loadJSON(DATA_PATHS.timeline);
+    const projects = await loadJSON(DATA_PATHS.projects);
+    const milestones = [...projects].sort((a, b) =>
+      String(a.year).localeCompare(String(b.year))
+    );
+
     const list = document.createElement("ol");
     list.className = "timeline";
 
@@ -160,7 +187,7 @@ export async function renderTimeline(containerEl) {
 
       const description = document.createElement("p");
       description.className = "text-sm text-muted";
-      description.textContent = milestone.description;
+      description.textContent = milestone.subtitle || milestone.description;
       content.appendChild(description);
 
       item.appendChild(content);

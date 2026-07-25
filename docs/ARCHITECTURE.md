@@ -25,14 +25,13 @@
     │   ├── data-loader.js         Generic fetch()-and-cache helper for JSON data
     │   ├── render-projects.js     Turns projects.json into card markup + the Projects page's category filter bar
     │   ├── render-project-detail.js  Renders one project (via ?id=) into project.html
-    │   ├── render-about.js        Turns skills.json + experience.json + timeline.json into markup
+    │   ├── render-about.js        Turns skills.json + cv.json (education/awards) + projects.json (timeline) into markup
     │   ├── render-contact.js      Turns socials.json into the mailto CTA + social link list
     │   └── main.js                Entry point: nav toggle, active-link state, footer year, init calls
     ├── data/
-    │   ├── projects.json
-    │   ├── skills.json
-    │   ├── experience.json
-    │   ├── timeline.json
+    │   ├── projects.json     Single source for every project — also drives the CV's project list and the About timeline
+    │   ├── skills.json       Single source for skills — shared by the CV page and the About page
+    │   ├── cv.json           Education, awards, certifications, languages, interests — shared by the CV and About pages
     │   └── socials.json
     ├── images/               Project screenshots / avatar (SVG placeholders included)
     ├── icons/                Inline-SVG icon source files + favicon

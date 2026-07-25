@@ -5,14 +5,15 @@
 
   DEPENDENCIES
     assets/css/{tokens,base,layout,components,pages,micro-interactions}.css
-    assets/js/main.js (renders skills.json, experience.json, timeline.json
-    via render-about.js)
+    assets/js/main.js (renders skills.json, cv.json (education/awards),
+    and projects.json (timeline) via render-about.js)
 
   SAFE EDITS
-    Bio paragraph text below is safe to hand-edit directly. Skills,
-    experience, and timeline content should be edited in their respective
-    JSON files in assets/data/, not here — this file only provides the
-    empty containers those renderers populate.
+    Bio paragraph text below is safe to hand-edit directly. Skills come
+    from assets/data/skills.json; education/experience and awards come
+    from assets/data/cv.json; the milestone timeline is generated from
+    assets/data/projects.json. Edit those files, not here — this file
+    only provides the empty containers those renderers populate.
 -->
 <!DOCTYPE html>
 <html lang="en">

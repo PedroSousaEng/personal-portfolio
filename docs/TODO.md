@@ -4,7 +4,7 @@
 - [ ] Replace placeholder name/bio copy in `index.html` and `about.html`.
 - [ ] Replace all six entries in `assets/data/projects.json` with real
       projects (or trim/extend the array — the grid handles any count).
-- [ ] Replace `assets/data/skills.json`, `experience.json`, `timeline.json`.
+- [ ] Replace `assets/data/skills.json`, and the education/awards in `cv.json`.
 - [ ] Replace `assets/data/socials.json`, and the footer/structured-data
       copies described in `SETUP.md`.
 - [ ] Replace placeholder images in `assets/images/` (avatar, project

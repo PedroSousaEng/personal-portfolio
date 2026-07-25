@@ -1,8 +1,9 @@
 /**
  * PURPOSE
- *   Turn assets/data/cv.json (plus assets/data/projects.json, for linking
- *   project references to their real case-study pages) into the CV page's
- *   content: summary, education, skills, projects, awards, certifications,
+ *   Turn assets/data/cv.json (plus assets/data/projects.json, for full
+ *   project titles/summaries, and assets/data/skills.json, the shared
+ *   skills source with the About page) into the CV page's content:
+ *   summary, education, skills, projects, awards, certifications,
  *   languages, and interests.
  *
  * RESPONSIBILITIES
@@ -11,15 +12,22 @@
  * DATA CONTRACT (assets/data/cv.json)
  *   {
  *     summary: string,
- *     education: Array<{ degree, institution, location, period, details }>,
+ *     education: Array<{ degree, institution, location, period, details, highlights?: string[] }>,
  *     experienceSummary: string,
- *     skills: Array<{ category: string, items: string[] }>,
- *     projects: Array<{ title: string, note: string, id: string }>,
- *     awards: Array<{ title: string, description: string, year: string }>,
- *     certifications: Array<{ title: string, issuer: string, year: string }>,
- *     languages: Array<{ language: string, level: string }>,
+ *     projects: Array<{ id: string }>,
+ *     awards: Array<{ title, description, year }>,
+ *     certifications: Array<{ title, issuer, year }>,
+ *     languages: Array<{ language, level }>,
  *     interests: string[]
  *   }
+ *
+ *   Skills are NOT read from cv.json — they come from assets/data/skills.json
+ *   (Array<{ category: string, items: string[] }>), the same file the About
+ *   page reads. Edit skills.json once and both pages update together.
+ *
+ *   Projects are only referenced by `id` here — title, subtitle, and the
+ *   link target all come from the matching entry in projects.json, so a
+ *   project's name/blurb only ever needs editing in one place.
  *
  *   Every array section renders nothing (and is skipped, not shown as an
  *   empty heading) if it's missing or empty — certifications is expected
@@ -128,8 +136,8 @@ function buildExperienceSection(cv) {
   return section;
 }
 
-function buildSkillsSection(cv) {
-  if (!Array.isArray(cv.skills) || cv.skills.length === 0) return null;
+function buildSkillsSection(skillGroups) {
+  if (!Array.isArray(skillGroups) || skillGroups.length === 0) return null;
   const section = document.createElement("section");
   section.className = "cv-section";
   section.appendChild(buildSectionHeading("Technical Skills"));
@@ -137,7 +145,7 @@ function buildSkillsSection(cv) {
   const grid = document.createElement("div");
   grid.className = "stack mt-4";
 
-  for (const group of cv.skills) {
+  for (const group of skillGroups) {
     const groupEl = document.createElement("div");
     groupEl.className = "stack stack--tight";
 
@@ -163,9 +171,10 @@ function buildSkillsSection(cv) {
 }
 
 /**
- * Projects section: links each entry to its real project.html?id=<id>
- * case study when a matching project exists in projects.json, so the CV
- * never duplicates content — it points at the single source of truth.
+ * Projects section: cv.json only lists which project ids to show — the
+ * title, link, and one-line note all come from projects.json (title +
+ * subtitle), so a project's name/blurb never needs editing in two files.
+ * An id with no match in projects.json is skipped entirely.
  */
 function buildProjectsSection(cv, projectsById) {
   if (!Array.isArray(cv.projects) || cv.projects.length === 0) return null;
@@ -177,26 +186,21 @@ function buildProjectsSection(cv, projectsById) {
   list.className = "cv-list mt-4";
 
   for (const entry of cv.projects) {
-    const item = document.createElement("li");
     const matched = projectsById.get(entry.id);
+    if (!matched) continue;
 
-    if (matched) {
-      const link = document.createElement("a");
-      link.className = "cv-list__link";
-      link.href = `project.html?id=${encodeURIComponent(entry.id)}`;
-      link.textContent = entry.title;
-      item.appendChild(link);
-    } else {
-      const span = document.createElement("span");
-      span.className = "cv-list__link";
-      span.textContent = entry.title;
-      item.appendChild(span);
-    }
+    const item = document.createElement("li");
 
-    if (entry.note) {
+    const link = document.createElement("a");
+    link.className = "cv-list__link";
+    link.href = `project.html?id=${encodeURIComponent(entry.id)}`;
+    link.textContent = matched.title;
+    item.appendChild(link);
+
+    if (matched.subtitle) {
       const note = document.createElement("span");
       note.className = "text-sm text-muted";
-      note.textContent = ` — ${entry.note}`;
+      note.textContent = ` — ${matched.subtitle}`;
       item.appendChild(note);
     }
 
@@ -313,9 +317,10 @@ function buildInterestsSection(cv) {
  */
 export async function renderCv(containerEl) {
   try {
-    const [cv, projects] = await Promise.all([
+    const [cv, projects, skillGroups] = await Promise.all([
       loadJSON(DATA_PATHS.cv),
       loadJSON(DATA_PATHS.projects).catch(() => []),
+      loadJSON(DATA_PATHS.skills).catch(() => []),
     ]);
 
     const projectsById = new Map(projects.map((project) => [project.id, project]));
@@ -324,7 +329,7 @@ export async function renderCv(containerEl) {
       buildSummarySection,
       buildEducationSection,
       buildExperienceSection,
-      buildSkillsSection,
+      () => buildSkillsSection(skillGroups),
       (data) => buildProjectsSection(data, projectsById),
       buildAwardsSection,
       buildCertificationsSection,

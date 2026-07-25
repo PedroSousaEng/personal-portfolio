@@ -1,6 +1,7 @@
 [
   { "category": "Programming", "items": ["Python", "Data Analysis", "Automation"] },
-  { "category": "Engineering & CAD", "items": ["SolidWorks", "Solid Edge", "Mechanical Modeling", "Product Development"] },
+  { "category": "Engineering & CAD", "items": ["SolidWorks", "Solid Edge", "Mechanical Modeling", "FEA", "Product Development"] },
   { "category": "Manufacturing & Prototyping", "items": ["3D Printing", "PLA", "Mechanical Assembly"] },
+  { "category": "Software", "items": ["HTML5", "CSS3", "JavaScript", "Git"] },
   { "category": "Artificial Intelligence", "items": ["Generative AI tools", "Development acceleration", "AI-assisted learning"] }
 ]

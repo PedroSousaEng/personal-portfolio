@@ -20,8 +20,6 @@ export const DATA_PATHS = Object.freeze({
   site: "assets/data/site.json",
   projects: "assets/data/projects.json",
   skills: "assets/data/skills.json",
-  experience: "assets/data/experience.json",
-  timeline: "assets/data/timeline.json",
   socials: "assets/data/socials.json",
   cv: "assets/data/cv.json",
 });
