@@ -72,9 +72,8 @@ export function initBackgroundFX() {
   const WAVE_COOLDOWN_MS = 1600; // Min time between clicks (waves now last longer)
   const WAVE_CLICK_RADIUS = 16; // Detect click within this radius of bob
   const WAVE_MAX_RADIUS = Math.max(window.innerWidth, window.innerHeight) * 1.5; // Goes to screen corners
-  const WAVE_DURATION_MS = 8000; // Slow, rolling pace — like a swell crossing open water
+  const WAVE_DURATION_MS = 6200; // Was 3.6s — slowed back down (roughly halved pace) per feedback
   const WAVE_LINE_WIDTH = 3;
-  const WAVE_GLOW_BLUR = 30; // soft halo around the ring, drawn via shadowBlur
   const WAVE_COLOR = "107, 124, 255"; // Indigo blue, as an "r, g, b" triplet
 
   const PARTICLE_AREA_DIVISOR = 14000; // lower = more particles
@@ -121,6 +120,50 @@ export function initBackgroundFX() {
   const FX_PARTICLE_DIM = parseColorTriplet(tok("--fx-particle-dim", "#5b6376")) || "91, 99, 118";
   const FX_GLOW_CURSOR = parseColorTriplet(tok("--fx-glow-cursor", "#6c7cff")) || "108, 124, 255";
   const FX_GLOW_AMBIENT = FX_PARTICLE; // ambient uses particle colour for cohesion
+
+  // ---- Cached radial-glow sprites ---------------------------------------
+  // Every other page's effect (about/projects/contact/404) pre-renders its
+  // gradients into an offscreen canvas once and blits it with drawImage
+  // every frame instead of calling createRadialGradient/createLinearGradient
+  // per frame. Home's ambient lights and pendulum glow never got that
+  // treatment and were rebuilding gradients (and, for the rod, running a
+  // large-area shadowBlur pass) 30 times a second, forever, on the page
+  // most visitors land on first. Baking the falloff profile once at
+  // strength/intensity = 1 and scaling brightness via ctx.globalAlpha at
+  // draw time (same trick projects-spotlight.js uses for its pulse) gives
+  // an identical look for a fraction of the cost.
+  const GLOW_SPRITE_SIZE = 640; // baked at a fixed size, then drawImage-scaled to whatever radius is needed
+  const GLOW_SPRITE_RADIUS = GLOW_SPRITE_SIZE / 2;
+
+  function createGlowSprite(color, stops) {
+    const sprite = document.createElement("canvas");
+    sprite.width = GLOW_SPRITE_SIZE;
+    sprite.height = GLOW_SPRITE_SIZE;
+    const spriteCtx = sprite.getContext("2d");
+    const gradient = spriteCtx.createRadialGradient(
+      GLOW_SPRITE_RADIUS, GLOW_SPRITE_RADIUS, 0,
+      GLOW_SPRITE_RADIUS, GLOW_SPRITE_RADIUS, GLOW_SPRITE_RADIUS
+    );
+    for (const [offset, alpha] of stops) gradient.addColorStop(offset, `rgba(${color}, ${alpha})`);
+    spriteCtx.fillStyle = gradient;
+    spriteCtx.fillRect(0, 0, GLOW_SPRITE_SIZE, GLOW_SPRITE_SIZE);
+    return sprite;
+  }
+
+  // Matches the original drawAmbientLight() stops (0.32 / 0.12 / 0), baked
+  // at strength = 1 — actual strength is applied via globalAlpha per draw.
+  const ambientGlowSprite = createGlowSprite(FX_GLOW_AMBIENT, [
+    [0, 0.32], [0.5, 0.12], [1, 0],
+  ]);
+  const cursorGlowSprite = createGlowSprite(FX_GLOW_CURSOR, [
+    [0, 0.32], [0.5, 0.12], [1, 0],
+  ]);
+
+  // Matches the original bob-glow stops (0.9 / 0.45 / 0), baked at
+  // intensity = 1 — actual breathing intensity applied via globalAlpha.
+  const bobGlowSprite = createGlowSprite(FX_GLOW_CURSOR, [
+    [0, 0.9], [0.35, 0.45], [1, 0],
+  ]);
 
   // ---- Canvas setup -----------------------------------------------------
   const canvas = document.createElement("canvas");
@@ -275,11 +318,31 @@ export function initBackgroundFX() {
       const fadeOut = 1 - Math.max(0, (linear - 0.65) / 0.35);
       const alpha = Math.max(0, Math.min(fadeIn, fadeOut));
 
+      // NOTE: this used to draw via ctx.shadowBlur for the glow. shadowBlur
+      // forces the compositor to blur the shape's entire bounding box —
+      // fine for a small particle, but this ring's bounding box can span
+      // most (or all) of the viewport at full radius. Redrawn every frame
+      // for the ~8s the wave is alive, that was expensive enough to stall
+      // the tab (and on some GPUs lose the canvas context entirely, which
+      // is why the whole scene could freeze and go black after a click).
+      // A few concentric strokes of falling alpha/width fake the same soft
+      // halo for a fraction of the cost — same trick already used for the
+      // particle glow above.
       ctx.save();
-      ctx.shadowColor = `rgba(${WAVE_COLOR}, ${alpha * 0.9})`;
-      ctx.shadowBlur = WAVE_GLOW_BLUR;
       ctx.strokeStyle = `rgba(${WAVE_COLOR}, ${alpha * 0.85})`;
       ctx.lineWidth = WAVE_LINE_WIDTH;
+      ctx.beginPath();
+      ctx.arc(wave.originX, wave.originY, radius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.strokeStyle = `rgba(${WAVE_COLOR}, ${alpha * 0.32})`;
+      ctx.lineWidth = WAVE_LINE_WIDTH + 6;
+      ctx.beginPath();
+      ctx.arc(wave.originX, wave.originY, radius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.strokeStyle = `rgba(${WAVE_COLOR}, ${alpha * 0.14})`;
+      ctx.lineWidth = WAVE_LINE_WIDTH + 14;
       ctx.beginPath();
       ctx.arc(wave.originX, wave.originY, radius, 0, Math.PI * 2);
       ctx.stroke();
@@ -293,10 +356,12 @@ export function initBackgroundFX() {
   function drawPendulum(now) {
     const { pivotX, pivotY, bobX, bobY } = pendulum;
 
-    // Rod: bright silvery line, glowing faintly along its length.
-    ctx.save();
-    ctx.shadowColor = `rgba(${FX_PARTICLE}, 0.5)`;
-    ctx.shadowBlur = 6;
+    // Rod: bright silvery line, glowing faintly along its length. The
+    // gradient still has to be rebuilt each frame (the endpoints move), but
+    // shadowBlur is gone — its bounding box spans nearly the full screen
+    // height, so blurring it every frame was the single biggest continuous
+    // cost of this whole effect. The gradient's own bright endpoint already
+    // reads as a soft glow without it.
     const rodGradient = ctx.createLinearGradient(pivotX, pivotY, bobX, bobY);
     rodGradient.addColorStop(0, `rgba(${FX_PARTICLE_DIM}, 0.15)`);
     rodGradient.addColorStop(1, `rgba(${FX_PARTICLE}, 0.85)`);
@@ -306,7 +371,6 @@ export function initBackgroundFX() {
     ctx.moveTo(pivotX, pivotY);
     ctx.lineTo(bobX, bobY);
     ctx.stroke();
-    ctx.restore();
 
     // Small pivot anchor so the rod visibly hangs from something.
     ctx.fillStyle = `rgba(${FX_PARTICLE}, 0.4)`;
@@ -315,21 +379,18 @@ export function initBackgroundFX() {
     ctx.fill();
 
     // Bob glow: breathing halo — radius and intensity oscillate gently.
-    // Now using blue/white colors instead of amber
+    // Uses the pre-baked sprite scaled/faded to the current radius and
+    // intensity instead of building a new gradient every frame.
     const breath = Math.sin((now / BOB_GLOW_BREATH_PERIOD_MS) * Math.PI * 2);
     const glowR = BOB_GLOW_BASE_R + breath * BOB_GLOW_BREATH_AMP;
     const glowIntensity = 0.82 + breath * 0.12;
 
-    const glow = ctx.createRadialGradient(bobX, bobY, 0, bobX, bobY, glowR);
-    glow.addColorStop(0, `rgba(${FX_GLOW_CURSOR}, ${0.9 * glowIntensity})`);
-    glow.addColorStop(0.35, `rgba(${FX_GLOW_CURSOR}, ${0.45 * glowIntensity})`);
-    glow.addColorStop(1, `rgba(${FX_GLOW_CURSOR}, 0)`);
-    ctx.fillStyle = glow;
-    ctx.beginPath();
-    ctx.arc(bobX, bobY, glowR, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.globalAlpha = glowIntensity;
+    ctx.drawImage(bobGlowSprite, bobX - glowR, bobY - glowR, glowR * 2, glowR * 2);
+    ctx.globalAlpha = 1;
 
-    // Bob core: WHITE/BLUISH instead of amber
+    // Bob core: WHITE/BLUISH instead of amber. shadowBlur here is cheap —
+    // the bounding box is tiny (a 9px circle) — so it's left as-is.
     ctx.save();
     ctx.shadowColor = `rgba(${FX_GLOW_CURSOR}, ${0.9 * glowIntensity})`;
     ctx.shadowBlur = 18;
@@ -341,16 +402,11 @@ export function initBackgroundFX() {
   }
 
   // ---- Dynamic lighting (roaming glow pools) ----------------------------
-  function drawAmbientLight(x, y, radius, color, strength) {
+  function drawAmbientLight(x, y, radius, sprite, strength) {
     if (strength <= 0.01) return;
-    const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-    gradient.addColorStop(0, `rgba(${color}, ${0.32 * strength})`);
-    gradient.addColorStop(0.5, `rgba(${color}, ${0.12 * strength})`);
-    gradient.addColorStop(1, `rgba(${color}, 0)`);
-    ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.globalAlpha = strength;
+    ctx.drawImage(sprite, x - radius, y - radius, radius * 2, radius * 2);
+    ctx.globalAlpha = 1;
   }
 
   // Ambient light: slowly drifts in a Lissajous-like path across the
@@ -533,27 +589,40 @@ export function initBackgroundFX() {
     }
     lastFrameTime = now;
 
-    ctx.clearRect(0, 0, width, height);
+    // Defensive: an uncaught error in any of the drawing calls below would
+    // otherwise stop requestAnimationFrame from ever being re-scheduled,
+    // permanently freezing the whole scene on whatever the last clearRect
+    // left behind (i.e. a blank canvas over the page's dark background —
+    // reads as "everything stopped and turned black"). Catching here means
+    // a bad frame just gets skipped instead of killing the loop forever.
+    try {
+      ctx.clearRect(0, 0, width, height);
 
-    updatePendulum(now);
+      updatePendulum(now);
 
-    const idleFor = now - pointer.lastMove;
-    const mouseStrength = pointer.active
-      ? Math.max(0, 1 - Math.max(0, idleFor - MOUSE_IDLE_FADE_MS) / 600)
-      : 0;
+      const idleFor = now - pointer.lastMove;
+      const mouseStrength = pointer.active
+        ? Math.max(0, 1 - Math.max(0, idleFor - MOUSE_IDLE_FADE_MS) / 600)
+        : 0;
 
-    // Ambient roaming light — gives the scene life even when the pointer
-    // is idle. Strength oscillates gently so it's never flat.
-    updateAmbientLightPosition(now);
-    const ambientStrength = 0.35 + 0.15 * Math.sin(now / 6000);
+      // Ambient roaming light — gives the scene life even when the pointer
+      // is idle. Strength oscillates gently so it's never flat.
+      updateAmbientLightPosition(now);
+      const ambientStrength = 0.35 + 0.15 * Math.sin(now / 6000);
 
-    drawAmbientLight(ambientLight.x, ambientLight.y, AMBIENT_LIGHT_RADIUS, FX_GLOW_AMBIENT, ambientStrength);
-    drawAmbientLight(pointer.x, pointer.y, MOUSE_LIGHT_RADIUS, FX_GLOW_CURSOR, mouseStrength);
-    drawAmbientLight(pendulum.bobX, pendulum.bobY, PENDULUM_LIGHT_RADIUS, FX_GLOW_CURSOR, 0.7);
+      drawAmbientLight(ambientLight.x, ambientLight.y, AMBIENT_LIGHT_RADIUS, ambientGlowSprite, ambientStrength);
+      drawAmbientLight(pointer.x, pointer.y, MOUSE_LIGHT_RADIUS, cursorGlowSprite, mouseStrength);
+      drawAmbientLight(pendulum.bobX, pendulum.bobY, PENDULUM_LIGHT_RADIUS, cursorGlowSprite, 0.7);
 
-    drawPendulum(now);
-    drawWaves(now);
-    updateAndDrawParticles(now, mouseStrength);
+      drawPendulum(now);
+      drawWaves(now);
+      updateAndDrawParticles(now, mouseStrength);
+    } catch (err) {
+      // Drop whatever caused it (most likely a stray wave) rather than
+      // let one bad frame take the whole ambient effect down with it.
+      waves = [];
+      console.error("[background-fx] frame error, skipping frame:", err);
+    }
 
     rafId = window.requestAnimationFrame(frame);
   }
@@ -591,6 +660,8 @@ export function initBackgroundFX() {
     window.removeEventListener("click", onClick);
     document.removeEventListener("visibilitychange", onVisibilityChange);
     reduceMotionQuery.removeEventListener("change", onReduceMotionChange);
+    canvas.removeEventListener("contextlost", onContextLost);
+    canvas.removeEventListener("contextrestored", onContextRestored);
     if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
   }
 
@@ -623,6 +694,25 @@ export function initBackgroundFX() {
       triggerWave();
     }
   }
+
+  // ---- Canvas context loss recovery --------------------------------
+  // Heavy GPU-side canvas work (or unrelated memory pressure from other
+  // tabs) can cause the browser to drop the canvas's rendering context.
+  // Without handling this, every subsequent draw call silently no-ops,
+  // the canvas stays permanently blank, and the whole scene looks
+  // "frozen and black" with no way to recover short of a page reload.
+  function onContextLost(event) {
+    event.preventDefault();
+    stop();
+  }
+
+  function onContextRestored() {
+    seedParticlesIfNeeded();
+    start();
+  }
+
+  canvas.addEventListener("contextlost", onContextLost);
+  canvas.addEventListener("contextrestored", onContextRestored);
 
   document.addEventListener("visibilitychange", onVisibilityChange);
   window.addEventListener("resize", onResize, { passive: true });
