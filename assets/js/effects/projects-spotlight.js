@@ -32,7 +32,7 @@ export function initProjectsSpotlight() {
 
   const SPOTLIGHT_RADIUS = 320;
   const SPOTLIGHT_RADIUS_LARGE = 540;
-  const TRACKING_EASE = 0.085;
+  const TRACKING_EASE = 0.38;
   const IDLE_AFTER_MS = 1400;
   const IDLE_DRIFT_PERIOD_MS = 22000;
   const PULSE_PERIOD_MS = 3600;

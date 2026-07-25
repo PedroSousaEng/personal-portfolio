@@ -74,7 +74,6 @@ export function initBackgroundFX() {
   const WAVE_MAX_RADIUS = Math.max(window.innerWidth, window.innerHeight) * 1.5; // Goes to screen corners
   const WAVE_DURATION_MS = 8000; // Slow, rolling pace — like a swell crossing open water
   const WAVE_LINE_WIDTH = 3;
-  const WAVE_GLOW_BLUR = 30; // soft halo around the ring, drawn via shadowBlur
   const WAVE_COLOR = "107, 124, 255"; // Indigo blue, as an "r, g, b" triplet
 
   const PARTICLE_AREA_DIVISOR = 14000; // lower = more particles
@@ -275,11 +274,31 @@ export function initBackgroundFX() {
       const fadeOut = 1 - Math.max(0, (linear - 0.65) / 0.35);
       const alpha = Math.max(0, Math.min(fadeIn, fadeOut));
 
+      // NOTE: this used to draw via ctx.shadowBlur for the glow. shadowBlur
+      // forces the compositor to blur the shape's entire bounding box —
+      // fine for a small particle, but this ring's bounding box can span
+      // most (or all) of the viewport at full radius. Redrawn every frame
+      // for the ~8s the wave is alive, that was expensive enough to stall
+      // the tab (and on some GPUs lose the canvas context entirely, which
+      // is why the whole scene could freeze and go black after a click).
+      // A few concentric strokes of falling alpha/width fake the same soft
+      // halo for a fraction of the cost — same trick already used for the
+      // particle glow above.
       ctx.save();
-      ctx.shadowColor = `rgba(${WAVE_COLOR}, ${alpha * 0.9})`;
-      ctx.shadowBlur = WAVE_GLOW_BLUR;
       ctx.strokeStyle = `rgba(${WAVE_COLOR}, ${alpha * 0.85})`;
       ctx.lineWidth = WAVE_LINE_WIDTH;
+      ctx.beginPath();
+      ctx.arc(wave.originX, wave.originY, radius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.strokeStyle = `rgba(${WAVE_COLOR}, ${alpha * 0.32})`;
+      ctx.lineWidth = WAVE_LINE_WIDTH + 6;
+      ctx.beginPath();
+      ctx.arc(wave.originX, wave.originY, radius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.strokeStyle = `rgba(${WAVE_COLOR}, ${alpha * 0.14})`;
+      ctx.lineWidth = WAVE_LINE_WIDTH + 14;
       ctx.beginPath();
       ctx.arc(wave.originX, wave.originY, radius, 0, Math.PI * 2);
       ctx.stroke();
@@ -533,27 +552,40 @@ export function initBackgroundFX() {
     }
     lastFrameTime = now;
 
-    ctx.clearRect(0, 0, width, height);
+    // Defensive: an uncaught error in any of the drawing calls below would
+    // otherwise stop requestAnimationFrame from ever being re-scheduled,
+    // permanently freezing the whole scene on whatever the last clearRect
+    // left behind (i.e. a blank canvas over the page's dark background —
+    // reads as "everything stopped and turned black"). Catching here means
+    // a bad frame just gets skipped instead of killing the loop forever.
+    try {
+      ctx.clearRect(0, 0, width, height);
 
-    updatePendulum(now);
+      updatePendulum(now);
 
-    const idleFor = now - pointer.lastMove;
-    const mouseStrength = pointer.active
-      ? Math.max(0, 1 - Math.max(0, idleFor - MOUSE_IDLE_FADE_MS) / 600)
-      : 0;
+      const idleFor = now - pointer.lastMove;
+      const mouseStrength = pointer.active
+        ? Math.max(0, 1 - Math.max(0, idleFor - MOUSE_IDLE_FADE_MS) / 600)
+        : 0;
 
-    // Ambient roaming light — gives the scene life even when the pointer
-    // is idle. Strength oscillates gently so it's never flat.
-    updateAmbientLightPosition(now);
-    const ambientStrength = 0.35 + 0.15 * Math.sin(now / 6000);
+      // Ambient roaming light — gives the scene life even when the pointer
+      // is idle. Strength oscillates gently so it's never flat.
+      updateAmbientLightPosition(now);
+      const ambientStrength = 0.35 + 0.15 * Math.sin(now / 6000);
 
-    drawAmbientLight(ambientLight.x, ambientLight.y, AMBIENT_LIGHT_RADIUS, FX_GLOW_AMBIENT, ambientStrength);
-    drawAmbientLight(pointer.x, pointer.y, MOUSE_LIGHT_RADIUS, FX_GLOW_CURSOR, mouseStrength);
-    drawAmbientLight(pendulum.bobX, pendulum.bobY, PENDULUM_LIGHT_RADIUS, FX_GLOW_CURSOR, 0.7);
+      drawAmbientLight(ambientLight.x, ambientLight.y, AMBIENT_LIGHT_RADIUS, FX_GLOW_AMBIENT, ambientStrength);
+      drawAmbientLight(pointer.x, pointer.y, MOUSE_LIGHT_RADIUS, FX_GLOW_CURSOR, mouseStrength);
+      drawAmbientLight(pendulum.bobX, pendulum.bobY, PENDULUM_LIGHT_RADIUS, FX_GLOW_CURSOR, 0.7);
 
-    drawPendulum(now);
-    drawWaves(now);
-    updateAndDrawParticles(now, mouseStrength);
+      drawPendulum(now);
+      drawWaves(now);
+      updateAndDrawParticles(now, mouseStrength);
+    } catch (err) {
+      // Drop whatever caused it (most likely a stray wave) rather than
+      // let one bad frame take the whole ambient effect down with it.
+      waves = [];
+      console.error("[background-fx] frame error, skipping frame:", err);
+    }
 
     rafId = window.requestAnimationFrame(frame);
   }
@@ -591,6 +623,8 @@ export function initBackgroundFX() {
     window.removeEventListener("click", onClick);
     document.removeEventListener("visibilitychange", onVisibilityChange);
     reduceMotionQuery.removeEventListener("change", onReduceMotionChange);
+    canvas.removeEventListener("contextlost", onContextLost);
+    canvas.removeEventListener("contextrestored", onContextRestored);
     if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
   }
 
@@ -623,6 +657,25 @@ export function initBackgroundFX() {
       triggerWave();
     }
   }
+
+  // ---- Canvas context loss recovery --------------------------------
+  // Heavy GPU-side canvas work (or unrelated memory pressure from other
+  // tabs) can cause the browser to drop the canvas's rendering context.
+  // Without handling this, every subsequent draw call silently no-ops,
+  // the canvas stays permanently blank, and the whole scene looks
+  // "frozen and black" with no way to recover short of a page reload.
+  function onContextLost(event) {
+    event.preventDefault();
+    stop();
+  }
+
+  function onContextRestored() {
+    seedParticlesIfNeeded();
+    start();
+  }
+
+  canvas.addEventListener("contextlost", onContextLost);
+  canvas.addEventListener("contextrestored", onContextRestored);
 
   document.addEventListener("visibilitychange", onVisibilityChange);
   window.addEventListener("resize", onResize, { passive: true });
