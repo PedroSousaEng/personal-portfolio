@@ -15,6 +15,8 @@
     this page only provides the container the renderer populates.
     To wire up a real PDF, drop it at assets/documents/cv-pedro-sousa.pdf
     (or update the two hrefs below to point wherever it actually lives).
+    "Print version" opens that same PDF and prints IT (not this HTML
+    page) — see the inline script near the end of this file.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -81,7 +83,7 @@
         </div>
 
         <div class="cv-header__actions no-print">
-          <a class="btn btn--primary" href="assets/documents/cv-pedro-sousa.pdf" download>
+          <a class="btn btn--primary" href="assets/documents/cv-pedro-sousa.pdf" download data-cv-pdf-link>
             <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-4.5-4.5M12 15l4.5-4.5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
             Download CV (PDF)
           </a>
@@ -113,8 +115,29 @@
   </footer>
 
   <script>
+    // "Print version" prints the actual CV PDF you uploaded to
+    // assets/documents/cv-pedro-sousa.pdf (same file as the "Download CV"
+    // button above, read via [data-cv-pdf-link]) — NOT this HTML page.
+    // Opening the PDF in a new tab and calling print() there triggers the
+    // browser's native PDF-viewer print dialog (works in Chrome/Edge;
+    // Firefox/Safari open their own PDF viewer the same way).
+    // If the popup is blocked, or the PDF file hasn't been uploaded yet
+    // (404), fall back to printing this page instead of doing nothing.
     document.addEventListener("click", (event) => {
-      if (event.target.closest("[data-print-cv]")) window.print();
+      if (!event.target.closest("[data-print-cv]")) return;
+
+      const pdfLink = document.querySelector("[data-cv-pdf-link]");
+      const pdfUrl = pdfLink ? pdfLink.getAttribute("href") : null;
+      const pdfWindow = pdfUrl ? window.open(pdfUrl, "_blank") : null;
+
+      if (!pdfWindow) {
+        window.print();
+        return;
+      }
+
+      pdfWindow.addEventListener("load", () => {
+        pdfWindow.print();
+      });
     });
   </script>
   <script type="module" src="assets/js/main.js"></script>
