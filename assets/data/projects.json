@@ -4,7 +4,11 @@
     "title": "Vinted OS",
     "subtitle": "Smart listing management for Vinted sellers",
     "description": "A productivity platform designed to streamline inventory management for Vinted sellers by centralizing listing organization, performance tracking, and workflow automation. The system provides tools for monitoring product metrics, managing large inventories, accelerating listing and relisting processes, and improving operational efficiency. The project demonstrates practical software development, process optimization, data organization, and user-focused interface design for real-world e-commerce applications.",
-    "tags": ["Python", "Artificial Intelligence", "Automation"],
+    "tags": [
+      "Python",
+      "Artificial Intelligence",
+      "Automation"
+    ],
     "image": "assets/images/VintedOs.png",
     "featured": true,
     "github": "https://github.com/PedroSousaEng/vinted-os",
@@ -13,14 +17,21 @@
     "category": "Software",
     "year": "2026",
     "status": "In Progress",
-    "highlights": ["Personal Project"],
+    "highlights": [
+      "Personal Project"
+    ],
     "objectives": [
       "Centralize inventory and listing data that was previously scattered across the Vinted app and spreadsheets.",
       "Reduce the manual effort of relisting and refreshing stale product listings.",
       "Surface performance metrics (views, likes, sell-through time) to guide pricing and relisting decisions."
     ],
     "outcome": "A working personal tool that manages my own Vinted inventory end-to-end, with AI-assisted development used throughout to accelerate iteration and explore automation approaches I hadn't used before.",
-    "myRole": ["Product & Systems Design", "Python Development", "Data Modeling", "Workflow Automation"],
+    "myRole": [
+      "Product & Systems Design",
+      "Python Development",
+      "Data Modeling",
+      "Workflow Automation"
+    ],
     "story": [
       {
         "stage": "Problem",
@@ -49,23 +60,34 @@
     ],
     "modules": [
       {
-  "type": "gallery",
-  "heading": "Showcase",
-  "images": [
-    { "src": "assets/images/VintedOs.png", "caption": "Vinted OS dashboard" }
-  ]
-},
+        "type": "gallery",
+        "heading": "Showcase",
+        "images": [
+          {
+            "src": "assets/images/VintedOs.png",
+            "caption": "Vinted OS dashboard"
+          }
+        ]
+      },
       {
         "type": "spec-groups",
         "heading": "System Overview",
         "groups": [
           {
             "label": "Architecture",
-            "items": ["Python core with a local data store", "Modular automation hooks (relisting, price suggestions)", "AI-assisted scripting for repetitive data tasks"]
+            "items": [
+              "Python core with a local data store",
+              "Modular automation hooks (relisting, price suggestions)",
+              "AI-assisted scripting for repetitive data tasks"
+            ]
           },
           {
             "label": "Features",
-            "items": ["Inventory tracking with status/history", "Performance metrics per listing", "Foundation for scheduled relisting automation"]
+            "items": [
+              "Inventory tracking with status/history",
+              "Performance metrics per listing",
+              "Foundation for scheduled relisting automation"
+            ]
           }
         ]
       },
@@ -73,8 +95,14 @@
         "type": "reflection",
         "heading": "Reflection",
         "items": [
-          { "label": "Challenges", "text": "Keeping the data model simple enough to maintain solo while still capturing enough history to make useful pricing/relisting suggestions." },
-          { "label": "Future Improvements", "text": "Fully automate the relisting cycle and add a lightweight dashboard view of inventory health instead of reading raw data." }
+          {
+            "label": "Challenges",
+            "text": "Keeping the data model simple enough to maintain solo while still capturing enough history to make useful pricing/relisting suggestions."
+          },
+          {
+            "label": "Future Improvements",
+            "text": "Fully automate the relisting cycle and add a lightweight dashboard view of inventory health instead of reading raw data."
+          }
         ]
       }
     ]
@@ -84,7 +112,12 @@
     "title": "Personal Portfolio",
     "subtitle": "Premium engineering portfolio, framework-free",
     "description": "A premium engineering portfolio developed using HTML5, CSS3, and Vanilla JavaScript, with a strong emphasis on performance, accessibility, and user experience. The website showcases engineering projects through responsive layouts, smooth animations, and interactive visual elements while maintaining clean architecture and optimized code. The project demonstrates frontend development skills, UI/UX design principles, performance optimization, and the ability to build scalable, framework-free web applications suitable for professional presentation.",
-    "tags": ["HTML5", "CSS3", "JavaScript", "UI/UX"],
+    "tags": [
+      "HTML5",
+      "CSS3",
+      "JavaScript",
+      "UI/UX"
+    ],
     "image": "assets/images/project-portfolio.svg",
     "featured": true,
     "github": "https://github.com/PedroSousaEng/personal-portfolio",
@@ -93,14 +126,21 @@
     "category": "Software",
     "year": "2026",
     "status": "In Progress",
-    "highlights": ["Personal Project"],
+    "highlights": [
+      "Personal Project"
+    ],
     "objectives": [
       "Present my engineering projects with the depth of real case studies, not just a list of links.",
       "Build a fast, accessible, framework-free site that stays easy to extend as new projects are added.",
       "Use AI as a genuine development accelerator while keeping full control over architecture and content."
     ],
     "outcome": "A production site with a reusable data-driven project system: every project page assembles itself from a single JSON record, so adding a new case study never requires touching the templates.",
-    "myRole": ["Frontend Architecture", "UI/UX Design", "Performance Optimization", "Content Strategy"],
+    "myRole": [
+      "Frontend Architecture",
+      "UI/UX Design",
+      "Performance Optimization",
+      "Content Strategy"
+    ],
     "story": [
       {
         "stage": "Problem",
@@ -127,18 +167,26 @@
         "text": "Treating the portfolio itself as an engineering project, with a real data model and iteration cycle, produced a much more maintainable result than hand-writing each page."
       }
     ],
-    "modules": [ 
+    "modules": [
       {
         "type": "spec-groups",
         "heading": "System Overview",
         "groups": [
           {
             "label": "Architecture",
-            "items": ["Static HTML pages + shared vanilla JS render modules", "Every project/site field driven by one JSON record", "No build step, no framework, no bundler"]
+            "items": [
+              "Static HTML pages + shared vanilla JS render modules",
+              "Every project/site field driven by one JSON record",
+              "No build step, no framework, no bundler"
+            ]
           },
           {
             "label": "Software",
-            "items": ["Category filter bar on the Projects page", "Modular case-study system (this section is one such module)", "Print-ready CV page generated from its own JSON"]
+            "items": [
+              "Category filter bar on the Projects page",
+              "Modular case-study system (this section is one such module)",
+              "Print-ready CV page generated from its own JSON"
+            ]
           }
         ]
       },
@@ -146,8 +194,14 @@
         "type": "reflection",
         "heading": "Reflection",
         "items": [
-          { "label": "Challenges", "text": "Balancing ambient visual effects (canvas backgrounds, cursor, tilt) against real performance, several rounds of profiling were needed to remove jank without losing the premium feel." },
-          { "label": "Future Improvements", "text": "Add a lightweight build step for image optimization, and expand the modular project-content system with real photo galleries as projects gain documentation." }
+          {
+            "label": "Challenges",
+            "text": "Balancing ambient visual effects (canvas backgrounds, cursor, tilt) against real performance, several rounds of profiling were needed to remove jank without losing the premium feel."
+          },
+          {
+            "label": "Future Improvements",
+            "text": "Add a lightweight build step for image optimization, and expand the modular project-content system with real photo galleries as projects gain documentation."
+          }
         ]
       }
     ]
@@ -157,7 +211,12 @@
     "title": "Formula Water",
     "subtitle": "Gravity-powered vehicle prototype",
     "description": "An engineering project focused on the design, modeling, and validation of a gravity-powered Formula Water prototype. The repository includes CAD development, engineering calculations, analytical modeling, numerical simulations, and prototype iterations used to optimize performance and efficiency. The project combines mechanical design, applied physics, manufacturing considerations, and experimental validation to demonstrate a structured engineering workflow from concept development through testing and technical documentation.",
-    "tags": ["CAD", "Python", "Simulation", "Mechanical Design"],
+    "tags": [
+      "CAD",
+      "Python",
+      "Simulation",
+      "Mechanical Design"
+    ],
     "image": "assets/images/project-formula-water.svg",
     "featured": true,
     "github": "https://github.com/PedroSousaEng/formula-water",
@@ -166,14 +225,22 @@
     "category": "Mechanical Engineering",
     "year": "2026",
     "status": "Completed",
-    "highlights": ["1st Place — University of Minho", "Team Project"],
+    "highlights": [
+      "1st Place — University of Minho",
+      "Team Project"
+    ],
     "objectives": [
       "Design a vehicle that converts the potential energy of falling water into forward motion as efficiently as possible.",
       "Minimize friction and mass losses across the drivetrain to maximize distance travelled per unit of stored energy.",
       "Validate the design analytically and experimentally before the competition run."
     ],
     "outcome": "1st place at the University of Minho competition, with a prototype whose measured performance closely matched the analytical and simulated predictions.",
-    "myRole": ["CAD Modeling", "Python Simulation & Analysis", "Drivetrain Design", "Testing & Validation"],
+    "myRole": [
+      "CAD Modeling",
+      "Python Simulation & Analysis",
+      "Drivetrain Design",
+      "Testing & Validation"
+    ],
     "story": [
       {
         "stage": "Problem",
@@ -208,30 +275,49 @@
         "text": "Simulating the system in Python before committing to manufacturing saved iteration cycles, most of the physical testing was spent fine-tuning rather than discovering fundamental design flaws."
       }
     ],
-    "modules": [{
-  "type": "gallery",
-  "heading": "Showcase",
-  "images": [
-    { "src": "assets/images/fw-0.jpeg", "caption": "Real Model" },
-    { "src": "assets/images/fw-1.png", "caption": "CAD Model" },
-    { "src": "assets/images/fw-2.png", "caption": "Stress Analysis" }
-  ]
-},
+    "modules": [
+      {
+        "type": "gallery",
+        "heading": "Showcase",
+        "images": [
+          {
+            "src": "assets/images/fw-0.jpeg",
+            "caption": "Real Model"
+          },
+          {
+            "src": "assets/images/fw-1.png",
+            "caption": "CAD Model"
+          },
+          {
+            "src": "assets/images/fw-2.png",
+            "caption": "Stress Analysis"
+          }
+        ]
+      },
       {
         "type": "spec-groups",
         "heading": "Engineering Specifications",
         "groups": [
           {
             "label": "CAD & Modeling",
-            "items": ["Full chassis and drivetrain assembly in SolidWorks/Solid Edge", "Gear ratio tuned via simulation before finalizing geometry"]
+            "items": [
+              "Full chassis and drivetrain assembly in SolidWorks/Solid Edge",
+              "Gear ratio tuned via simulation before finalizing geometry"
+            ]
           },
           {
             "label": "Simulation & Calculations",
-            "items": ["Python model of energy conversion and drivetrain losses", "Rolling-friction and stability/center-of-mass analysis"]
+            "items": [
+              "Python model of energy conversion and drivetrain losses",
+              "Rolling-friction and stability/center-of-mass analysis"
+            ]
           },
           {
             "label": "Manufacturing",
-            "items": ["Machined/assembled drivetrain and chassis components", "Bearing selection iterated to reduce friction losses"]
+            "items": [
+              "Machined/assembled drivetrain and chassis components",
+              "Bearing selection iterated to reduce friction losses"
+            ]
           }
         ]
       },
@@ -239,15 +325,25 @@
         "type": "achievements",
         "heading": "Achievements",
         "items": [
-          { "title": "1st Place — University of Minho Competition", "description": "Awarded for overall performance and engineering execution against other competing teams.", "year": "2026" }
+          {
+            "title": "1st Place — University of Minho Competition",
+            "description": "Awarded for overall performance and engineering execution against other competing teams.",
+            "year": "2026"
+          }
         ]
       },
       {
         "type": "reflection",
         "heading": "Reflection",
         "items": [
-          { "label": "Challenges", "text": "Minimizing friction losses in the drivetrain while keeping the design simple enough to manufacture reliably within the competition's constraints." },
-          { "label": "Future Improvements", "text": "Instrument the prototype with real sensors during testing to capture a full speed/distance curve instead of only the final result." }
+          {
+            "label": "Challenges",
+            "text": "Minimizing friction losses in the drivetrain while keeping the design simple enough to manufacture reliably within the competition's constraints."
+          },
+          {
+            "label": "Future Improvements",
+            "text": "Instrument the prototype with real sensors during testing to capture a full speed/distance curve instead of only the final result."
+          }
         ]
       }
     ]
@@ -257,7 +353,12 @@
     "title": "Door Lock Teardown",
     "subtitle": "Reverse-engineering an automotive mechanism",
     "description": "A comprehensive engineering teardown of an automotive door lock mechanism involving complete disassembly, reverse engineering, CAD reconstruction, and functional analysis. The project investigates component interactions, manufacturing processes, material selection, tolerances, and assembly methods to understand the system's operation and design intent. The resulting documentation highlights both the mechanical architecture and engineering decisions behind a real automotive product.",
-    "tags": ["Reverse Engineering", "CAD", "Materials", "Product Development"],
+    "tags": [
+      "Reverse Engineering",
+      "CAD",
+      "Materials",
+      "Product Development"
+    ],
     "image": "assets/images/project-teardown.svg",
     "featured": false,
     "github": "https://github.com/PedroSousaEng/doorlock-teardown",
@@ -266,14 +367,20 @@
     "category": "Mechanical Engineering",
     "year": "2025",
     "status": "Completed",
-    "highlights": ["University Project"],
+    "highlights": [
+      "University Project"
+    ],
     "objectives": [
       "Fully disassemble an automotive door lock mechanism to understand every component's function.",
       "Identify the materials and manufacturing processes behind each part and why they were chosen.",
       "Document the mechanism well enough to explain the engineering decisions behind the design."
     ],
     "outcome": "A complete component-by-component breakdown of the mechanism, with documented reasoning for material and process choices and how each part contributes to the lock's function and reliability.",
-    "myRole": ["Disassembly & Inspection", "Materials Analysis", "Technical Documentation"],
+    "myRole": [
+      "Disassembly & Inspection",
+      "Materials Analysis",
+      "Technical Documentation"
+    ],
     "story": [
       {
         "stage": "Problem",
@@ -300,25 +407,51 @@
         "text": "Reverse engineering a finished product is one of the fastest ways to build intuition for manufacturing-aware design, tolerances and material choices that look arbitrary on paper usually have a clear cost or reliability reason once you see the assembled part."
       }
     ],
-    "modules": [{
-  "type": "gallery",
-  "heading": "Showcase",
-  "images": [
-    { "src": "assets/images/dlt-0.jpeg", "caption": "Real Lock" },
-    { "src": "assets/images/dlt-1.jpeg", "caption": "CAD Model - Exploded View" }
-  ]
-},
+    "modules": [
+      {
+        "type": "gallery",
+        "heading": "Showcase",
+        "images": [
+          {
+            "src": "assets/images/dlt-0.jpeg",
+            "caption": "Real Lock"
+          },
+          {
+            "src": "assets/images/dlt-1.jpeg",
+            "caption": "CAD Model - Exploded View"
+          },
+          {
+            "src": "assets/images/dlt-4.mp4",
+            "caption": "Mechanism Actuation Test"
+          },
+          {
+            "src": "assets/images/dlt-5.mp4",
+            "caption": "Locking Pawl Engagement"
+          },
+          {
+            "src": "assets/images/dlt-6.mp4",
+            "caption": "Reassembled Mechanism Test"
+          }
+        ]
+      },
       {
         "type": "spec-groups",
         "heading": "Engineering Specifications",
         "groups": [
           {
             "label": "Materials & Manufacturing",
-            "items": ["Stamped steel levers and pawl", "Injection-molded housing components", "Machined pin/actuation interfaces"]
+            "items": [
+              "Stamped steel levers and pawl",
+              "Injection-molded housing components",
+              "Machined pin/actuation interfaces"
+            ]
           },
           {
             "label": "Analysis",
-            "items": ["Component-by-component functional breakdown", "Manual force-path validation across sub-assemblies"]
+            "items": [
+              "Component-by-component functional breakdown",
+              "Manual force-path validation across sub-assemblies"
+            ]
           }
         ]
       },
@@ -326,8 +459,14 @@
         "type": "reflection",
         "heading": "Reflection",
         "items": [
-          { "label": "Challenges", "text": "Disassembling without damaging small spring-loaded components, and correctly inferring the intended force path before re-testing it manually." },
-          { "label": "Future Improvements", "text": "Reconstruct the mechanism in CAD from the teardown measurements to validate tolerances numerically instead of only by inspection." }
+          {
+            "label": "Challenges",
+            "text": "Disassembling without damaging small spring-loaded components, and correctly inferring the intended force path before re-testing it manually."
+          },
+          {
+            "label": "Future Improvements",
+            "text": "Reconstruct the mechanism in CAD from the teardown measurements to validate tolerances numerically instead of only by inspection."
+          }
         ]
       }
     ]
@@ -337,7 +476,12 @@
     "title": "Fatigue Study",
     "subtitle": "FEA-based fatigue life assessment of a transmission hub",
     "description": "A structural integrity study of a transmission hub combining CAD modeling, Finite Element Analysis (FEA), and analytical calculations to evaluate stress distribution and fatigue performance under cyclic loading. The project investigates stress concentrations, identifies critical failure regions, validates numerical results with engineering theory, and estimates fatigue life. It demonstrates the application of solid mechanics, material behavior, and simulation-driven engineering methodologies for mechanical component assessment.",
-    "tags": ["FEA", "CAD", "Solid Mechanics", "Fatigue Analysis"],
+    "tags": [
+      "FEA",
+      "CAD",
+      "Solid Mechanics",
+      "Fatigue Analysis"
+    ],
     "image": "assets/images/project-fatigue-study.svg",
     "featured": false,
     "github": "https://github.com/PedroSousaEng/fatigue-study",
@@ -346,14 +490,20 @@
     "category": "Mechanical Engineering",
     "year": "2026",
     "status": "Completed",
-    "highlights": ["University Project"],
+    "highlights": [
+      "University Project"
+    ],
     "objectives": [
       "Model a transmission hub in CAD and evaluate its stress distribution under cyclic loading.",
       "Identify stress-concentration regions most likely to initiate fatigue failure.",
       "Cross-validate the FEA results against analytical solid-mechanics calculations."
     ],
     "outcome": "A validated fatigue-life estimate for the hub, with FEA-identified critical regions confirmed against hand calculations, demonstrating a simulation-driven approach to structural assessment.",
-    "myRole": ["CAD Modeling", "FEA Setup & Analysis", "Analytical Validation"],
+    "myRole": [
+      "CAD Modeling",
+      "FEA Setup & Analysis",
+      "Analytical Validation"
+    ],
     "story": [
       {
         "stage": "Problem",
@@ -380,26 +530,42 @@
         "text": "FEA results are only as trustworthy as the analytical checks behind them, validating critical stress values by hand caught a boundary-condition assumption that would have skewed the fatigue estimate."
       }
     ],
-    "modules": [{
-  "type": "gallery",
-  "heading": "Showcase",
-  "images": [
-    { "src": "assets/images/fs-0.jpeg", "caption": "Real Piece" },
-    { "src": "assets/images/fs-1.jpeg", "caption": "Mechanism where the piece is used" },
-    { "src": "assets/images/fs-2.png", "caption": "Stress Analysis" }
-  ]
-},
+    "modules": [
+      {
+        "type": "gallery",
+        "heading": "Showcase",
+        "images": [
+          {
+            "src": "assets/images/fs-0.jpeg",
+            "caption": "Real Piece"
+          },
+          {
+            "src": "assets/images/fs-1.jpeg",
+            "caption": "Mechanism where the piece is used"
+          },
+          {
+            "src": "assets/images/fs-2.png",
+            "caption": "Stress Analysis"
+          }
+        ]
+      },
       {
         "type": "spec-groups",
         "heading": "Engineering Specifications",
         "groups": [
           {
             "label": "CAD & Modeling",
-            "items": ["Hub geometry modeled with fillets, keyway, and section transitions captured explicitly"]
+            "items": [
+              "Hub geometry modeled with fillets, keyway, and section transitions captured explicitly"
+            ]
           },
           {
             "label": "FEA & Validation",
-            "items": ["Stress distribution mapped under cyclic loading", "Critical regions cross-checked against analytical solid-mechanics calculations", "Fatigue-life estimate via S-N curve approach"]
+            "items": [
+              "Stress distribution mapped under cyclic loading",
+              "Critical regions cross-checked against analytical solid-mechanics calculations",
+              "Fatigue-life estimate via S-N curve approach"
+            ]
           }
         ]
       },
@@ -407,8 +573,14 @@
         "type": "reflection",
         "heading": "Reflection",
         "items": [
-          { "label": "Challenges", "text": "Setting boundary conditions in the FEA model that matched the real loading scenario closely enough for the analytical cross-check to be meaningful." },
-          { "label": "Future Improvements", "text": "Run a mesh-convergence study to quantify confidence in the stress values at the most critical fillet region." }
+          {
+            "label": "Challenges",
+            "text": "Setting boundary conditions in the FEA model that matched the real loading scenario closely enough for the analytical cross-check to be meaningful."
+          },
+          {
+            "label": "Future Improvements",
+            "text": "Run a mesh-convergence study to quantify confidence in the stress values at the most critical fillet region."
+          }
         ]
       }
     ]
@@ -418,7 +590,12 @@
     "title": "Pin Clutch",
     "subtitle": "Pedal-actuated pin clutch mechanism",
     "description": "Design and development of a pedal-actuated pin clutch mechanism intended for controlled shaft engagement and disengagement. The project includes concept generation, CAD modeling, kinematic analysis, mechanical calculations, material selection, and functional prototyping using additive manufacturing. Particular attention was given to simplicity, manufacturability, and reliable operation, demonstrating the complete engineering design process from initial concept to a validated physical prototype.",
-    "tags": ["CAD", "3D Printing", "Kinematics", "Mechanical Design"],
+    "tags": [
+      "CAD",
+      "3D Printing",
+      "Kinematics",
+      "Mechanical Design"
+    ],
     "image": "assets/images/project-embraiagem.svg",
     "featured": false,
     "github": "https://github.com/PedroSousaEng/pin-clutch",
@@ -427,14 +604,21 @@
     "category": "Mechanical Engineering",
     "year": "2024",
     "status": "Completed",
-    "highlights": ["University Project"],
+    "highlights": [
+      "University Project"
+    ],
     "objectives": [
       "Design a simple, reliable mechanism to engage and disengage two shafts on demand via a pedal.",
       "Keep the design manufacturable with additive manufacturing (3D printing) and simple materials.",
       "Validate the mechanism through a functional physical prototype."
     ],
     "outcome": "A working PLA prototype that reliably engages and disengages the two shafts via pedal actuation and a connecting pin, validating the kinematic design.",
-    "myRole": ["Concept Design", "CAD Modeling", "Kinematic Analysis", "3D-Printed Prototyping"],
+    "myRole": [
+      "Concept Design",
+      "CAD Modeling",
+      "Kinematic Analysis",
+      "3D-Printed Prototyping"
+    ],
     "story": [
       {
         "stage": "Problem",
@@ -471,16 +655,56 @@
     ],
     "modules": [
       {
+        "type": "gallery",
+        "heading": "Showcase",
+        "images": [
+          {
+            "src": "assets/images/pc-1.jpeg",
+            "caption": "3D-Printed Components"
+          },
+          {
+            "src": "assets/images/pc-2.jpeg",
+            "caption": "Assembled Prototype"
+          },
+          {
+            "src": "assets/images/pc-3.jpeg",
+            "caption": "Pedal Linkage Detail"
+          },
+          {
+            "src": "assets/images/pc-4.jpeg",
+            "caption": "Pin Engagement Close-up"
+          },
+          {
+            "src": "assets/images/pc-5.jpeg",
+            "caption": "Pedal Actuation Test"
+          },
+          {
+            "src": "assets/images/pc-6.jpeg",
+            "caption": "Full Prototype Setup"
+          },
+          {
+            "src": "assets/images/pc-0.mp4",
+            "caption": "Functional Test — Pedal Actuation"
+          }
+        ]
+      },
+      {
         "type": "spec-groups",
         "heading": "Engineering Specifications",
         "groups": [
           {
             "label": "CAD & Kinematics",
-            "items": ["Pedal-to-pin linkage modeled and sized via kinematic analysis", "Actuation travel tuned to guarantee reliable engagement"]
+            "items": [
+              "Pedal-to-pin linkage modeled and sized via kinematic analysis",
+              "Actuation travel tuned to guarantee reliable engagement"
+            ]
           },
           {
             "label": "Manufacturing",
-            "items": ["3D-printed in PLA with print orientation chosen for pin sliding fit", "Clearances iterated across print revisions"]
+            "items": [
+              "3D-printed in PLA with print orientation chosen for pin sliding fit",
+              "Clearances iterated across print revisions"
+            ]
           }
         ]
       },
@@ -488,11 +712,16 @@
         "type": "reflection",
         "heading": "Reflection",
         "items": [
-          { "label": "Challenges", "text": "Getting the pin-to-housing clearance right — too tight caused binding, too loose caused inconsistent engagement." },
-          { "label": "Future Improvements", "text": "Sketch and size the linkage geometry on paper before the first CAD pass, to catch clearance issues earlier than the first physical print." }
+          {
+            "label": "Challenges",
+            "text": "Getting the pin-to-housing clearance right — too tight caused binding, too loose caused inconsistent engagement."
+          },
+          {
+            "label": "Future Improvements",
+            "text": "Sketch and size the linkage geometry on paper before the first CAD pass, to catch clearance issues earlier than the first physical print."
+          }
         ]
       }
     ]
   }
 ]
-
