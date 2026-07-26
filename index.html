@@ -54,22 +54,6 @@
   <link rel="stylesheet" href="assets/css/page-transitions.css">
   <link rel="stylesheet" href="assets/css/svg-line-draw.css">
   <link rel="stylesheet" href="assets/css/noise.css">
-  <link rel="stylesheet" href="assets/css/boot-intro.css">
-
-  <!-- Runs synchronously before the body is parsed: if this tab's session
-       already saw the boot intro, mark <html> immediately so the overlay
-       (see body, below) never gets a chance to paint. See
-       assets/js/boot-intro.js for the rest of the sequence. -->
-  <script>
-    try {
-      if (sessionStorage.getItem("pf-boot-intro-seen") === "1") {
-        document.documentElement.classList.add("no-boot-intro");
-      }
-    } catch (error) {
-      // Private mode etc — degrade silently, worst case the intro plays
-      // again this load.
-    }
-  </script>
 
   <script type="application/ld+json">
   {
@@ -80,36 +64,17 @@
     "url": "https://pedrosousaeng.github.io/portfolio/",
     "sameAs": [
       "https://github.com/PedroSousaEng",
-      "https://linkedin.com/in/pedro-sousa-3408201a4/"
+      "https://www.linkedin.com/in/pedro-sousa-3408201a4/"
     ]
   }
   </script>
 <!-- Private analytics (GoatCounter). Only you see the stats — no
          dashboard, banner, or cookie notice is shown to visitors.
-         Replace YOUR-CODE with your own GoatCounter site code after
-         signing up for free at https://www.goatcounter.com/ -->
-    <script data-goatcounter="https://YOUR-CODE.goatcounter.com/count"
+         Site code: pedro-sousa (goatcounter.com/settings). -->
+    <script data-goatcounter="https://pedro-sousa.goatcounter.com/count"
             async src="https://gc.zgo.at/count.js"></script>
   </head>
 <body data-page="home">
-  <div class="boot-intro" aria-hidden="true">
-    <div class="boot-intro__grid"></div>
-    <div class="boot-intro__panel">
-      <svg class="boot-intro__mark" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-        <path class="boot-intro__mark-hex" d="M32,10 L51,21 L51,43 L32,54 L13,43 L13,21 Z"/>
-        <circle class="boot-intro__mark-circle" cx="32" cy="32" r="7"/>
-      </svg>
-      <p class="boot-intro__label font-mono">SYSTEM</p>
-      <p class="boot-intro__line font-mono"><span class="boot-intro__type">Pedro Sousa</span><span class="boot-intro__caret"></span></p>
-      <div class="boot-intro__bar"><div class="boot-intro__bar-fill"></div></div>
-      <div class="boot-intro__status font-mono text-sm" aria-hidden="true">
-        <span class="boot-intro__status-step boot-intro__status-step--1">Initializing engine</span>
-        <span class="boot-intro__status-step boot-intro__status-step--2">Assembling components</span>
-        <span class="boot-intro__status-step boot-intro__status-step--3">Ready</span>
-      </div>
-    </div>
-  </div>
-
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">

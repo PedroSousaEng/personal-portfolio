@@ -50,18 +50,18 @@ body[data-custom-cursor="active"] .btn {
 }
 
 .cursor-dot {
-  width: 6px;
-  height: 6px;
-  margin: -3px 0 0 -3px;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
   border-radius: var(--radius-full);
   background: var(--color-accent-indigo);
   transition: opacity var(--duration-base) var(--ease-standard);
 }
 
 .cursor-ring {
-  width: 32px;
-  height: 32px;
-  margin: -16px 0 0 -16px;
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
   transition: opacity var(--duration-base) var(--ease-standard),
     width var(--duration-base) var(--ease-standard),
     height var(--duration-base) var(--ease-standard),
@@ -74,59 +74,22 @@ body[data-custom-cursor="active"] .btn {
   height: 100%;
   border-radius: var(--radius-full);
   border: 1px solid var(--color-accent-indigo-dim);
-  transition: border-radius var(--duration-base) var(--ease-standard),
-    border-color var(--duration-base) var(--ease-standard),
-    background-color var(--duration-base) var(--ease-standard);
+  transition: border-color var(--duration-base) var(--ease-standard);
 }
 
 .cursor-ring[data-hover="true"] {
-  width: 52px;
-  height: 52px;
-  margin: -26px 0 0 -26px;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
 }
 
 .cursor-ring[data-hover="true"] .cursor-ring-shape {
   border-color: var(--color-accent-indigo);
-  background: var(--color-accent-indigo-tint);
 }
 
-/* =========================================================
-   Per-page cursor identity
-   Home keeps the plain circle (default rules above). Every other
-   page gets its own simple silhouette on .cursor-ring-shape — the
-   inner element is untouched by cursor.js (which only ever writes
-   `transform` on the outer .cursor-ring, for position), so rotation
-   is fair game here alongside border-radius / border-style.
-   ========================================================= */
-
-/* About: a true diamond — a rotated square, reads as a facet of the
-   node network behind it. */
-body[data-page="about"] .cursor-ring-shape {
-  border-radius: 3px;
-  transform: rotate(45deg);
-}
-
-body[data-page="about"] .cursor-ring[data-hover="true"] .cursor-ring-shape {
-  border-radius: 4px;
-}
-
-/* Projects: a square reticle — a viewfinder framing each card. */
-body[data-page="projects"] .cursor-ring-shape {
-  border-radius: 6px;
-}
-
-/* Contact: a dashed ring — echoes the radar sweep on the page. */
-body[data-page="contact"] .cursor-ring-shape {
-  border-style: dashed;
-}
-
-/* 404: a dashed square, tilted slightly off-axis — a broken,
-   off-signal frame. */
-body[data-page="404"] .cursor-ring-shape {
-  border-radius: 3px;
-  border-style: dashed;
-  transform: rotate(6deg);
-}
+/* One consistent minimal ring across every page — no more per-page
+   diamond/square/dashed/rotated variants. A single, quiet shape reads as
+   more considered than a different gimmick per section. */
 
 @media (prefers-reduced-motion: reduce) {
   .cursor-dot,

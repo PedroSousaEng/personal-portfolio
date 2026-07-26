@@ -56,10 +56,6 @@ async function applySiteIdentity() {
       el.textContent = value;
     }
   });
-
-  document.title = document.title
-    .replace(/Alex Rivera/g, site.name)
-    .replace(/alex-rivera/g, site.brand);
 }
 
 /**

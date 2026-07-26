@@ -6,9 +6,10 @@
  * RESPONSIBILITIES
  *   - renderProjects(containerEl, { featuredOnly }): fetch, build, and
  *     insert project cards into a given container. Used by the home page's
- *     "Featured projects" strip and, unfiltered, by the Projects page.
- *   - renderProjectsPage(gridEl, filterBarEl): Projects-page variant that
- *     also builds a category filter bar wired to re-render the grid.
+ *     "Featured projects" strip.
+ *   - renderProjectsPage(gridEl, filterBarEl): Projects-page variant —
+ *     renders every project in one grid, featured ones sorted first, with
+ *     an optional category filter bar wired to re-render the grid.
  *
  * DATA CONTRACT (assets/data/projects.json)
  *   Array<{
@@ -327,8 +328,15 @@ export async function renderProjectsPage(gridEl, filterBarEl) {
         return;
       }
 
+      // Featured projects surface first; order is otherwise preserved
+      // (stable sort), so within "featured" and "not featured" groups
+      // projects keep their position from projects.json.
+      const sorted = [...list].sort(
+        (a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured))
+      );
+
       const fragment = document.createDocumentFragment();
-      for (const project of list) {
+      for (const project of sorted) {
         fragment.appendChild(buildCard(project));
       }
       gridEl.replaceChildren(fragment);

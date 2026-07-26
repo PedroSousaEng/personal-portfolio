@@ -10,7 +10,7 @@
       "Automation"
     ],
     "image": "assets/images/VintedOs.png",
-    "featured": true,
+    "featured": false,
     "github": "https://github.com/PedroSousaEng/vinted-os",
     "demo": "",
     "report": "",
@@ -119,7 +119,7 @@
       "UI/UX"
     ],
     "image": "assets/images/project-portfolio.svg",
-    "featured": true,
+    "featured": false,
     "github": "https://github.com/PedroSousaEng/personal-portfolio",
     "demo": "",
     "report": "",
@@ -217,7 +217,7 @@
       "Simulation",
       "Mechanical Design"
     ],
-    "image": "assets/images/project-formula-water.svg",
+    "image": "assets/images/fw-0.jpeg",
     "featured": true,
     "github": "https://github.com/PedroSousaEng/formula-water",
     "demo": "",
@@ -359,7 +359,7 @@
       "Materials",
       "Product Development"
     ],
-    "image": "assets/images/project-teardown.svg",
+    "image": "assets/images/dlt-0.jpeg",
     "featured": false,
     "github": "https://github.com/PedroSousaEng/doorlock-teardown",
     "demo": "",
@@ -482,8 +482,8 @@
       "Solid Mechanics",
       "Fatigue Analysis"
     ],
-    "image": "assets/images/project-fatigue-study.svg",
-    "featured": false,
+    "image": "assets/images/fs-2.png",
+    "featured": true,
     "github": "https://github.com/PedroSousaEng/fatigue-study",
     "demo": "",
     "report": "assets/documents/Report-fatigue-study.pdf",
@@ -596,8 +596,8 @@
       "Kinematics",
       "Mechanical Design"
     ],
-    "image": "assets/images/project-embraiagem.svg",
-    "featured": false,
+    "image": "assets/images/pc-2.jpeg",
+    "featured": true,
     "github": "https://github.com/PedroSousaEng/pin-clutch",
     "demo": "",
     "report": "",

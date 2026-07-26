@@ -41,7 +41,6 @@ import { initTextDecode } from "./text-decode.js";
 import { initCardTilt } from "./tilt.js";
 import { initAvatarTilt } from "./avatar-tilt.js";
 import { initClickRipple } from "./click-ripple.js";
-import { initBootIntro } from "./boot-intro.js";
 import { initReducedMotion } from "./reduced-motion.js";
 import { initPageTransitions } from "./page-transitions.js";
 import { initSvgLineDraw } from "./svg-line-draw.js";
@@ -108,9 +107,6 @@ function initPageData() {
   }
 
   if (page === "projects") {
-    const featuredEl = document.querySelector("[data-featured-projects]");
-    if (featuredEl) renderProjects(featuredEl, { featuredOnly: true });
-
     const allEl = document.querySelector("[data-all-projects]");
     const filterBarEl = document.querySelector("[data-project-filters]");
     if (allEl) renderProjectsPage(allEl, filterBarEl);
@@ -176,8 +172,6 @@ function initPageBackground() {
 function init() {
   if (initialized) return;
   initialized = true;
-
-  initBootIntro();
 
   // Reduced-motion first so the boolean is mirrored on <body>
   // before any subsequent module inspects it.

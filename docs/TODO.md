@@ -1,16 +1,28 @@
 # TODO.md
 
 ## Before deploying with real content
-- [ ] Replace placeholder name/bio copy in `index.html` and `about.html`.
-- [ ] Replace all six entries in `assets/data/projects.json` with real
+- [x] Replace placeholder name/bio copy in `index.html` and `about.html`.
+- [x] Replace all six entries in `assets/data/projects.json` with real
       projects (or trim/extend the array — the grid handles any count).
-- [ ] Replace `assets/data/skills.json`, and the education/awards in `cv.json`.
-- [ ] Replace `assets/data/socials.json`, and the footer/structured-data
+- [x] Replace `assets/data/skills.json`, and the education/awards in `cv.json`.
+- [x] Replace `assets/data/socials.json`, and the footer/structured-data
       copies described in `SETUP.md`.
-- [ ] Replace placeholder images in `assets/images/` (avatar, project
-      covers, OG image) with real photos/screenshots.
-- [ ] Find-and-replace the placeholder site URL
+- [x] Find-and-replace the placeholder site URL
       (`https://alexrivera.github.io/portfolio/`) with the real one.
+- [x] OG/social-share image (`assets/images/og-image.svg` + exported
+      `.png`) no longer says "Alex Rivera" — regenerated with the real
+      name/role.
+- [ ] **Avatar is still a placeholder.** `assets/images/avatar.svg` is a
+      generated silhouette with "substituir por foto real" baked into the
+      SVG text — this needs an actual photo before sharing the site
+      widely. Drop a real photo in as `assets/images/avatar.jpg` (or
+      similar) and update the `src` in `about.html`.
+- [ ] Project cover images (`project-*.svg` in `assets/images/`) are still
+      generic geometric placeholders, not real screenshots/renders — swap
+      in real photos/CAD renders per project if you want the cards to
+      show actual work instead of abstract icons.
+- [x] GoatCounter analytics configured — site code `pedro-sousa` is live
+      in all 7 pages.
 - [ ] Run through the "Verifying before you deploy" checklist in
       `SETUP.md`.
 
