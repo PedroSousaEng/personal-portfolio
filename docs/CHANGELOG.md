@@ -3,6 +3,40 @@
 All notable changes to this project are documented here. Format loosely
 follows [Keep a Changelog](https://keepachangelog.com).
 
+## [Unreleased] — Real-content cleanup & polish pass
+
+### Fixed
+- **OG/social-share image** (`assets/images/og-image.svg` + exported
+  `.png`) still said "Alex Rivera — Software Engineer" — this is what
+  rendered as the link preview on LinkedIn/WhatsApp/etc. Regenerated with
+  the real name and role.
+- Removed a dead `document.title` find-and-replace in `render-site.js`
+  left over from the original template (real content no longer contains
+  "Alex Rivera" anywhere, so it was a permanent no-op).
+- `sitemap.xml` was missing `cv.html`.
+- GoatCounter analytics configured with the real site code
+  (`pedro-sousa`) across all 7 pages, replacing the `YOUR-CODE` placeholder.
+
+### Changed
+- **Featured projects** swapped to better represent mechanical engineering
+  work: Vinted OS and Personal Portfolio (software/meta) are no longer
+  featured; Fatigue Study (FEA) and Pin Clutch (concept → CAD → kinematics
+  → prototype) are now featured alongside Formula Water.
+- **Category filter bar** removed from the Projects page — it always
+  shows the full grid now, no Software/Mechanical Engineering tabs.
+- **Custom cursor** simplified: gentler hover growth (28px → 34px instead
+  of 32px → 52px), no background fill tint on hover, and the four
+  per-page shape variants (diamond on About, square on Projects, dashed
+  on Contact, tilted dashed square on 404) were removed in favor of one
+  consistent minimal ring everywhere.
+
+### Removed
+- **Boot intro** (the "SYSTEM / Initializing engine…" splash screen on
+  first Home visit) removed entirely — `assets/js/boot-intro.js`,
+  `assets/css/boot-intro.css`, the overlay markup and the
+  sessionStorage-gating inline script in `index.html` are all gone. The
+  site now renders straight to content on every load.
+
 ## [Unreleased] — Phase 2: Project Showcase Enhancement
 
 ### Added
