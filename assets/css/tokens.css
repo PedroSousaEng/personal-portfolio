@@ -69,15 +69,17 @@
   --fx-projects-spotlight-soft: #aeb8ff;
   --fx-projects-line: #5b6376;
 
-  /* ---- Contact page: radar field ----
+  /* ---- Contact page: Iberian map ----
      Consumed by:
-       - assets/js/effects/contact-radar.js
-       - assets/css/effects/contact-radar.css */
-  --fx-contact-ring: #6c7cff;
-  --fx-contact-sweep: #aeb8ff;
-  --fx-contact-line: #5b6376;
-  --fx-contact-grid: rgba(120, 130, 170, 0.02); /* more subtle */
-  --fx-contact-grid-size: 72px;
+       - assets/js/effects/iberian-map.js
+       - assets/css/effects/iberian-map.css
+     Monochrome line-art only — no accent blue here, kept deliberately
+     apart from the rest of the --fx-* palette so the map never picks up
+     a "radar" tint by accident. */
+  --fx-contact-map-line: #e6e8ee; /* world + peninsula linework, on #050505 */
+  --fx-contact-map-fill-pt: rgba(230, 232, 238, 0.05);
+  --fx-contact-map-fill-es: rgba(230, 232, 238, 0.03);
+  --fx-contact-signal: #e5484d; /* Braga marker — the one spot of color */
 
   /* ---- 404 page: error / interference field ----
      Consumed by:

@@ -1,0 +1,25 @@
+/**
+ * PURPOSE
+ *   Contact-page-only static surface layer supporting the JS-driven
+ *   Iberian map background. Monochrome only — no accent-blue wash, kept
+ *   isolated from shared page styles. Replaces contact-radar.css
+ *   (Phase 6 revision).
+ *
+ * RESPONSIBILITIES
+ *   - Scope every selector to body[data-page="contact"].
+ *   - Add a very subtle depth vignette behind the map canvas.
+ *   - Hide the canvas under prefers-reduced-motion is NOT done here —
+ *     the map itself should still render statically; only iberian-map.js
+ *     skips the pulse animation. See base.css for the generic .bg-fx
+ *     rules this builds on.
+ */
+
+body[data-page="contact"] {
+  background-image:
+    radial-gradient(ellipse 70% 78% at 72% 50%, transparent 0%, transparent 55%, var(--fx-depth-vignette) 100%);
+  background-attachment: fixed;
+}
+
+body[data-page="contact"] .bg-fx--contact-map {
+  opacity: 0.95;
+}

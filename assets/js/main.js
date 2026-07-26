@@ -15,7 +15,7 @@
  *   render-projects.js, render-project-detail.js, render-about.js, background-fx.js, scroll-reveal.js,
  *   cursor.js, magnetic.js, text-decode.js, tilt.js, reduced-motion.js,
  *   page-transitions.js, svg-line-draw.js,
- *   effects/{tech-network,about-rocket,projects-spotlight,contact-radar,error-signal}.js
+ *   effects/{tech-network,about-rocket,projects-spotlight,iberian-map,error-signal}.js
  *
  * SAFE EDITS
  *   To wire up a new page's data rendering, add a case to initPageData()
@@ -32,7 +32,7 @@ import { initBackgroundFX } from "./background-fx.js";
 import { initTechNetwork } from "./effects/tech-network.js";
 import { initAboutRocket } from "./effects/about-rocket.js";
 import { initProjectsSpotlight } from "./effects/projects-spotlight.js";
-import { initContactRadar } from "./effects/contact-radar.js";
+import { initIberianMap } from "./effects/iberian-map.js";
 import { initErrorSignal } from "./effects/error-signal.js";
 import { initScrollReveal } from "./scroll-reveal.js";
 import { initCursor } from "./cursor.js";
@@ -145,7 +145,7 @@ function initPageData() {
  *   home    -> initBackgroundFX()      : pendulum + particle field + lighting
  *   about   -> initTechNetwork()       : nodes / links / slow orbits + parallax
  *   projects-> initProjectsSpotlight() : mouse-led spotlight wash
- *   contact -> initContactRadar()      : slow radar sweep + signal blips
+ *   contact -> initIberianMap()        : Iberian Peninsula line-art map
  *   404     -> initErrorSignal()       : broken signal lines + interference
  *
  * Each effect module is self-contained: it injects its own <canvas>,
@@ -163,7 +163,7 @@ function initPageBackground() {
   } else if (page === "projects") {
     initProjectsSpotlight();
   } else if (page === "contact") {
-    initContactRadar();
+    initIberianMap();
   } else if (page === "404") {
     initErrorSignal();
   }
