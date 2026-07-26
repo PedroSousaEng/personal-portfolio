@@ -217,7 +217,7 @@
       "Simulation",
       "Mechanical Design"
     ],
-    "image": "assets/images/project-formula-water.svg",
+    "image": "assets/images/fw-0.jpeg",
     "featured": true,
     "github": "https://github.com/PedroSousaEng/formula-water",
     "demo": "",
@@ -359,7 +359,7 @@
       "Materials",
       "Product Development"
     ],
-    "image": "assets/images/project-teardown.svg",
+    "image": "assets/images/dlt-0.jpeg",
     "featured": false,
     "github": "https://github.com/PedroSousaEng/doorlock-teardown",
     "demo": "",
@@ -482,7 +482,11 @@
       "Solid Mechanics",
       "Fatigue Analysis"
     ],
+<<<<<<< Updated upstream
     "image": "assets/images/project-fatigue-study.svg",
+=======
+    "image": "assets/images/fs-2.png",
+>>>>>>> Stashed changes
     "featured": true,
     "github": "https://github.com/PedroSousaEng/fatigue-study",
     "demo": "",
@@ -596,7 +600,11 @@
       "Kinematics",
       "Mechanical Design"
     ],
+<<<<<<< Updated upstream
     "image": "assets/images/project-embraiagem.svg",
+=======
+    "image": "assets/images/pc-2.jpeg",
+>>>>>>> Stashed changes
     "featured": true,
     "github": "https://github.com/PedroSousaEng/pin-clutch",
     "demo": "",

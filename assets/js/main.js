@@ -107,9 +107,6 @@ function initPageData() {
   }
 
   if (page === "projects") {
-    const featuredEl = document.querySelector("[data-featured-projects]");
-    if (featuredEl) renderProjects(featuredEl, { featuredOnly: true });
-
     const allEl = document.querySelector("[data-all-projects]");
     const filterBarEl = document.querySelector("[data-project-filters]");
     if (allEl) renderProjectsPage(allEl, filterBarEl);
