@@ -97,7 +97,12 @@ function buildCaseHeading(text) {
   return heading;
 }
 
-/** Builds the hero block: image, meta, title, subtitle, highlights, tags, links. */
+/**
+ * Builds the hero block: image, meta, title, subtitle, highlights, tags.
+ * Action links (GitHub/demo) and the report preview now live in the aside
+ * column (see buildActionLinks / buildReportSection) so they can render
+ * beside the sticky gallery instead of stacking under the hero.
+ */
 function buildHero(project) {
   const hero = document.createElement("div");
   hero.className = "project-hero";
@@ -149,8 +154,19 @@ function buildHero(project) {
   }
   hero.appendChild(tags);
 
+  return hero;
+}
+
+/**
+ * Builds the GitHub/Resources + Live demo action buttons for the aside
+ * column. Returns null when the project has neither, so callers never
+ * append an empty wrapper.
+ */
+function buildActionLinks(project) {
+  if (!project.github && !project.demo) return null;
+
   const links = document.createElement("div");
-  links.className = "card__links mt-6";
+  links.className = "card__links mt-8";
 
   if (project.github) {
     const githubLink = document.createElement("a");
@@ -172,18 +188,58 @@ function buildHero(project) {
     links.appendChild(demoLink);
   }
 
-  if (project.report) {
-    const reportLink = document.createElement("a");
-    reportLink.className = "btn btn--secondary";
-    reportLink.href = project.report;
-    reportLink.target = "_blank";
-    reportLink.rel = "noopener noreferrer";
-    reportLink.innerHTML = `${DOWNLOAD_ICON} Download report`;
-    links.appendChild(reportLink);
-  }
+  return links;
+}
 
-  hero.appendChild(links);
-  return hero;
+/**
+ * Builds the "Report" section for the aside column: an embedded PDF
+ * preview (scrollable within its own iframe) plus a text fallback link and
+ * the existing "Download report" button. Returns null when the project
+ * has no report, so no empty section/heading ever renders.
+ */
+function buildReportSection(project) {
+  if (!project.report) return null;
+
+  const section = document.createElement("section");
+  section.className = "case-section case-report";
+  section.appendChild(buildCaseHeading("Report"));
+
+  const embed = document.createElement("div");
+  embed.className = "report-embed mt-6";
+
+  const iframe = document.createElement("iframe");
+  iframe.className = "report-embed__frame";
+  iframe.src = project.report;
+  iframe.title = `${project.title} report preview`;
+  iframe.setAttribute("aria-label", `${project.title} report preview`);
+  iframe.loading = "lazy";
+  embed.appendChild(iframe);
+
+  const fallback = document.createElement("p");
+  fallback.className = "report-embed__fallback text-sm mt-3";
+  const fallbackLink = document.createElement("a");
+  fallbackLink.className = "resource-list__item";
+  fallbackLink.href = project.report;
+  fallbackLink.target = "_blank";
+  fallbackLink.rel = "noopener noreferrer";
+  fallbackLink.innerHTML = `${EXTERNAL_ICON}<span>Open in new tab</span>`;
+  fallback.appendChild(fallbackLink);
+  embed.appendChild(fallback);
+
+  section.appendChild(embed);
+
+  const downloadWrap = document.createElement("div");
+  downloadWrap.className = "card__links mt-4";
+  const downloadLink = document.createElement("a");
+  downloadLink.className = "btn btn--secondary";
+  downloadLink.href = project.report;
+  downloadLink.target = "_blank";
+  downloadLink.rel = "noopener noreferrer";
+  downloadLink.innerHTML = `${DOWNLOAD_ICON} Download report`;
+  downloadWrap.appendChild(downloadLink);
+  section.appendChild(downloadWrap);
+
+  return section;
 }
 
 /** Builds the Overview section: description, objectives, outcome. Always present. */
@@ -680,22 +736,40 @@ const MODULE_RENDERERS = {
 
 /**
  * Renders project.modules[] in order, skipping any module with an
- * unrecognised type or with no usable content — a project's page only
- * ever shows the sections it actually has data for.
+ * unrecognised type, no usable content, or a type listed in `skipTypes` —
+ * a project's page only ever shows the sections it actually has data for.
  * @param {object} project
+ * @param {string[]} [skipTypes] module types to omit (e.g. "gallery",
+ *   which is rendered separately in the aside column instead).
  * @returns {HTMLElement[]}
  */
-function buildDynamicModules(project) {
+function buildDynamicModules(project, skipTypes = []) {
   if (!Array.isArray(project.modules)) return [];
 
   const sections = [];
   for (const module of project.modules) {
-    const renderer = module && MODULE_RENDERERS[module.type];
+    if (!module || skipTypes.includes(module.type)) continue;
+    const renderer = MODULE_RENDERERS[module.type];
     if (!renderer) continue;
     const section = renderer(module);
     if (section) sections.push(section);
   }
   return sections;
+}
+
+/**
+ * Pulls the project's gallery module (if it has one with usable content)
+ * out for the aside column, so it renders beside the report/links instead
+ * of inline with the other narrative modules.
+ * @param {object} project
+ * @returns {HTMLElement | null}
+ */
+function buildGalleryAside(project) {
+  if (!Array.isArray(project.modules)) return null;
+  const galleryModule = project.modules.find(
+    (module) => module && module.type === "gallery"
+  );
+  return galleryModule ? renderGalleryModule(galleryModule) : null;
 }
 
 /** Builds a compact prev/next navigation row between two projects. */
@@ -824,20 +898,60 @@ function buildFooterCta() {
 function buildDetail(project, allProjects) {
   const fragment = document.createDocumentFragment();
 
-  // Always-present sections.
-  fragment.appendChild(buildHero(project));
-  fragment.appendChild(buildOverview(project));
+  // Two-column layout: header spans full width, then main (narrative)
+  // and aside (gallery/report/links) sit side by side on wide screens.
+  // DOM order is header -> aside -> main so that on narrow screens,
+  // where the grid collapses to a single column, the gallery/report/
+  // links flow right after the header and before the rest of the text —
+  // CSS grid-area placement re-positions main/aside for >=1024px without
+  // needing a different DOM order per breakpoint.
+  const layout = document.createElement("div");
+  layout.className = "project-layout";
+
+  const header = document.createElement("div");
+  header.className = "project-layout__header";
+  header.appendChild(buildHero(project));
+  layout.appendChild(header);
+
+  const aside = document.createElement("aside");
+  aside.className = "project-layout__aside";
+  aside.setAttribute("aria-label", "Gallery, report and links");
+
+  const gallerySection = buildGalleryAside(project);
+  if (gallerySection) aside.appendChild(gallerySection);
+
+  const reportSection = buildReportSection(project);
+  if (reportSection) aside.appendChild(reportSection);
+
+  const actionLinks = buildActionLinks(project);
+  if (actionLinks) aside.appendChild(actionLinks);
+
+  if (aside.childNodes.length > 0) {
+    layout.appendChild(aside);
+  } else {
+    // No gallery, report, or links for this project — let the main
+    // column take the full width instead of leaving an empty track.
+    layout.classList.add("project-layout--no-aside");
+  }
+
+  const main = document.createElement("div");
+  main.className = "project-layout__main";
+  main.appendChild(buildOverview(project));
 
   const contribution = buildContribution(project);
-  if (contribution) fragment.appendChild(contribution);
+  if (contribution) main.appendChild(contribution);
 
   const story = buildStory(project);
-  if (story) fragment.appendChild(story);
+  if (story) main.appendChild(story);
 
-  // Dynamic, per-project modules — only what this project actually has.
-  for (const moduleSection of buildDynamicModules(project)) {
-    fragment.appendChild(moduleSection);
+  // Remaining dynamic modules — everything except the gallery, which
+  // already rendered in the aside above.
+  for (const moduleSection of buildDynamicModules(project, ["gallery"])) {
+    main.appendChild(moduleSection);
   }
+
+  layout.appendChild(main);
+  fragment.appendChild(layout);
 
   const index = allProjects.findIndex((item) => item.id === project.id);
   const prevProject = index > 0 ? allProjects[index - 1] : null;

@@ -620,6 +620,66 @@ body[data-page="projects"] [data-all-projects] > .card[data-tilting="true"] .car
   max-width: 720px;
 }
 
+/* Two-column project layout: header (hero text) spans the full width,
+   then main (narrative) and aside (gallery/report/links) sit side by
+   side from 1024px up. Below that, everything is a single column and
+   simply follows DOM order — see render-project-detail.js for why the
+   aside comes before main in the markup. */
+.project-layout__aside {
+  margin-top: var(--space-12);
+}
+
+.project-layout__aside > *:first-child {
+  margin-top: 0;
+}
+
+@media (min-width: 1024px) {
+  .project-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+    grid-template-areas:
+      "header header"
+      "main   aside";
+    column-gap: var(--space-10);
+    row-gap: var(--space-12);
+  }
+
+  .project-layout--no-aside {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "header"
+      "main";
+  }
+
+  .project-layout__header {
+    grid-area: header;
+  }
+
+  .project-layout__main {
+    grid-area: main;
+    min-width: 0;
+  }
+
+  .project-layout__aside {
+    grid-area: aside;
+    min-width: 0;
+    margin-top: 0;
+    /* Sticks within the height of the "main aside" row (which stretches
+       to match the taller .project-layout__main), respecting the fixed
+       site header's height (--nav-height, also used by .site-header)
+       plus a little breathing room. */
+    align-self: start;
+    position: sticky;
+    top: calc(var(--nav-height) + var(--space-6));
+  }
+
+  /* The aside is narrower than the main column, so keep its gallery to
+     2 columns instead of the 3 the same module would use inline. */
+  .project-layout__aside .case-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* Every section on the project detail page — Overview, My Contribution,
    Engineering Story, and every dynamic module (spec-groups, gallery,
    resource-list, achievements, reflection) — shares this width so the
@@ -730,6 +790,33 @@ body[data-page="projects"] [data-all-projects] > .card[data-tilting="true"] .car
   background: var(--color-ink-800);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-md);
+}
+
+/* Report: embedded PDF preview + fallback link in the aside column */
+.report-embed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.report-embed__frame {
+  width: 100%;
+  height: 70vh;
+  max-height: 640px;
+  min-height: 320px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-ink-900);
+}
+
+@media (max-width: 640px) {
+  .report-embed__frame {
+    height: 60vh;
+  }
+}
+
+.report-embed__fallback {
+  margin: 0;
 }
 
 /* gallery: photo/render/screenshot grid */
