@@ -98,10 +98,10 @@ function buildCaseHeading(text) {
 }
 
 /**
- * Builds the hero block: image, meta, title, subtitle, highlights, tags.
- * Action links (GitHub/demo) and the report preview now live in the aside
- * column (see buildActionLinks / buildReportSection) so they can render
- * beside the sticky gallery instead of stacking under the hero.
+ * Builds the hero block: image, meta, title, subtitle, highlights, tags,
+ * and the GitHub/demo/report links. The report preview (iframe) still
+ * lives separately in the aside column (see buildReportSection) so it can
+ * render beside the sticky gallery.
  */
 function buildHero(project) {
   const hero = document.createElement("div");
@@ -154,19 +154,8 @@ function buildHero(project) {
   }
   hero.appendChild(tags);
 
-  return hero;
-}
-
-/**
- * Builds the GitHub/Resources + Live demo action buttons for the aside
- * column. Returns null when the project has neither, so callers never
- * append an empty wrapper.
- */
-function buildActionLinks(project) {
-  if (!project.github && !project.demo) return null;
-
   const links = document.createElement("div");
-  links.className = "card__links mt-8";
+  links.className = "card__links mt-6";
 
   if (project.github) {
     const githubLink = document.createElement("a");
@@ -188,14 +177,25 @@ function buildActionLinks(project) {
     links.appendChild(demoLink);
   }
 
-  return links;
+  if (project.report) {
+    const reportLink = document.createElement("a");
+    reportLink.className = "btn btn--secondary";
+    reportLink.href = project.report;
+    reportLink.target = "_blank";
+    reportLink.rel = "noopener noreferrer";
+    reportLink.innerHTML = `${DOWNLOAD_ICON} Download report`;
+    links.appendChild(reportLink);
+  }
+
+  hero.appendChild(links);
+  return hero;
 }
 
 /**
- * Builds the "Report" section for the aside column: an embedded PDF
- * preview (scrollable within its own iframe) plus a text fallback link and
- * the existing "Download report" button. Returns null when the project
- * has no report, so no empty section/heading ever renders.
+ * Builds the "Report" section for the aside column: just the embedded PDF
+ * preview (scrollable within its own iframe) beside the gallery. The
+ * download/resources links live back in the hero. Returns null when the
+ * project has no report, so no empty section/heading ever renders.
  */
 function buildReportSection(project) {
   if (!project.report) return null;
@@ -215,30 +215,7 @@ function buildReportSection(project) {
   iframe.loading = "lazy";
   embed.appendChild(iframe);
 
-  const fallback = document.createElement("p");
-  fallback.className = "report-embed__fallback text-sm mt-3";
-  const fallbackLink = document.createElement("a");
-  fallbackLink.className = "resource-list__item";
-  fallbackLink.href = project.report;
-  fallbackLink.target = "_blank";
-  fallbackLink.rel = "noopener noreferrer";
-  fallbackLink.innerHTML = `${EXTERNAL_ICON}<span>Open in new tab</span>`;
-  fallback.appendChild(fallbackLink);
-  embed.appendChild(fallback);
-
   section.appendChild(embed);
-
-  const downloadWrap = document.createElement("div");
-  downloadWrap.className = "card__links mt-4";
-  const downloadLink = document.createElement("a");
-  downloadLink.className = "btn btn--secondary";
-  downloadLink.href = project.report;
-  downloadLink.target = "_blank";
-  downloadLink.rel = "noopener noreferrer";
-  downloadLink.innerHTML = `${DOWNLOAD_ICON} Download report`;
-  downloadWrap.appendChild(downloadLink);
-  section.appendChild(downloadWrap);
-
   return section;
 }
 
@@ -915,7 +892,7 @@ function buildDetail(project, allProjects) {
 
   const aside = document.createElement("aside");
   aside.className = "project-layout__aside";
-  aside.setAttribute("aria-label", "Gallery, report and links");
+  aside.setAttribute("aria-label", "Gallery and report");
 
   const gallerySection = buildGalleryAside(project);
   if (gallerySection) aside.appendChild(gallerySection);
@@ -923,14 +900,11 @@ function buildDetail(project, allProjects) {
   const reportSection = buildReportSection(project);
   if (reportSection) aside.appendChild(reportSection);
 
-  const actionLinks = buildActionLinks(project);
-  if (actionLinks) aside.appendChild(actionLinks);
-
   if (aside.childNodes.length > 0) {
     layout.appendChild(aside);
   } else {
-    // No gallery, report, or links for this project — let the main
-    // column take the full width instead of leaving an empty track.
+    // No gallery or report for this project — let the main column take
+    // the full width instead of leaving an empty track.
     layout.classList.add("project-layout--no-aside");
   }
 

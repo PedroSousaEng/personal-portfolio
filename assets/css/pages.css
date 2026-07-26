@@ -815,10 +815,6 @@ body[data-page="projects"] [data-all-projects] > .card[data-tilting="true"] .car
   }
 }
 
-.report-embed__fallback {
-  margin: 0;
-}
-
 /* gallery: photo/render/screenshot grid */
 .case-gallery {
   display: grid;
