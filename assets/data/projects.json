@@ -234,7 +234,7 @@
       "Minimize friction and mass losses across the drivetrain to maximize distance travelled per unit of stored energy.",
       "Validate the design analytically and experimentally before the competition run."
     ],
-    "outcome": "1st place at the University of Minho competition, with a prototype whose measured performance closely matched the analytical and simulated predictions.",
+    "outcome": "1st place at the University of Minho competition, with a measured run distance of 18.89 m against a 22.5 m theoretical prediction — a ~16% shortfall traced back to added friction in the 3D-printed drivetrain components, giving an overall energy-conversion efficiency of about 14.1%.",
     "myRole": [
       "CAD Modeling",
       "Python Simulation & Analysis",
@@ -264,11 +264,11 @@
       },
       {
         "stage": "Testing",
-        "text": "Ran physical trials to validate the simulated performance, measuring actual distance travelled and comparing it against the analytical predictions, then made small adjustments to gear ratio and mass distribution based on the results."
+        "text": "Ran physical trials to validate the simulated performance, measuring an actual run distance of 18.89 m versus the 22.5 m predicted analytically, then made small adjustments to gear ratio and mass distribution based on the ~16% shortfall observed."
       },
       {
         "stage": "Results",
-        "text": "The prototype won 1st place at the University of Minho competition, with real-world performance closely tracking the Python simulation's predictions, validating the analytical approach taken from the start."
+        "text": "The prototype won 1st place at the University of Minho competition. Measured performance did not fully match the model: the vehicle covered 18.89 m against a theoretical prediction of 22.5 m, an overall efficiency of roughly 14.1%. The gap was traced to extra friction from the 3D-printed drivetrain parts that the idealized Python model hadn't fully captured — the honest theory-vs-measurement comparison, not a perfect match, is what confirmed the analytical approach."
       },
       {
         "stage": "Lessons Learned",
@@ -318,6 +318,15 @@
               "Machined/assembled drivetrain and chassis components",
               "Bearing selection iterated to reduce friction losses"
             ]
+          },
+          {
+            "label": "Testing & Validation",
+            "items": [
+              "Theoretical distance: ~22.5 m — Measured distance: 18.89 m (~14.1% overall efficiency)",
+              "~16% shortfall attributed to added friction in 3D-printed drivetrain components",
+              "Water reservoir: 0.353 kg, within the 0.5 L / 0.5 m height rule and the 200×300 mm footprint limit",
+              "Wheel axle: max bending moment 0.17315 Nm, max stress 8.17 MPa — safety factor 3.04 against PLA yield strength"
+            ]
           }
         ]
       },
@@ -342,7 +351,7 @@
           },
           {
             "label": "Future Improvements",
-            "text": "Instrument the prototype with real sensors during testing to capture a full speed/distance curve instead of only the final result."
+            "text": "Instrument the prototype with real sensors to capture a full speed/distance curve, and refine the Python friction model with the measured ~16% efficiency loss so predictions match physical builds more closely next time."
           }
         ]
       }
@@ -475,7 +484,7 @@
     "id": "fatigue-study",
     "title": "Fatigue Study",
     "subtitle": "FEA-based fatigue life assessment of a transmission hub",
-    "description": "A structural integrity study of a transmission hub combining CAD modeling, Finite Element Analysis (FEA), and analytical calculations to evaluate stress distribution and fatigue performance under cyclic loading. The project investigates stress concentrations, identifies critical failure regions, validates numerical results with engineering theory, and estimates fatigue life. It demonstrates the application of solid mechanics, material behavior, and simulation-driven engineering methodologies for mechanical component assessment.",
+    "description": "A structural integrity study of a transmission hub in EN-GJS-500-7 nodular cast iron (σᵤ = 500 MPa, σᵧ = 320 MPa, E = 169 GPa), triggered by a real part that failed in service. Combines CAD modeling, Finite Element Analysis under a cyclic impact load (Fₘₐₓ = 12,000 N, Fₘᵢₙ = 3,000 N, R = 0.25), and analytical calculations to evaluate stress distribution and fatigue performance. A four-step mesh-convergence study confirmed the FEA result, and the resulting simulated and hand-calculated fatigue lives were compared against each other and against the real failure.",
     "tags": [
       "FEA",
       "CAD",
@@ -491,14 +500,15 @@
     "year": "2026",
     "status": "Completed",
     "highlights": [
-      "University Project"
+      "University Project",
+      "Real Failure Case Study"
     ],
     "objectives": [
       "Model a transmission hub in CAD and evaluate its stress distribution under cyclic loading.",
       "Identify stress-concentration regions most likely to initiate fatigue failure.",
       "Cross-validate the FEA results against analytical solid-mechanics calculations."
     ],
-    "outcome": "A validated fatigue-life estimate for the hub, with FEA-identified critical regions confirmed against hand calculations, demonstrating a simulation-driven approach to structural assessment.",
+    "outcome": "A validated fatigue-life estimate for the hub: FEA (converged at a 1 mm mesh / 2.36M elements, 242 MPa peak von Mises stress) predicted failure around 94 impact cycles, while an analytical Goodman-criterion check (Kf = 2.3, safety factor 1.5) predicted around 1,000 cycles — both methods agreeing on a finite, short fatigue life, consistent with the arm that actually broke in service.",
     "myRole": [
       "CAD Modeling",
       "FEA Setup & Analysis",
@@ -507,7 +517,7 @@
     "story": [
       {
         "stage": "Problem",
-        "text": "Transmission hubs experience cyclic loading in service, and predicting where fatigue failure will initiate, and how long the part will last, requires more than a static-stress check."
+        "text": "This study started from a real failure: a transmission-hub arm broke in service under cyclic impact loading. Predicting where fatigue failure initiates, and how long the part will actually last, requires more than a static-stress check."
       },
       {
         "stage": "Research",
@@ -515,19 +525,19 @@
       },
       {
         "stage": "Design",
-        "text": "Built a CAD model of the hub capturing the geometric features most likely to concentrate stress, fillets, keyways, and section transitions."
+        "text": "Built a CAD model of the hub in EN-GJS-500-7 nodular cast iron, capturing the geometric features most likely to concentrate stress — fillets, keyways, and section transitions — under the measured cyclic impact load (Fₘₐₓ = 12,000 N, Fₘᵢₙ = 3,000 N, stress ratio R = 0.25)."
       },
       {
         "stage": "Development",
-        "text": "Ran Finite Element Analysis to map stress distribution under the expected loading cycle, then cross-checked the FEA output against analytical solid-mechanics calculations at the critical sections to confirm the simulation was physically reasonable."
+        "text": "Ran a mesh-convergence study across four refinement levels before trusting the FEA result, converging at a 1 mm mesh (2.36 million elements) with a peak von Mises stress of 242 MPa. Cross-checked that value against an analytical Goodman-criterion calculation (stress concentration Kf = 2.3, target safety factor 1.5) at the same critical section."
       },
       {
         "stage": "Results",
-        "text": "Identified the specific regions most at risk of fatigue initiation and produced a fatigue-life estimate consistent between the FEA and analytical methods, giving confidence in both approaches."
+        "text": "The converged FEA model (242 MPa peak stress) predicted roughly 94 impact cycles to failure; the analytical Goodman-criterion check predicted roughly 1,000 cycles. The two methods diverge in absolute count but agree on the conclusion that matters: a short, finite fatigue life at that stress concentration — consistent with the real arm that failed in service."
       },
       {
         "stage": "Lessons Learned",
-        "text": "FEA results are only as trustworthy as the analytical checks behind them, validating critical stress values by hand caught a boundary-condition assumption that would have skewed the fatigue estimate."
+        "text": "FEA results are only as trustworthy as the mesh and the analytical checks behind them. Running the four-step convergence study before reading the stress value, and cross-checking with Goodman by hand, is what made the ~94 vs ~1,000-cycle gap interpretable instead of just a red flag."
       }
     ],
     "modules": [
@@ -554,17 +564,26 @@
         "heading": "Engineering Specifications",
         "groups": [
           {
-            "label": "CAD & Modeling",
+            "label": "Material & Loading",
             "items": [
-              "Hub geometry modeled with fillets, keyway, and section transitions captured explicitly"
+              "EN-GJS-500-7 nodular cast iron: σᵤ = 500 MPa, σᵧ = 320 MPa, E = 169 GPa",
+              "Cyclic impact load: Fₘₐₓ = 12,000 N, Fₘᵢₙ = 3,000 N (stress ratio R = 0.25)"
             ]
           },
           {
-            "label": "FEA & Validation",
+            "label": "CAD & Mesh Convergence",
             "items": [
-              "Stress distribution mapped under cyclic loading",
-              "Critical regions cross-checked against analytical solid-mechanics calculations",
-              "Fatigue-life estimate via S-N curve approach"
+              "Hub geometry modeled with fillets, keyway, and section transitions captured explicitly",
+              "Four-step mesh-refinement study, converged at 1 mm elements / 2.36 million elements"
+            ]
+          },
+          {
+            "label": "FEA & Fatigue Results",
+            "items": [
+              "Peak von Mises stress (converged mesh): 242 MPa",
+              "SolidWorks fatigue simulation: ~94 cycles to failure",
+              "Analytical Goodman criterion (Kf = 2.3, safety factor 1.5): ~1,000 cycles",
+              "Both methods agree on a short, finite fatigue life, consistent with the real in-service failure"
             ]
           }
         ]
@@ -575,11 +594,11 @@
         "items": [
           {
             "label": "Challenges",
-            "text": "Setting boundary conditions in the FEA model that matched the real loading scenario closely enough for the analytical cross-check to be meaningful."
+            "text": "Setting boundary conditions in the FEA model that matched the real impact-loading scenario closely enough for the analytical cross-check to be meaningful, and reconciling the ~94 vs ~1,000-cycle gap between the simulated and hand-calculated fatigue lives."
           },
           {
             "label": "Future Improvements",
-            "text": "Run a mesh-convergence study to quantify confidence in the stress values at the most critical fillet region."
+            "text": "Refine the Kf estimate and boundary conditions to narrow the gap between the ~94-cycle FEA result and the ~1,000-cycle analytical estimate, and correlate both against the actual number of service cycles the real part survived before failing."
           }
         ]
       }
@@ -589,30 +608,32 @@
     "id": "pin-clutch",
     "title": "Pin Clutch",
     "subtitle": "Pedal-actuated pin clutch mechanism",
-    "description": "Design and development of a pedal-actuated pin clutch mechanism intended for controlled shaft engagement and disengagement. The project includes concept generation, CAD modeling, kinematic analysis, mechanical calculations, material selection, and functional prototyping using additive manufacturing. Particular attention was given to simplicity, manufacturability, and reliable operation, demonstrating the complete engineering design process from initial concept to a validated physical prototype.",
+    "description": "Design and development of a pedal-actuated pin clutch mechanism (a coupling system in the same family used on sewing machines) intended for controlled shaft engagement and disengagement. The driving pulley carries three concentric grooves; a spring-loaded radial pin slides into one of them to lock the pulley to a driven shaft, and a pedal-actuated lever compresses the spring to withdraw the pin on demand. The project includes concept generation, CAD modeling in Solid Edge, a full kinematic analysis (position, velocity, and acceleration of the engagement point via rotation-matrix formulation), material selection, and functional prototyping using additive manufacturing. Particular attention was given to simplicity, manufacturability, and reliable operation, demonstrating the complete engineering design process from initial concept to a validated physical prototype.",
     "tags": [
       "CAD",
       "3D Printing",
       "Kinematics",
-      "Mechanical Design"
+      "Mechanical Design",
+      "Solid Edge"
     ],
     "image": "assets/images/pc-2.jpeg",
     "featured": true,
     "github": "https://github.com/PedroSousaEng/pin-clutch",
     "demo": "",
-    "report": "",
+    "report": "assets/documents/Report-pin-clutch.pdf",
     "category": "Mechanical Engineering",
     "year": "2024",
     "status": "Completed",
     "highlights": [
-      "University Project"
+      "University Project",
+      "Team Project (6 members)"
     ],
     "objectives": [
-      "Design a simple, reliable mechanism to engage and disengage two shafts on demand via a pedal.",
-      "Keep the design manufacturable with additive manufacturing (3D printing) and simple materials.",
-      "Validate the mechanism through a functional physical prototype."
+      "Design a simple, reliable mechanism to engage and disengage two shafts on demand via a pedal, using a three-groove driving pulley and a spring-loaded radial pin.",
+      "Keep the design manufacturable with additive manufacturing (FDM/PLA) and low-cost secondary materials (pine wood, PVC, carbon-steel spring wire).",
+      "Derive the full kinematic model (position, velocity, and acceleration) of the engagement point to validate the linkage geometry analytically."
     ],
-    "outcome": "A working PLA prototype that reliably engages and disengages the two shafts via pedal actuation and a connecting pin, validating the kinematic design.",
+    "outcome": "A working PLA prototype that reliably engages and disengages two shafts via pedal actuation and a spring-loaded pin, with the kinematic model (position, velocity, and acceleration of the pin's engagement point, derived through rotation-matrix transformations) confirming the linkage geometry chosen in CAD.",
     "myRole": [
       "Concept Design",
       "CAD Modeling",
@@ -626,15 +647,15 @@
       },
       {
         "stage": "Research",
-        "text": "Looked at simple mechanical clutch principles, pin/dog clutches in particular, for a design that trades some smoothness for mechanical simplicity and manufacturability."
+        "text": "Looked at simple mechanical clutch principles, pin/dog clutches in particular, tracing the lineage from medieval leather-belt mill couplings through Industrial Revolution line-shaft pulleys, cone clutches, and modern dry disc and dual-clutch (PDK/DSG) systems, for a design that trades some smoothness for mechanical simplicity and manufacturability."
       },
       {
         "stage": "Design",
-        "text": "Designed a pin-based engagement system actuated by a pedal-driven linkage: pressing the pedal drives a connecting pin into alignment between the two shafts, locking them together; releasing it withdraws the pin."
+        "text": "Designed a pin-based engagement system around a driving pulley with three concentric grooves: pressing the pedal releases a curved lever that was holding the radial pin retracted against a compressed spring, letting the pin snap into a groove and lock the pulley to the driven shaft; releasing the pedal lets the lever push the pin back out, decoupling the shafts."
       },
       {
         "stage": "Development",
-        "text": "Modeled the mechanism in CAD and ran a kinematic analysis of the pedal-to-pin linkage to size the actuation travel and confirm the pin would engage reliably across the expected range of motion."
+        "text": "Modeled the mechanism in Solid Edge and ran a full kinematic analysis of the pin's engagement point: position from a rotation-matrix transform of the local frame (r = A₁·s), velocity from w₁/₀ ∧ s₁^A, and acceleration from w₁/₀(w₁/₀ ∧ s₁^A) under constant angular velocity, sizing the actuation travel and confirming reliable engagement across the expected range of motion."
       },
       {
         "stage": "Manufacturing",
@@ -646,7 +667,7 @@
       },
       {
         "stage": "Results",
-        "text": "A functional, low-cost prototype that consistently demonstrates the coupling/decoupling principle, validating the pedal-actuated pin-clutch concept end to end."
+        "text": "A functional, low-cost prototype that consistently demonstrates the coupling/decoupling principle, with the analytical kinematic model matching the CAD linkage geometry and validating the pedal-actuated pin-clutch concept end to end."
       },
       {
         "stage": "Lessons Learned",
@@ -695,14 +716,25 @@
           {
             "label": "CAD & Kinematics",
             "items": [
-              "Pedal-to-pin linkage modeled and sized via kinematic analysis",
-              "Actuation travel tuned to guarantee reliable engagement"
+              "Three-groove driving pulley + spring-loaded radial pin engagement system, modeled in Solid Edge",
+              "Full kinematic derivation (position, velocity, acceleration) of the pin's engagement point via rotation-matrix transformations",
+              "Constant pulley angular velocity (w₀) assumption used to size actuation travel"
+            ]
+          },
+          {
+            "label": "Materials",
+            "items": [
+              "Pulley, cam/eccentric, pin, and actuation lever: PLA (FDM 3D printing, ISO 527)",
+              "Support hubs, pedal, and shafts: C24 pine wood (EN 338) — E ≈ 11 GPa, bending strength 120 MPa",
+              "Engagement spring: SAE 1070 spring steel; connecting rod: carbon steel (EN 10025)",
+              "Guide tubes: PVC"
             ]
           },
           {
             "label": "Manufacturing",
             "items": [
               "3D-printed in PLA with print orientation chosen for pin sliding fit",
+              "Pine components cut and drilled on a bench saw / pillar drill",
               "Clearances iterated across print revisions"
             ]
           }
@@ -714,11 +746,11 @@
         "items": [
           {
             "label": "Challenges",
-            "text": "Getting the pin-to-housing clearance right — too tight caused binding, too loose caused inconsistent engagement."
+            "text": "Getting the pin-to-groove clearance right — too tight caused binding, too loose caused inconsistent engagement — and correctly modeling the impact-like tangential force that briefly decelerates the pulley at the moment of engagement."
           },
           {
             "label": "Future Improvements",
-            "text": "Sketch and size the linkage geometry on paper before the first CAD pass, to catch clearance issues earlier than the first physical print."
+            "text": "Sketch and size the linkage geometry on paper before the first CAD pass, and instrument the prototype to measure the pulley's momentary speed drop at engagement predicted by the kinematic model."
           }
         ]
       }
