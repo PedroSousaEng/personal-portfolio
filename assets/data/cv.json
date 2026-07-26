@@ -1,41 +1,74 @@
 {
-  "summary": "Mechanical Engineering undergraduate at the University of Minho with a strong interest in the intersection of engineering, technology, and artificial intelligence. Comfortable moving between CAD modeling, analytical/simulation work in Python, and AI-assisted software development, with a track record of applying that range to real prototypes — including a 1st-place competition vehicle — and to personal software projects built end-to-end.",
+  "summary": "Mechanical Engineering undergraduate at the University of Minho with a strong interest in the intersection of engineering, technology, and artificial intelligence. Advanced in CAD modeling with SolidWorks and Solid Edge, comfortable with Python at an intermediate level for analysis and simulation, and experienced in using AI tools to accelerate software development. This range has been applied to real prototypes, including a 1st-place competition vehicle, and to personal software projects built end-to-end.",
   "education": [
     {
       "degree": "BSc in Mechanical Engineering",
       "institution": "University of Minho",
       "location": "Guimarães, Portugal",
-      "period": "Ongoing",
+      "period": "2024/2025 – Ongoing",
       "details": "Coursework and projects spanning solid mechanics, dynamics, CAD/CAM, manufacturing processes, and simulation-driven design.",
       "highlights": [
+        "Admitted in the 2024/2025 academic year as a 1st-choice applicant, with an entrance average of 17.6 (rounded to 18).",
+        "Entrance exams: Physics and Chemistry, and Mathematics A.",
         "Development of Formula Water, a vehicle prototype powered by water's potential energy.",
         "Study of system dynamics, motion transmission, friction, stability, and center of mass.",
         "Use of Python for simulations and results analysis, and SolidWorks/Solid Edge for modeling mechanical components."
       ]
     }
   ],
-  "experienceSummary": "Independent, project-based experience rather than formal employment to date: every entry on this CV's Projects section was scoped, executed, and (where applicable) manufactured or tested by me, individually or as part of a competition team.",
+  "experienceSummary": "Independent, project-based experience rather than formal employment to date. Every entry in the Projects section below was scoped, executed, and (where applicable) manufactured or tested by me, individually or as part of a team. I also manage the Vinted and Temu sales accounts for a family business, handling listing strategy and day-to-day account operations.",
   "projects": [
-    { "id": "formula-water" },
-    { "id": "vinted-os" },
-    { "id": "fatigue-study" },
-    { "id": "pin-clutch" },
-    { "id": "doorlock-teardown" },
-    { "id": "personal-portfolio" }
+    {
+      "id": "formula-water"
+    },
+    {
+      "id": "vinted-os"
+    },
+    {
+      "id": "fatigue-study"
+    },
+    {
+      "id": "pin-clutch"
+    },
+    {
+      "id": "doorlock-teardown"
+    },
+    {
+      "id": "personal-portfolio"
+    }
   ],
   "awards": [
-    { "title": "1st Place — University of Minho Competition", "description": "Formula Water: gravity-powered vehicle prototype, awarded for overall performance and engineering execution.", "year": "2023" }
+    {
+      "title": "1st Place, University of Minho Competition",
+      "description": "Formula Water: gravity-powered vehicle prototype, awarded for overall performance and engineering execution.",
+      "year": "2026"
+    }
   ],
   "certifications": [],
   "languages": [
-    { "language": "Portuguese", "level": "Native" },
-    { "language": "English", "level": "Fluent" }
+    {
+      "language": "Portuguese",
+      "level": "Native"
+    },
+    {
+      "language": "English",
+      "level": "Fluent"
+    },
+    {
+      "language": "Spanish",
+      "level": "Basic"
+    },
+    {
+      "language": "French",
+      "level": "Basic"
+    }
   ],
   "interests": [
     "Mechanical design",
     "Artificial intelligence",
     "Software development",
     "Product teardown & reverse engineering",
-    "3D printing & prototyping"
+    "3D printing & prototyping (Bambu Lab)",
+    "Fitness & health"
   ]
 }

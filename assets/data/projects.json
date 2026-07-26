@@ -25,7 +25,7 @@
       "Reduce the manual effort of relisting and refreshing stale product listings.",
       "Surface performance metrics (views, likes, sell-through time) to guide pricing and relisting decisions."
     ],
-    "outcome": "A working personal tool that manages my own Vinted inventory end-to-end, with AI-assisted development used throughout to accelerate iteration and explore automation approaches I hadn't used before.",
+    "outcome": "A working personal tool that manages my own Vinted inventory end-to-end. AI-assisted development was used throughout to accelerate iteration and explore automation approaches I hadn't used before, though some workflows are still being validated before I'd call the system fully tested.",
     "myRole": [
       "Product & Systems Design",
       "Python Development",
@@ -51,11 +51,11 @@
       },
       {
         "stage": "Results",
-        "text": "The tool now organizes my inventory, tracks basic performance signals, and forms the base for future automation like scheduled relisting. It is in active, ongoing use."
+        "text": "The tool now organizes my inventory, tracks basic performance signals, and forms the base for future automation like scheduled relisting. It is in active, ongoing use, though I haven't yet been able to test every workflow end-to-end."
       },
       {
         "stage": "Lessons Learned",
-        "text": "Using AI as a development accelerator works best when I stay the one making architectural decisions, it's fastest for boilerplate and exploration, but the data model and priorities still need deliberate human design."
+        "text": "Using AI as a development accelerator works best when I stay the one making architectural decisions. It's fastest for boilerplate and exploration, but the data model and priorities still need deliberate human design."
       }
     ],
     "modules": [
@@ -144,7 +144,7 @@
     "story": [
       {
         "stage": "Problem",
-        "text": "A generic portfolio template doesn't show how I actually think as an engineer, it lists projects instead of explaining the reasoning, trade-offs, and results behind them."
+        "text": "A generic portfolio template doesn't show how I actually think as an engineer. It lists projects instead of explaining the reasoning, trade-offs, and results behind them."
       },
       {
         "stage": "Design",
@@ -226,15 +226,15 @@
     "year": "2026",
     "status": "Completed",
     "highlights": [
-      "1st Place — University of Minho",
-      "Team Project"
+      "1st Place, University of Minho",
+      "Team Project (6 members)"
     ],
     "objectives": [
       "Design a vehicle that converts the potential energy of falling water into forward motion as efficiently as possible.",
       "Minimize friction and mass losses across the drivetrain to maximize distance travelled per unit of stored energy.",
       "Validate the design analytically and experimentally before the competition run."
     ],
-    "outcome": "1st place at the University of Minho competition, with a measured run distance of 18.89 m against a 22.5 m theoretical prediction — a ~16% shortfall traced back to added friction in the 3D-printed drivetrain components, giving an overall energy-conversion efficiency of about 14.1%.",
+    "outcome": "1st place at the University of Minho competition, with a measured run distance of 21 m against a 22.5 m theoretical prediction. The ~6.7% shortfall was traced back to added friction in the 3D-printed drivetrain components, giving an overall energy-conversion efficiency of about 14.1%.",
     "myRole": [
       "CAD Modeling",
       "Python Simulation & Analysis",
@@ -264,11 +264,11 @@
       },
       {
         "stage": "Testing",
-        "text": "Ran physical trials to validate the simulated performance, measuring an actual run distance of 18.89 m versus the 22.5 m predicted analytically, then made small adjustments to gear ratio and mass distribution based on the ~16% shortfall observed."
+        "text": "Ran physical trials to validate the simulated performance, measuring an actual run distance of 21 m versus the 22.5 m predicted analytically, then made small adjustments to gear ratio and mass distribution based on the ~6.7% shortfall observed."
       },
       {
         "stage": "Results",
-        "text": "The prototype won 1st place at the University of Minho competition. Measured performance did not fully match the model: the vehicle covered 18.89 m against a theoretical prediction of 22.5 m, an overall efficiency of roughly 14.1%. The gap was traced to extra friction from the 3D-printed drivetrain parts that the idealized Python model hadn't fully captured — the honest theory-vs-measurement comparison, not a perfect match, is what confirmed the analytical approach."
+        "text": "The prototype won 1st place at the University of Minho competition. Measured performance did not fully match the model: the vehicle covered 21 m against a theoretical prediction of 22.5 m, an overall efficiency of roughly 14.1%. The gap was traced to extra friction from the 3D-printed drivetrain parts that the idealized Python model hadn't fully captured. That honest theory-vs-measurement comparison, rather than a perfect match, is what confirmed the analytical approach."
       },
       {
         "stage": "Lessons Learned",
@@ -302,7 +302,8 @@
             "label": "CAD & Modeling",
             "items": [
               "Full chassis and drivetrain assembly in SolidWorks/Solid Edge",
-              "Gear ratio tuned via simulation before finalizing geometry"
+              "Gear ratio tuned via simulation before finalizing geometry",
+              "Full CAD files (SolidWorks/Solid Edge) included in the project repository"
             ]
           },
           {
@@ -322,10 +323,10 @@
           {
             "label": "Testing & Validation",
             "items": [
-              "Theoretical distance: ~22.5 m — Measured distance: 18.89 m (~14.1% overall efficiency)",
-              "~16% shortfall attributed to added friction in 3D-printed drivetrain components",
+              "Theoretical distance ~22.5 m; measured distance 21 m (~14.1% overall efficiency)",
+              "~6.7% shortfall attributed to added friction in 3D-printed drivetrain components",
               "Water reservoir: 0.353 kg, within the 0.5 L / 0.5 m height rule and the 200×300 mm footprint limit",
-              "Wheel axle: max bending moment 0.17315 Nm, max stress 8.17 MPa — safety factor 3.04 against PLA yield strength"
+              "Wheel axle: max bending moment 0.17315 Nm, max stress 8.17 MPa, safety factor 3.04 against PLA yield strength"
             ]
           }
         ]
@@ -335,7 +336,7 @@
         "heading": "Achievements",
         "items": [
           {
-            "title": "1st Place — University of Minho Competition",
+            "title": "1st Place, University of Minho Competition",
             "description": "Awarded for overall performance and engineering execution against other competing teams.",
             "year": "2026"
           }
@@ -351,7 +352,7 @@
           },
           {
             "label": "Future Improvements",
-            "text": "Instrument the prototype with real sensors to capture a full speed/distance curve, and refine the Python friction model with the measured ~16% efficiency loss so predictions match physical builds more closely next time."
+            "text": "Instrument the prototype with real sensors to capture a full speed/distance curve, and refine the Python friction model with the measured ~6.7% efficiency loss so predictions match physical builds more closely next time."
           }
         ]
       }
@@ -377,7 +378,8 @@
     "year": "2025",
     "status": "Completed",
     "highlights": [
-      "University Project"
+      "University Project",
+      "Team Project (6 members)"
     ],
     "objectives": [
       "Fully disassemble an automotive door lock mechanism to understand every component's function.",
@@ -459,7 +461,8 @@
             "label": "Analysis",
             "items": [
               "Component-by-component functional breakdown",
-              "Manual force-path validation across sub-assemblies"
+              "Manual force-path validation across sub-assemblies",
+              "CAD reconstruction files included in the project repository"
             ]
           }
         ]
@@ -501,14 +504,15 @@
     "status": "Completed",
     "highlights": [
       "University Project",
-      "Real Failure Case Study"
+      "Real Failure Case Study",
+      "Team Project (3 members)"
     ],
     "objectives": [
       "Model a transmission hub in CAD and evaluate its stress distribution under cyclic loading.",
       "Identify stress-concentration regions most likely to initiate fatigue failure.",
       "Cross-validate the FEA results against analytical solid-mechanics calculations."
     ],
-    "outcome": "A validated fatigue-life estimate for the hub: FEA (converged at a 1 mm mesh / 2.36M elements, 242 MPa peak von Mises stress) predicted failure around 94 impact cycles, while an analytical Goodman-criterion check (Kf = 2.3, safety factor 1.5) predicted around 1,000 cycles — both methods agreeing on a finite, short fatigue life, consistent with the arm that actually broke in service.",
+    "outcome": "A validated fatigue-life estimate for the hub: FEA (converged at a 1 mm mesh / 2.36M elements, 242 MPa peak von Mises stress) predicted failure around 94 impact cycles, while an analytical Goodman-criterion check (Kf = 2.3, safety factor 1.5) predicted around 1,000 cycles. Both methods agree on a finite, short fatigue life, consistent with the arm that actually broke in service.",
     "myRole": [
       "CAD Modeling",
       "FEA Setup & Analysis",
@@ -525,7 +529,7 @@
       },
       {
         "stage": "Design",
-        "text": "Built a CAD model of the hub in EN-GJS-500-7 nodular cast iron, capturing the geometric features most likely to concentrate stress — fillets, keyways, and section transitions — under the measured cyclic impact load (Fₘₐₓ = 12,000 N, Fₘᵢₙ = 3,000 N, stress ratio R = 0.25)."
+        "text": "Built a CAD model of the hub in EN-GJS-500-7 nodular cast iron, capturing the geometric features most likely to concentrate stress (fillets, keyways, and section transitions) under the measured cyclic impact load (Fₘₐₓ = 12,000 N, Fₘᵢₙ = 3,000 N, stress ratio R = 0.25)."
       },
       {
         "stage": "Development",
@@ -533,7 +537,7 @@
       },
       {
         "stage": "Results",
-        "text": "The converged FEA model (242 MPa peak stress) predicted roughly 94 impact cycles to failure; the analytical Goodman-criterion check predicted roughly 1,000 cycles. The two methods diverge in absolute count but agree on the conclusion that matters: a short, finite fatigue life at that stress concentration — consistent with the real arm that failed in service."
+        "text": "The converged FEA model (242 MPa peak stress) predicted roughly 94 impact cycles to failure; the analytical Goodman-criterion check predicted roughly 1,000 cycles. The two methods diverge in absolute count but agree on the conclusion that matters: a short, finite fatigue life at that stress concentration, consistent with the real arm that failed in service."
       },
       {
         "stage": "Lessons Learned",
@@ -574,7 +578,8 @@
             "label": "CAD & Mesh Convergence",
             "items": [
               "Hub geometry modeled with fillets, keyway, and section transitions captured explicitly",
-              "Four-step mesh-refinement study, converged at 1 mm elements / 2.36 million elements"
+              "Four-step mesh-refinement study, converged at 1 mm elements / 2.36 million elements",
+              "Full CAD files (SolidWorks) included in the project repository"
             ]
           },
           {
@@ -705,7 +710,7 @@
           },
           {
             "src": "assets/images/pc-0.mp4",
-            "caption": "Functional Test — Pedal Actuation"
+            "caption": "Functional Test: Pedal Actuation"
           }
         ]
       },
@@ -718,14 +723,15 @@
             "items": [
               "Three-groove driving pulley + spring-loaded radial pin engagement system, modeled in Solid Edge",
               "Full kinematic derivation (position, velocity, acceleration) of the pin's engagement point via rotation-matrix transformations",
-              "Constant pulley angular velocity (w₀) assumption used to size actuation travel"
+              "Constant pulley angular velocity (w₀) assumption used to size actuation travel",
+              "Full CAD files (Solid Edge) included in the project repository"
             ]
           },
           {
             "label": "Materials",
             "items": [
               "Pulley, cam/eccentric, pin, and actuation lever: PLA (FDM 3D printing, ISO 527)",
-              "Support hubs, pedal, and shafts: C24 pine wood (EN 338) — E ≈ 11 GPa, bending strength 120 MPa",
+              "Support hubs, pedal, and shafts: C24 pine wood (EN 338), E ≈ 11 GPa, bending strength 120 MPa",
               "Engagement spring: SAE 1070 spring steel; connecting rod: carbon steel (EN 10025)",
               "Guide tubes: PVC"
             ]
@@ -746,7 +752,7 @@
         "items": [
           {
             "label": "Challenges",
-            "text": "Getting the pin-to-groove clearance right — too tight caused binding, too loose caused inconsistent engagement — and correctly modeling the impact-like tangential force that briefly decelerates the pulley at the moment of engagement."
+            "text": "Getting the pin-to-groove clearance right (too tight caused binding, too loose caused inconsistent engagement), and correctly modeling the impact-like tangential force that briefly decelerates the pulley at the moment of engagement."
           },
           {
             "label": "Future Improvements",
