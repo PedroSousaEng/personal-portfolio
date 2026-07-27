@@ -9,7 +9,7 @@
       "Artificial Intelligence",
       "Automation"
     ],
-    "image": "assets/images/VintedOs.png",
+    "image": "assets/images/VintedOS.png",
     "featured": false,
     "github": "https://github.com/PedroSousaEng/vinted-os",
     "demo": "",
@@ -64,7 +64,7 @@
         "heading": "Showcase",
         "images": [
           {
-            "src": "assets/images/VintedOs.png",
+            "src": "assets/images/VintedOS.png",
             "caption": "Vinted OS dashboard"
           }
         ]
