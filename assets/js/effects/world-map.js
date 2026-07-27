@@ -3,8 +3,13 @@
  *   Contact-page-only ambient background: injects a real, accurately-
  *   coastlined world map (not hand-drawn approximations) as a fixed,
  *   low-opacity decorative layer, weighted to the right side of the
- *   viewport, with a small glowing pin over Lisbon. Replaces the
- *   earlier canvas-drawn Iberian map (iberian-map.js).
+ *   viewport, with a Google-Maps-style pin over Portugal ringed by two
+ *   slowly counter-rotating dashed orbits. The viewBox is deliberately
+ *   wider than the visible card so more of the Atlantic/world map
+ *   extends leftward underneath the contact card (see world-map.css's
+ *   mask, which fades that extra width to invisible rather than
+ *   cropping it out). Replaces the earlier canvas-drawn Iberian map
+ *   (iberian-map.js).
  *
  * RESPONSIBILITIES
  *   - Inject the map markup (below) wrapped in a
@@ -27,14 +32,19 @@
  *   assets/css/effects/world-map.css (all visual styling)
  *
  * SAFE EDITS
- *   To reposition the Lisbon pin, edit the <g class="world-map__pin">
- *   transform below. If you regenerate the coastline data, update both
- *   this constant and assets/images/world-map.svg together so they
- *   stay in sync.
+ *   Pin sits at (478.5, 119) — north-western Portugal (Porto area), not
+ *   Lisbon. To reposition it, edit the <g class="world-map__interest">
+ *   transform below (it carries the rings, shadow and marker together).
+ *   To show more/less of the Atlantic on the left, adjust the svg's
+ *   viewBox min-x/width — keep the max-x (currently 570) fixed so
+ *   Portugal's on-screen position and scale don't shift, and scale
+ *   .world-map__svg's width in world-map.css by the same ratio. If you
+ *   regenerate the coastline data, update both this constant and
+ *   assets/images/world-map.svg together so they stay in sync.
  */
 
-const WORLD_MAP_MARKUP = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="415 55 155 175" class="world-map__svg" role="img" aria-label="">
-<title>Map centred on Portugal, showing the Atlantic, Spain, France and North Africa</title>
+const WORLD_MAP_MARKUP = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="260 55 310 175" class="world-map__svg" role="img" aria-label="">
+<title>Map centred on Portugal, showing the wider Atlantic, Europe and North Africa</title>
   <g class="world-map__landmasses">
     <path id="abw" d="M307,214L307,214L307,214L307,214L307,214L307,214L307,214L307,214L307,214L307,214"/>
     <path id="ado" d="M504,120L504,120L504,120L504,120L504,120L504,120L504,120L504,120L504,120L504,120L504,120L504,119L504,119L504,119L504,120L504,120L504,120L504,120L504,120"/>
@@ -258,9 +268,13 @@ const WORLD_MAP_MARKUP = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="415 5
     <path id="zmb" d="M591,283L592,284L593,287L592,287L591,290L592,293L591,294L590,297L591,297L583,300L583,302L581,303L579,304L579,305L578,305L576,308L574,310L573,310L572,310L569,309L569,309L569,309L568,308L566,308L564,309L562,307L560,304L560,294L566,294L566,293L566,292L566,290L566,289L566,288L567,288L567,289L568,289L570,289L571,291L573,291L575,290L576,292L578,292L579,293L580,295L582,295L582,292L581,292L579,291L578,291L579,287L579,284L579,282L580,280L580,280L584,279L585,280L586,281L587,281L589,282L591,283"/>
     <path id="zwe" d="M585,323L583,323L582,324L581,323L580,323L578,322L576,321L576,319L576,318L574,318L571,314L571,312L570,312L569,309L572,310L573,310L574,310L576,308L578,305L579,305L579,304L581,303L583,302L583,303L586,303L587,304L587,305L589,305L590,306L590,310L589,312L589,315L589,315L589,317L589,318L588,320L585,323"/>
   </g>
-  <g class="world-map__pin" transform="translate(479.6 129.1)">
-    <circle class="world-map__pin-halo" r="3"/>
-    <circle class="world-map__pin-core" r="1.6"/>
+  <g class="world-map__interest" transform="translate(478.5 119)">
+    <g class="world-map__orbit world-map__orbit--outer"><circle r="15"/></g>
+    <g class="world-map__orbit world-map__orbit--inner"><circle r="9"/></g>
+    <ellipse class="world-map__pin-shadow" cx="0" cy="0.6" rx="2.4" ry="0.9"/>
+    <g class="world-map__pin-drop" transform="scale(0.42)">
+      <path class="world-map__pin-shape" transform="translate(-12 -22)" d="M12 2C8.14 2 5 5.14 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.86-3.14-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+    </g>
   </g>
 </svg>`;
 

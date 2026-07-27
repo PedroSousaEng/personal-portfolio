@@ -73,11 +73,12 @@
      Consumed by:
        - assets/js/effects/world-map.js
        - assets/css/effects/world-map.css
-     Thin, low-contrast coastline strokes only — kept deliberately apart
-     from the rest of the --fx-* palette so the map never picks up an
-     accent tint by accident. The one spot of color is the Lisbon pin. */
-  --fx-world-map-line: #5b6376; /* coastline stroke — bright enough to read against pure black */
-  --fx-world-map-pin: #ff4d4d; /* Lisbon pin — the one spot of color */
+     Bold blue coastline strokes, kept deliberately apart from the rest
+     of the --fx-* palette so the rest of the site never picks up this
+     tint by accident. The one warm accent is the Portugal pin. */
+  --fx-world-map-line: #5b7fd6; /* coastline stroke — bold blue, reads clearly against pure black */
+  --fx-world-map-orbit: #7c9bff; /* dashed rings orbiting the Portugal pin */
+  --fx-world-map-pin: #ff4d4d; /* Portugal pin — the one warm spot of color */
 
   /* ---- 404 page: error / interference field ----
      Consumed by:

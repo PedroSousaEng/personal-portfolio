@@ -1,35 +1,46 @@
 /**
  * PURPOSE
  *   Contact-page-only ambient background: a real, accurately-coastlined
- *   world map (Natural Earth data, not hand-drawn), rendered as thin,
- *   low-contrast line art, weighted to the right side of the viewport
- *   with a small glowing pin over Lisbon. Replaces the earlier
- *   hand-simplified Iberian map (iberian-map.css).
+ *   world map (Natural Earth data, not hand-drawn), rendered as bold,
+ *   blue-tinted line art, weighted to the right side of the viewport
+ *   with a Google-Maps-style pin over Portugal. The map's viewBox is
+ *   wider than the on-screen card on purpose — the extra width (more
+ *   of the Atlantic/world, to the west) extends left, under the
+ *   contact card, faded out by the mask below rather than cropped, so
+ *   the page reads as "a wider world map behind the card" instead of a
+ *   tight Iberia-only crop. Replaces the earlier hand-simplified
+ *   Iberian map (iberian-map.css).
  *
  * RESPONSIBILITIES
- *   - Position the fetched <svg> (injected by world-map.js) fixed,
- *     behind all content, cropped mostly to the right half of the
- *     viewport.
+ *   - Position the injected <svg> (from world-map.js) fixed, behind all
+ *     content, weighted to the right of the viewport.
  *   - Fade the map to transparent toward the left via a mask, so the
- *     contact card stays the clear visual focus.
- *   - Style every country path identically: no fill, one thin
- *     low-contrast stroke — this is what keeps 221 country outlines
- *     from reading as "busy" instead of "map".
- *   - Style + animate the Lisbon pin (halo pulses via CSS keyframes;
- *     global prefers-reduced-motion rules in base.css already freeze
- *     the animation, leaving just the small static dot).
+ *     contact card stays the clear visual focus and the extra western
+ *     width added in world-map.js's viewBox disappears before it would
+ *     otherwise show past the card.
+ *   - Style every country path identically: no fill, one bold blue
+ *     stroke — this is what keeps 221 country outlines from reading as
+ *     "busy" instead of "map".
+ *   - Style + animate Portugal's marker: a red teardrop pin with a
+ *     soft shadow, ringed by two dashed circles that slowly rotate in
+ *     opposite directions, marking it out as the point of interest.
+ *     Global prefers-reduced-motion rules in base.css already freeze
+ *     all of this, leaving just the static pin and rings in place.
  *
  * DEPENDENCIES
- *   assets/css/tokens.css (--fx-world-map-line, --fx-world-map-pin)
- *   assets/js/effects/world-map.js (fetches assets/images/world-map.svg
- *   and injects it as the first child of <body>)
+ *   assets/css/tokens.css (--fx-world-map-line, --fx-world-map-orbit,
+ *   --fx-world-map-pin)
+ *   assets/js/effects/world-map.js (injects the map SVG as the first
+ *   child of <body>)
  *
  * SAFE EDITS
  *   To move the map, adjust .world-map__svg's top/right/width — the
- *   mask and pin travel with it since they're relative to the same
- *   element. Do not hand-edit the coastline paths inside the SVG
- *   asset; regenerate from source data instead (see the asset file's
- *   own comment).
+ *   mask and marker travel with it since they're relative to the same
+ *   element. If you widen/narrow the viewBox in world-map.js, scale
+ *   this file's .world-map__svg width by the same ratio (see that
+ *   file's SAFE EDITS note) or the map will change scale. Do not
+ *   hand-edit the coastline paths inside the SVG asset; regenerate
+ *   from source data instead (see the asset file's own comment).
  */
 
 body[data-page="contact"] {
@@ -51,52 +62,79 @@ body[data-page="contact"] {
   position: absolute;
   top: 50%;
   right: -8%;
-  width: min(800px, 62vw);
+  /* viewBox width doubled (155 -> 310 units) to extend the map further
+     west; this width is doubled to match, so Portugal keeps the same
+     on-screen scale and position and only the added western area is
+     new on-screen real estate (faded out by the mask below). */
+  width: min(1600px, 124vw);
   height: auto;
   transform: translateY(-50%);
 
   /* Fade toward the left so the contact card (left/center column) stays
-     the clear visual focus; the map reads clearly only on the right. */
-  -webkit-mask-image: linear-gradient(to left, #000 0%, #000 45%, transparent 88%);
-  mask-image: linear-gradient(to left, #000 0%, #000 45%, transparent 88%);
+     the clear visual focus. Percentages are halved from the old crop
+     (45%/88% -> 22%/44%) so the fade sits at the same absolute distance
+     from the right edge as before, now that the element is twice as
+     wide — the newly-added western map fades to invisible under/behind
+     the card instead of showing past it. */
+  -webkit-mask-image: linear-gradient(to left, #000 0%, #000 22%, transparent 44%);
+  mask-image: linear-gradient(to left, #000 0%, #000 22%, transparent 44%);
 }
 
 .world-map__landmasses path {
   fill: none;
   stroke: var(--fx-world-map-line);
-  stroke-width: 1;
+  stroke-width: 1.9;
   stroke-linejoin: round;
   /* Keeps stroke thickness visually constant across the responsive
      width above, instead of scaling up with the viewBox. */
   vector-effect: non-scaling-stroke;
 }
 
-/* ---- Lisbon pin ---------------------------------------------------- */
+/* ---- Portugal marker ------------------------------------------------
+   A red teardrop pin (Google-Maps "place" style) with a soft ground
+   shadow, ringed by two dashed circles that slowly counter-rotate to
+   read as "this is the point of interest" rather than a plain dot. */
 
-.world-map__pin-core {
+.world-map__pin-shadow {
+  fill: rgba(0, 0, 0, 0.5);
+}
+
+.world-map__pin-shape {
   fill: var(--fx-world-map-pin);
   filter: drop-shadow(0 0 2.5px var(--fx-world-map-pin));
 }
 
-.world-map__pin-halo {
+.world-map__orbit circle {
   fill: none;
-  stroke: var(--fx-world-map-pin);
-  stroke-width: 1.1;
+  stroke: var(--fx-world-map-orbit);
   vector-effect: non-scaling-stroke;
-  transform-box: fill-box;
-  transform-origin: center;
-  opacity: 0.8;
-  animation: world-map-pulse 2.6s cubic-bezier(0.22, 0.8, 0.36, 1) infinite;
 }
 
-@keyframes world-map-pulse {
-  0% {
-    transform: scale(1);
-    opacity: 0.7;
-  }
-  70%,
-  100% {
-    transform: scale(6);
-    opacity: 0;
+.world-map__orbit {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: world-map-orbit-spin 48s linear infinite;
+}
+
+.world-map__orbit--outer circle {
+  stroke-width: 1.3;
+  stroke-dasharray: 3 7;
+  opacity: 0.6;
+}
+
+.world-map__orbit--inner circle {
+  stroke-width: 1.1;
+  stroke-dasharray: 2 5;
+  opacity: 0.46;
+}
+
+.world-map__orbit--inner {
+  animation-duration: 30s;
+  animation-direction: reverse;
+}
+
+@keyframes world-map-orbit-spin {
+  to {
+    transform: rotate(360deg);
   }
 }
