@@ -54,7 +54,7 @@ export async function renderSkills(containerEl) {
       groupEl.className = "stack stack--tight";
 
       const heading = document.createElement("h3");
-      heading.className = "text-sm font-mono text-muted";
+      heading.className = "text-sm text-muted";
       heading.textContent = group.category;
       groupEl.appendChild(heading);
 
@@ -110,7 +110,7 @@ export async function renderExperience(containerEl) {
       header.appendChild(roleTitle);
 
       const period = document.createElement("span");
-      period.className = "text-sm font-mono text-muted";
+      period.className = "text-sm text-muted";
       period.textContent = entry.period;
       header.appendChild(period);
 
@@ -176,7 +176,7 @@ export async function renderTimeline(containerEl) {
       const content = document.createElement("div");
 
       const year = document.createElement("span");
-      year.className = "timeline__period text-sm font-mono text-accent";
+      year.className = "timeline__period text-sm text-accent";
       year.textContent = milestone.year;
       content.appendChild(year);
 
@@ -228,7 +228,7 @@ export async function renderAwards(containerEl) {
 
       if (award.year) {
         const year = document.createElement("span");
-        year.className = "text-sm font-mono text-muted";
+        year.className = "text-sm text-muted";
         year.textContent = award.year;
         header.appendChild(year);
       }

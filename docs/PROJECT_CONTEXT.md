@@ -2,14 +2,16 @@
 
 ## What this is
 
-A premium, static portfolio website for a software/frontend engineer, built to be
-hosted on GitHub Pages with zero build step and zero backend. It is designed to
-feel like a small, well-made SaaS product rather than a template.
+A premium, static portfolio website for a mechanical engineer (who also codes
+side projects), built to be hosted on GitHub Pages with zero build step and
+zero backend. It is designed to feel like a well-made, considered product
+rather than a template — without reading as a software/dev portfolio, since
+the subject's primary discipline is mechanical engineering.
 
 ## Who it's for
 
-The site ships with realistic **placeholder content** (name: "Alex Rivera",
-role: "Software Engineer") in the `assets/data/*.json` files. Nothing about the
+The site now ships with real content (name: "Pedro Sousa", role: "Mechanical
+Engineering Student") in the `assets/data/*.json` files. Nothing about the
 design depends on that specific content — swap the JSON and images and the site
 becomes yours. See `SETUP.md` for exactly what to edit.
 
@@ -41,11 +43,15 @@ work while still giving visitors a direct way to reach out.
 ## Design north star
 
 Apple / Stripe / Linear / Vercel / Framer: restrained, confident, fast,
-accessible. One deliberate signature idea (a terminal/IDE-inspired thread —
-breadcrumb path styling, a status pill, a blinking cursor accent) ties the
-"engineer" subject matter to the visual language, without leaning on generic
-AI-portfolio defaults (no cream+serif+terracotta, no acid-green-on-black, no
-numbered-marker sections). Full rationale in `DESIGN_SYSTEM.md`.
+accessible. Dark, bold, high-contrast, with a plain sans-serif type system
+throughout — no terminal/IDE styling (shell-prompt logos, monospace UI
+chrome, blinking cursors), since those read as "software engineer" rather
+than "mechanical engineer." The signature ideas instead lean on the
+engineering subject matter itself (project imagery, spec-style detail,
+precise layout) rather than on developer-tool visual tropes. Also avoids
+generic AI-portfolio defaults (no cream+serif+terracotta, no
+acid-green-on-black, no numbered-marker sections). Full rationale in
+`DESIGN_SYSTEM.md`.
 
 ## How to read this repo
 

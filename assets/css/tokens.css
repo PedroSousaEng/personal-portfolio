@@ -76,7 +76,7 @@
      Thin, low-contrast coastline strokes only — kept deliberately apart
      from the rest of the --fx-* palette so the map never picks up an
      accent tint by accident. The one spot of color is the Lisbon pin. */
-  --fx-world-map-line: #34394a; /* coastline stroke, between #2c2f38 and #3a3d47 */
+  --fx-world-map-line: #5b6376; /* coastline stroke — bright enough to read against pure black */
   --fx-world-map-pin: #ff4d4d; /* Lisbon pin — the one spot of color */
 
   /* ---- 404 page: error / interference field ----

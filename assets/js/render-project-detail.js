@@ -232,7 +232,7 @@ function buildOverview(project) {
 
   if (Array.isArray(project.objectives) && project.objectives.length > 0) {
     const objectivesHeading = document.createElement("h3");
-    objectivesHeading.className = "text-sm font-mono text-muted mt-6";
+    objectivesHeading.className = "text-sm text-muted mt-6";
     objectivesHeading.textContent = "Objectives";
     section.appendChild(objectivesHeading);
 
@@ -248,7 +248,7 @@ function buildOverview(project) {
 
   if (project.outcome) {
     const outcomeHeading = document.createElement("h3");
-    outcomeHeading.className = "text-sm font-mono text-muted mt-6";
+    outcomeHeading.className = "text-sm text-muted mt-6";
     outcomeHeading.textContent = "Outcome";
     section.appendChild(outcomeHeading);
 
@@ -305,7 +305,7 @@ function buildStory(project) {
     const content = document.createElement("div");
 
     const stageLabel = document.createElement("span");
-    stageLabel.className = "story-timeline__stage text-sm font-mono text-accent";
+    stageLabel.className = "story-timeline__stage text-sm text-accent";
     stageLabel.textContent = `${String(index + 1).padStart(2, "0")} · ${step.stage}`;
     content.appendChild(stageLabel);
 
@@ -347,7 +347,7 @@ function renderSpecGroupsModule(module) {
 
     if (group.label) {
       const label = document.createElement("h3");
-      label.className = "text-sm font-mono text-muted";
+      label.className = "text-sm text-muted";
       label.textContent = group.label;
       groupEl.appendChild(label);
     }
@@ -640,7 +640,7 @@ function renderAchievementsModule(module) {
 
     if (achievement.year) {
       const year = document.createElement("span");
-      year.className = "text-sm font-mono text-muted";
+      year.className = "text-sm text-muted";
       year.textContent = achievement.year;
       header.appendChild(year);
     }
@@ -679,7 +679,7 @@ function renderReflectionModule(module) {
 
     if (entry.label) {
       const label = document.createElement("h3");
-      label.className = "text-sm font-mono text-muted";
+      label.className = "text-sm text-muted";
       label.textContent = entry.label;
       block.appendChild(label);
     }

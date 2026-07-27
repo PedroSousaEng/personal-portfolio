@@ -21,22 +21,26 @@ instead of one accent color.
   one "AI green."
 - **Type:** no external font files (keeps the zero-dependency, zero-network-request
   performance budget intact and sidesteps licensing). Instead, the *system* UI
-  font stack is pushed hard at both ends: very heavy (800/900) tight-tracking
-  display weight for headlines, and a monospace stack used as a deliberate
-  structural device (not for code samples) — labels, breadcrumbs, meta text,
-  the nav's current-page indicator. Pairing a heavy grotesque display with a
-  monospace utility face is a legible, load-bearing echo of an engineer's own
-  tools (editors, terminals) without literally drawing a terminal window.
+  font stack is pushed hard at one end only: very heavy (800/900)
+  tight-tracking display weight for headlines, paired with the same sans
+  face at normal weight for everything else — nav, labels, breadcrumbs, meta
+  text, body copy. A monospace face was used in an earlier pass for
+  labels/breadcrumbs as a nod to "engineer's tools," but that read as
+  *software* engineer specifically (terminals/editors), which is the wrong
+  discipline for this site's subject — it was removed sitewide in favor of
+  one consistent sans stack.
 - **Layout:** generous single-column rhythm on mobile, calm 12-column grid on
   desktop, sticky compact nav. Project and experience data drive repeating
   card/row components rather than bespoke one-off layouts, since content is
   meant to be edited via JSON.
-- **Signature:** a persistent monospace breadcrumb-style path in the nav
-  (`~/home`, `~/about`, `~/projects`, `~/contact`) with the active segment lit
-  in the indigo accent, plus a small pulsing "available for work" status pill
-  in the hero using the amber accent. Both motifs are grounded in real
-  developer vernacular (shell paths, CI/status indicators) rather than
-  decoration for its own sake, and they're the only two "loud" elements —
+- **Signature:** a plain-text breadcrumb nav (Home / About / Projects / CV /
+  Contact) with the active segment lit in the indigo accent, plus a small
+  pulsing "available for work" status pill in the hero using the amber
+  accent. The nav previously used a shell-path style (`~/home`) and the
+  wordmark previously used a Unix-prompt format (`~/pedro-sousa`) with a
+  blinking terminal-cursor accent — both were removed for the same reason as
+  the monospace type: they signal "software developer" specifically, not
+  "engineer" generally. The status pill remains the one "loud" element;
   everything else stays quiet and disciplined.
 - **Rejected:** numbered section markers (01 / 02 / 03) — the content here
   (skills, projects) isn't an ordered sequence, so numbering would encode
@@ -73,8 +77,9 @@ WCAG AA (4.5:1) for body text, including the muted tier.
 - **Body stack** (`--font-body`): same system-ui family, weight 400/500,
   line-height 1.6, used for paragraphs and UI text.
 - **Mono stack** (`--font-mono`): `ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace`,
-  used for the nav breadcrumb, eyebrows, tags, and the status pill only —
-  never for body copy.
+  token/utility class still defined but unused sitewide — the nav breadcrumb,
+  eyebrows, tags, status pill, CV/project meta labels, and the 404 code all
+  moved to the body sans stack (see "Type" above for why).
 
 ### Type scale (defined as tokens, applied via utility classes in `layout.css`)
 

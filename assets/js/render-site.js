@@ -1,19 +1,19 @@
 /**
  * PURPOSE
  *   Central "single source of truth" for site-wide identity text (name,
- *   role, tagline, brand handle, university) and footer social links.
+ *   role, tagline, university) and footer social links.
  *   Every page includes elements with a `data-site="..."` attribute
  *   instead of hard-coded copy — this module fills them in from
  *   assets/data/site.json and assets/data/socials.json on every load.
  *
  * RESPONSIBILITIES
  *   - applySiteIdentity(): fill every [data-site] element's text/attrs
- *     from site.json (name, first name, role, tagline, university, brand).
+ *     from site.json (name, first name, role, tagline, university).
  *   - applySocialLinks(): fill footer/contact [data-social] links (href +
  *     visible label where relevant) from socials.json.
  *
  * DATA CONTRACTS
- *   site.json:    { name, firstName, brand, role, tagline, university }
+ *   site.json:    { name, firstName, role, tagline, university }
  *   socials.json: { email, links: Array<{ platform, url, icon }> }
  *
  * SAFE EDITS
@@ -29,7 +29,7 @@ import { DATA_PATHS } from "./config.js";
 /**
  * Fills every element carrying a `data-site` attribute with the matching
  * field from site.json. Supported keys: name, first-name, role, tagline,
- * university, brand. If the element is a <title> or has `data-site-attr`,
+ * university. If the element is a <title> or has `data-site-attr`,
  * the value is written to that attribute instead of textContent.
  */
 async function applySiteIdentity() {
@@ -41,7 +41,6 @@ async function applySiteIdentity() {
     role: site.role,
     tagline: site.tagline,
     university: site.university,
-    brand: site.brand,
   };
 
   document.querySelectorAll("[data-site]").forEach((el) => {

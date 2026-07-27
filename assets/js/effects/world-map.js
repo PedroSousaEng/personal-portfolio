@@ -33,8 +33,8 @@
  *   stay in sync.
  */
 
-const WORLD_MAP_MARKUP = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 507" class="world-map__svg" role="img" aria-label="">
-<title>World map</title>
+const WORLD_MAP_MARKUP = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="415 55 155 175" class="world-map__svg" role="img" aria-label="">
+<title>Map centred on Portugal, showing the Atlantic, Spain, France and North Africa</title>
   <g class="world-map__landmasses">
     <path id="abw" d="M307,214L307,214L307,214L307,214L307,214L307,214L307,214L307,214L307,214L307,214"/>
     <path id="ado" d="M504,120L504,120L504,120L504,120L504,120L504,120L504,120L504,120L504,120L504,120L504,120L504,119L504,119L504,119L504,120L504,120L504,120L504,120L504,120"/>

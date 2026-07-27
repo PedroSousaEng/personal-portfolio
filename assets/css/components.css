@@ -163,7 +163,6 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  font-family: var(--font-mono);
   font-size: var(--text-xs);
   color: var(--color-text-400);
   letter-spacing: 0.02em;
@@ -210,7 +209,6 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  font-family: var(--font-mono);
   font-size: var(--text-xs);
   color: var(--color-text-400);
   border-bottom: 1px solid transparent;
@@ -253,7 +251,6 @@
      thumbnail without a per-frame blur cost. */
   background: rgba(9, 10, 14, 0.88);
   border: 1px solid var(--color-line);
-  font-family: var(--font-mono);
   font-size: var(--text-xs);
   color: var(--color-text-100);
 }
@@ -291,7 +288,6 @@
   border-radius: var(--radius-full);
   background: transparent;
   border: 1px solid var(--color-line);
-  font-family: var(--font-mono);
   font-size: var(--text-xs);
   color: var(--color-text-400);
   transition: color var(--duration-base) var(--ease-standard),
@@ -319,7 +315,6 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2);
-  font-family: var(--font-mono);
   font-size: var(--text-xs);
   color: var(--color-text-400);
 }
@@ -362,7 +357,6 @@
   border-radius: var(--radius-full);
   background: var(--color-ink-900);
   border: 1px solid var(--color-line);
-  font-family: var(--font-mono);
   font-size: var(--text-xs);
   color: var(--color-text-400);
 }
@@ -375,7 +369,6 @@
   border-radius: var(--radius-full);
   background: var(--color-ink-900);
   border: 1px solid var(--color-line);
-  font-family: var(--font-mono);
   font-size: var(--text-xs);
   letter-spacing: 0.02em;
 }
@@ -432,18 +425,14 @@
   justify-content: space-between;
 }
 
-/* Signature element: persistent monospace brand mark, styled like a shell
-   prompt path. Always visible (not part of the collapsible menu). */
+/* Persistent wordmark. Always visible (not part of the collapsible menu). */
 .nav__brand {
-  font-family: var(--font-mono);
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold, 700);
   font-size: var(--text-sm);
   color: var(--color-text-100);
   padding: var(--space-2);
   border-radius: var(--radius-sm);
-}
-
-.nav__brand span {
-  color: var(--color-accent-indigo);
 }
 
 .nav__toggle {
@@ -533,7 +522,6 @@
 
   .nav__menu a[aria-current="page"] {
     color: var(--color-text-100);
-    font-family: var(--font-mono);
   }
 
   /* Breadcrumb slash separators between desktop nav links. */
@@ -547,7 +535,6 @@
     position: absolute;
     left: calc(-1 * var(--space-3));
     color: var(--color-text-600);
-    font-family: var(--font-mono);
   }
 }
 

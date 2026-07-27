@@ -39,26 +39,6 @@
   font-weight: var(--weight-black);
 }
 
-/* Signature element: blinking terminal cursor beside the hero name. */
-.hero__cursor {
-  display: inline-block;
-  width: 0.5em;
-  height: 0.8em;
-  margin-left: 0.1em;
-  background: var(--color-accent-indigo);
-  animation: blink 1.1s step-end infinite;
-  vertical-align: text-bottom;
-}
-
-@keyframes blink {
-  0%, 49% {
-    opacity: 1;
-  }
-  50%, 100% {
-    opacity: 0;
-  }
-}
-
 .hero__lede {
   max-width: 56ch;
   color: var(--color-text-400);
@@ -532,7 +512,8 @@ body[data-page="projects"] [data-all-projects] > .card[data-tilting="true"] .car
 
 .page-404__code {
   margin-top: var(--space-6);
-  font-family: var(--font-mono);
+  font-family: var(--font-display);
+  font-weight: 700;
   font-size: clamp(4rem, 3rem + 5vw, 7rem);
   line-height: 0.92;
   color: var(--color-accent-indigo);
@@ -1054,7 +1035,6 @@ body[data-page="projects"] [data-all-projects] > .card[data-tilting="true"] .car
 
 .project-pager__label {
   display: block;
-  font-family: var(--font-mono);
   font-size: var(--text-xs);
   color: var(--color-text-600);
   letter-spacing: 0.06em;

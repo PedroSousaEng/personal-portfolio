@@ -44,21 +44,21 @@ body[data-page="contact"] {
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
-  opacity: 0.16; /* keeps the whole map decorative, never competing with content */
+  opacity: 0.45; /* visible against pure-black background, still decorative, never competing with content */
 }
 
 .world-map__svg {
   position: absolute;
   top: 50%;
-  right: -6%;
-  width: min(1200px, 92vw);
+  right: -8%;
+  width: min(800px, 62vw);
   height: auto;
   transform: translateY(-50%);
 
   /* Fade toward the left so the contact card (left/center column) stays
      the clear visual focus; the map reads clearly only on the right. */
-  -webkit-mask-image: linear-gradient(to left, #000 0%, #000 38%, transparent 82%);
-  mask-image: linear-gradient(to left, #000 0%, #000 38%, transparent 82%);
+  -webkit-mask-image: linear-gradient(to left, #000 0%, #000 45%, transparent 88%);
+  mask-image: linear-gradient(to left, #000 0%, #000 45%, transparent 88%);
 }
 
 .world-map__landmasses path {

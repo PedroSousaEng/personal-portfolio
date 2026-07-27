@@ -95,7 +95,7 @@ function buildEducationSection(cv) {
     header.appendChild(degree);
 
     const period = document.createElement("span");
-    period.className = "text-sm font-mono text-muted";
+    period.className = "text-sm text-muted";
     period.textContent = entry.period;
     header.appendChild(period);
 
@@ -150,7 +150,7 @@ function buildSkillsSection(skillGroups) {
     groupEl.className = "stack stack--tight";
 
     const heading = document.createElement("h3");
-    heading.className = "text-sm font-mono text-muted";
+    heading.className = "text-sm text-muted";
     heading.textContent = group.category;
     groupEl.appendChild(heading);
 
@@ -234,7 +234,7 @@ function buildAwardsSection(cv) {
 
     if (award.year) {
       const year = document.createElement("span");
-      year.className = "text-sm font-mono text-muted";
+      year.className = "text-sm text-muted";
       year.textContent = award.year;
       header.appendChild(year);
     }

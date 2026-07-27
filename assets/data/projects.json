@@ -3,7 +3,7 @@
     "id": "vinted-os",
     "title": "Vinted OS",
     "subtitle": "Smart listing management for Vinted sellers",
-    "description": "A productivity platform designed to streamline inventory management for Vinted sellers by centralizing listing organization, performance tracking, and workflow automation. The system provides tools for monitoring product metrics, managing large inventories, accelerating listing and relisting processes, and improving operational efficiency. The project demonstrates practical software development, process optimization, data organization, and user-focused interface design for real-world e-commerce applications.",
+    "description": "A Python tool I built on the side to manage my own Vinted inventory: tracking listings, prices, and performance in one place instead of spreadsheets, with some automation for relisting stale items. A coding side project I use to practice Python and automation, kept separate from my mechanical engineering work.",
     "tags": [
       "Python",
       "Artificial Intelligence",
@@ -111,7 +111,7 @@
     "id": "personal-portfolio",
     "title": "Personal Portfolio",
     "subtitle": "Premium engineering portfolio, framework-free",
-    "description": "A premium engineering portfolio developed using HTML5, CSS3, and Vanilla JavaScript, with a strong emphasis on performance, accessibility, and user experience. The website showcases engineering projects through responsive layouts, smooth animations, and interactive visual elements while maintaining clean architecture and optimized code. The project demonstrates frontend development skills, UI/UX design principles, performance optimization, and the ability to build scalable, framework-free web applications suitable for professional presentation.",
+    "description": "This website. A framework-free HTML, CSS, and JavaScript site I built and keep iterating on to present my mechanical engineering projects properly. A coding side project done for its own sake, not part of my engineering coursework.",
     "tags": [
       "HTML5",
       "CSS3",
@@ -136,10 +136,10 @@
     ],
     "outcome": "A production site with a reusable data-driven project system: every project page assembles itself from a single JSON record, so adding a new case study never requires touching the templates.",
     "myRole": [
-      "Frontend Architecture",
-      "UI/UX Design",
-      "Performance Optimization",
-      "Content Strategy"
+      "Frontend Development",
+      "Design & Layout",
+      "Performance Tweaks",
+      "Content Writing"
     ],
     "story": [
       {
@@ -148,43 +148,42 @@
       },
       {
         "stage": "Design",
-        "text": "I designed a component system (cards, status pills, highlight badges, filter bar) and a per-project data contract so every project, software or mechanical, renders a consistent, complete case study regardless of its content."
+        "text": "I sketched out a few reusable pieces (project cards, status pills, highlight badges) and settled on a simple, consistent set of fields for each project, so every project, software or mechanical, gets a proper write-up without me hand-building a new page layout each time."
       },
       {
         "stage": "Development",
-        "text": "Built with plain HTML5, CSS3, and vanilla JavaScript modules (no framework), with AI assistance used heavily for iteration speed, debugging, and refactors, while I directed the architecture and design decisions."
+        "text": "Built with plain HTML5, CSS3, and vanilla JavaScript (no framework), with AI assistance used heavily to speed up iteration and debugging, while I made the layout and content decisions myself."
       },
       {
         "stage": "Testing",
-        "text": "Iterated on performance (capping canvas pixel density, batching draw calls, removing expensive blur filters) after noticing jank on ambient background effects, and fixed an interaction bug where 3D card tilt made action buttons hard to click."
+        "text": "Cleaned up some performance issues after noticing the background animations were causing jank on lower-end devices, and fixed a bug where the card-tilt effect made buttons hard to click."
       },
       {
         "stage": "Results",
-        "text": "A fast, accessible site where every project, regardless of discipline, gets a real case study page: overview, my contribution, an engineering story, and links to source/resources."
+        "text": "A fast, accessible site where every project, regardless of discipline, gets a real write-up: overview, my contribution, the story behind it, and links to source/resources."
       },
       {
         "stage": "Lessons Learned",
-        "text": "Treating the portfolio itself as an engineering project, with a real data model and iteration cycle, produced a much more maintainable result than hand-writing each page."
+        "text": "Treating the portfolio itself as a real project, not just a page I'd never revisit, made it much easier to keep improving over time instead of starting over each time I wanted to change something."
       }
     ],
     "modules": [
       {
         "type": "spec-groups",
-        "heading": "System Overview",
+        "heading": "Overview",
         "groups": [
           {
-            "label": "Architecture",
+            "label": "Built with",
             "items": [
-              "Static HTML pages + shared vanilla JS render modules",
-              "Every project/site field driven by one JSON record",
+              "Static HTML pages + shared vanilla JS scripts",
+              "Every project/site field pulled from one JSON file",
               "No build step, no framework, no bundler"
             ]
           },
           {
-            "label": "Software",
+            "label": "Features",
             "items": [
-              "Category filter bar on the Projects page",
-              "Modular case-study system (this section is one such module)",
+              "Each project gets its own detail page with a proper write-up",
               "Print-ready CV page generated from its own JSON"
             ]
           }
@@ -196,11 +195,11 @@
         "items": [
           {
             "label": "Challenges",
-            "text": "Balancing ambient visual effects (canvas backgrounds, cursor, tilt) against real performance, several rounds of profiling were needed to remove jank without losing the premium feel."
+            "text": "Balancing the ambient visual effects (backgrounds, cursor, tilt) against real performance took a few rounds of tweaking to remove jank without losing the look."
           },
           {
             "label": "Future Improvements",
-            "text": "Add a lightweight build step for image optimization, and expand the modular project-content system with real photo galleries as projects gain documentation."
+            "text": "Add a lightweight build step for image optimization, and swap in real photos as the mechanical projects gain more documentation."
           }
         ]
       }

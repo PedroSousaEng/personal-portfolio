@@ -1,21 +1,5 @@
 [
   {
-    "category": "Programming",
-    "items": [
-      "Python",
-      "Data Analysis",
-      "Automation"
-    ]
-  },
-  {
-    "category": "AI-Assisted Development",
-    "items": [
-      "AI-Assisted Coding",
-      "Rapid Prototyping",
-      "Workflow Automation"
-    ]
-  },
-  {
     "category": "Engineering & CAD",
     "items": [
       "SolidWorks",
@@ -31,6 +15,22 @@
       "3D Printing",
       "PLA",
       "Mechanical Assembly"
+    ]
+  },
+  {
+    "category": "Programming",
+    "items": [
+      "Python",
+      "Data Analysis",
+      "Automation"
+    ]
+  },
+  {
+    "category": "AI-Assisted Development",
+    "items": [
+      "AI-Assisted Coding",
+      "Rapid Prototyping",
+      "Workflow Automation"
     ]
   },
   {

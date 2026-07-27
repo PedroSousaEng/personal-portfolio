@@ -112,13 +112,13 @@
 .font-mono     { font-family: var(--font-mono); }
 .font-display  { font-family: var(--font-display); font-weight: var(--weight-bold); }
 
-/* ---- Eyebrow: the mono structural label used above section headings ---- */
+/* ---- Eyebrow: the small structural label used above section headings ---- */
 .eyebrow {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  font-family: var(--font-mono);
   font-size: var(--text-xs);
+  font-weight: var(--weight-bold, 700);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text-400);
