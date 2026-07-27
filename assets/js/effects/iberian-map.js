@@ -29,6 +29,9 @@
  *   nudge points directly rather than importing a geo library. The whole
  *   scene shares one projection (see `project()`), anchored on Braga, so
  *   the world silhouette and the peninsula always stay in registration.
+ *   World landmasses are stroke-only (no fill) on purpose: a filled,
+ *   hand-approximated polygon at this point count reads as a solid dark
+ *   blob rather than a coastline, so keep it to thin outlines.
  */
 
 export function initIberianMap() {
@@ -55,75 +58,76 @@ export function initIberianMap() {
 
   const FX_LINE = parseColorTriplet(tok("--fx-contact-map-line", "#e6e8ee")) || "230, 232, 238";
   const FX_SIGNAL = parseColorTriplet(tok("--fx-contact-signal", "#e5484d")) || "229, 72, 77";
-  const LINE_COLOR = `rgb(${FX_LINE})`;
   const SIGNAL_COLOR = `rgb(${FX_SIGNAL})`;
+  const FILL_PT = tok("--fx-contact-map-fill-pt", "rgba(230, 232, 238, 0.06)");
+  const FILL_ES = tok("--fx-contact-map-fill-es", "rgba(230, 232, 238, 0.035)");
 
   // ---- Geography (hand-simplified line art — not surveyed data) ----
   // Anchor: everything is projected relative to Braga, so the faint world
   // silhouette and the bright peninsula detail always share one origin.
   const BRAGA = { lon: -8.42, lat: 41.55 };
 
-  // Very low-detail continent silhouettes — decorative backdrop only.
+  // Very low-detail continent outlines — decorative backdrop only.
+  // Stroke-only: no fill (see SAFE EDITS above).
   const WORLD_LANDMASSES = [
-    // Afro-Eurasia (Europe + Africa + Asia as one connected mass).
+    // Europe + Africa + western Asia, one connected mass.
     [
-      [-9, 43], [-9.3, 38], [-9, 36], [-5, 36], [0, 38], [10, 44], [15, 40],
-      [23, 40], [30, 42], [36, 33], [35, 20], [40, 12], [45, 2], [42, -10],
-      [35, -25], [20, -35], [15, -18], [10, -5], [9, 6], [-4, 5], [-10, 10],
-      [-17, 15], [-9, 21], [-9, 33], [-6, 35], [-9, 38], [-9, 43],
+      [-9.3, 43], [-9, 37], [-6, 36], [-2, 38], [4, 43], [12, 45], [18, 40],
+      [23, 36], [28, 41], [35, 37], [36, 20], [43, 12], [50, 12], [43, -2],
+      [40, -15], [35, -25], [25, -34], [16, -34], [12, -18], [9, -4], [8, 5],
+      [-2, 5], [-9, 10], [-17, 14], [-16, 21], [-10, 25], [-8, 33], [-9.3, 43],
     ],
-    // Extension covering the Asian landmass so the backdrop reads as a
-    // full world map rather than just Europe/Africa.
+    // Rest of Asia — kept separate and mostly off-screen at typical
+    // viewport widths; adds depth at wide/ultrawide sizes only.
     [
-      [30, 42], [45, 40], [60, 45], [75, 48], [95, 52], [115, 50], [135, 45],
-      [140, 55], [160, 65], [130, 75], [90, 78], [60, 72], [40, 66], [30, 60],
-      [36, 33], [30, 42],
-    ],
-    [
-      [70, 20], [80, 8], [90, 20], [98, 10], [105, 2], [100, -8], [110, -8],
-      [115, 5], [122, 22], [110, 20], [95, 22], [80, 22], [70, 20],
+      [50, 12], [60, 22], [68, 24], [72, 20], [78, 10], [82, 16], [90, 22],
+      [95, 20], [100, 12], [105, 0], [102, -6], [108, -8], [115, 4], [120, 15],
+      [122, 28], [130, 40], [140, 50], [155, 62], [130, 70], [100, 76],
+      [75, 70], [60, 65], [48, 55], [43, 40], [35, 37], [43, 12], [50, 12],
     ],
     // North America.
     [
-      [-165, 65], [-150, 60], [-130, 55], [-125, 40], [-118, 33], [-105, 20],
-      [-97, 16], [-88, 14], [-82, 22], [-80, 26], [-75, 35], [-70, 43],
-      [-65, 48], [-70, 58], [-85, 63], [-95, 68], [-115, 70], [-140, 68],
-      [-165, 65],
+      [-160, 62], [-145, 60], [-130, 52], [-124, 40], [-117, 32], [-105, 20],
+      [-96, 16], [-88, 14], [-82, 22], [-80, 27], [-75, 35], [-71, 42],
+      [-66, 45], [-64, 50], [-72, 58], [-88, 63], [-100, 68], [-120, 70],
+      [-140, 68], [-160, 62],
     ],
     // South America.
     [
-      [-80, 9], [-77, 2], [-80, -5], [-78, -15], [-71, -20], [-70, -30],
-      [-71, -40], [-68, -52], [-65, -55], [-58, -40], [-48, -25], [-35, -9],
-      [-40, 2], [-50, 5], [-60, 8], [-72, 8], [-80, 9],
+      [-79, 8], [-77, 1], [-80, -5], [-78, -15], [-71, -18], [-70, -30],
+      [-71, -40], [-68, -51], [-66, -54], [-58, -38], [-48, -24], [-35, -8],
+      [-40, 3], [-50, 6], [-60, 9], [-72, 9], [-79, 8],
     ],
     // Australia (small, low detail).
     [
-      [113, -22], [122, -18], [130, -12], [142, -11], [148, -20], [153, -28],
-      [150, -37], [140, -38], [131, -32], [122, -34], [114, -30], [113, -22],
+      [114, -22], [122, -18], [131, -12], [142, -11], [148, -20], [153, -27],
+      [150, -37], [140, -38], [131, -32], [122, -34], [114, -30], [114, -22],
     ],
   ];
 
-  // Peninsula coastline, ordered as PT_COAST (Minho mouth -> Guadiana
-  // mouth) followed by ES_COAST (Guadiana mouth -> back to Minho mouth) —
-  // see the two arrays below, kept separate so PT/ES can be filled apart.
+  // Peninsula coastline, split as PT_COAST (Minho mouth -> Guadiana
+  // mouth) and ES_COAST (Guadiana mouth -> ... -> back to Minho mouth),
+  // so Portugal/Spain can be filled as two distinct shapes.
   const PT_COAST = [
-    [-8.87, 41.88], [-8.85, 41.15], [-9.05, 40.65], [-9.47, 39.36],
-    [-9.2, 38.68], [-8.98, 38.0], [-8.78, 37.5], [-8.9, 37.05],
-    [-8.68, 37.0], [-8.0, 36.98], [-7.42, 37.17],
+    [-8.85, 41.88], [-8.9, 41.15], [-8.85, 40.6], [-9.0, 40.15],
+    [-9.25, 39.6], [-9.5, 38.78], [-9.25, 38.68], [-8.9, 38.45],
+    [-8.87, 37.95], [-8.97, 37.02], [-8.67, 37.1], [-7.93, 37.0],
+    [-7.42, 37.18],
   ];
 
   const ES_COAST = [
-    [-7.42, 37.17], [-6.3, 37.0], [-6.0, 36.75], [-5.6, 36.15], [-5.35, 36.13],
-    [-4.4, 36.72], [-2.47, 36.84], [-1.3, 37.6], [0.48, 38.35], [0.33, 39.47],
-    [1.15, 41.15], [2.17, 41.38], [3.2, 42.32], [1.7, 42.5], [0.0, 42.7],
-    [-1.5, 43.3], [-2.0, 43.37], [-3.2, 43.47], [-4.5, 43.4], [-5.7, 43.55],
-    [-7.0, 43.55], [-8.2, 43.4], [-9.3, 43.0], [-8.87, 42.2], [-8.87, 41.88],
+    [-7.42, 37.18], [-6.95, 37.18], [-6.3, 36.53], [-5.6, 36.0],
+    [-5.35, 36.12], [-4.42, 36.72], [-2.47, 36.83], [-0.99, 37.6],
+    [-0.48, 38.35], [-0.33, 39.47], [1.25, 41.12], [2.17, 41.38],
+    [3.18, 42.43], [1.0, 42.6], [-1.0, 42.9], [-1.98, 43.32],
+    [-2.93, 43.36], [-3.8, 43.46], [-5.66, 43.55], [-7.03, 43.54],
+    [-8.4, 43.37], [-9.3, 42.9], [-8.87, 42.24], [-8.85, 41.88],
   ];
 
   // The land border, Minho mouth (north) -> Guadiana mouth (south).
   const BORDER = [
-    [-8.87, 41.88], [-8.15, 41.92], [-6.95, 41.95], [-6.85, 41.0],
-    [-6.95, 40.3], [-7.0, 39.4], [-7.05, 38.6], [-7.3, 38.2], [-7.42, 37.17],
+    [-8.85, 41.88], [-8.2, 41.92], [-6.9, 41.95], [-6.85, 41.0],
+    [-6.9, 40.3], [-7.0, 39.5], [-7.0, 38.7], [-7.3, 38.15], [-7.42, 37.18],
   ];
 
   const PT_POLYGON = [...PT_COAST, ...[...BORDER].reverse().slice(1, -1)];
@@ -189,47 +193,45 @@ export function initIberianMap() {
   }
 
   function drawWorld() {
-    bgCtx.strokeStyle = `rgba(${FX_LINE}, 0.16)`;
-    bgCtx.fillStyle = `rgba(${FX_LINE}, 0.03)`;
+    bgCtx.strokeStyle = `rgba(${FX_LINE}, 0.18)`;
     bgCtx.lineWidth = 1;
     WORLD_LANDMASSES.forEach((mass, i) => {
-      const wobbled = withOrganicWobble(mass, 0.15, 1000 + i * 37);
+      const wobbled = withOrganicWobble(mass, 0.2, 1000 + i * 37);
       bgCtx.beginPath();
       pathFromLonLat(bgCtx, wobbled, worldScale);
-      bgCtx.fill();
       bgCtx.stroke();
     });
   }
 
   function drawPeninsula() {
-    const pt = withOrganicWobble(PT_POLYGON, 0.02, 42);
-    const es = withOrganicWobble(ES_POLYGON, 0.02, 73);
-    const border = withOrganicWobble(BORDER, 0.015, 91);
-    const outline = withOrganicWobble(PENINSULA_OUTLINE, 0.02, 15);
+    const pt = withOrganicWobble(PT_POLYGON, 0.015, 42);
+    const es = withOrganicWobble(ES_POLYGON, 0.015, 73);
+    const border = withOrganicWobble(BORDER, 0.01, 91);
+    const outline = withOrganicWobble(PENINSULA_OUTLINE, 0.015, 15);
 
     // Country fills — subtle, not a colored map, just enough to read as
     // two distinct territories.
-    bgCtx.fillStyle = `var(--fx-contact-map-fill-pt, rgba(230,232,238,0.05))`;
-    bgCtx.fillStyle = tok("--fx-contact-map-fill-pt", "rgba(230, 232, 238, 0.05)");
+    bgCtx.fillStyle = FILL_PT;
     bgCtx.beginPath();
     pathFromLonLat(bgCtx, pt, iberiaScale);
     bgCtx.fill();
 
-    bgCtx.fillStyle = tok("--fx-contact-map-fill-es", "rgba(230, 232, 238, 0.03)");
+    bgCtx.fillStyle = FILL_ES;
     bgCtx.beginPath();
     pathFromLonLat(bgCtx, es, iberiaScale);
     bgCtx.fill();
 
     // Coastline — the brighter, more detailed focal element.
-    bgCtx.strokeStyle = `rgba(${FX_LINE}, 0.55)`;
+    bgCtx.strokeStyle = `rgba(${FX_LINE}, 0.6)`;
     bgCtx.lineWidth = 1.4;
+    bgCtx.lineJoin = "round";
     bgCtx.beginPath();
     pathFromLonLat(bgCtx, outline, iberiaScale);
     bgCtx.stroke();
 
     // PT/ES border — a touch brighter than the coastline so the two
     // countries read as clearly distinct.
-    bgCtx.strokeStyle = `rgba(${FX_LINE}, 0.7)`;
+    bgCtx.strokeStyle = `rgba(${FX_LINE}, 0.75)`;
     bgCtx.lineWidth = 1.2;
     bgCtx.beginPath();
     pathFromLonLat(bgCtx, border, iberiaScale, { close: false });
@@ -256,11 +258,11 @@ export function initIberianMap() {
     // rest of the Contact layout doesn't need to change.
     anchor = { x: width * 0.72, y: height * 0.5 };
 
-    // World silhouette sized to roughly fill the viewport at low detail;
-    // the peninsula is then redrawn much larger, in the same spot, as
-    // the focal "zoom".
-    worldScale = Math.min(width, height) / 130;
-    iberiaScale = Math.min(width, height) / 16;
+    // World silhouette sized to sit in the background at low detail;
+    // the peninsula is then redrawn larger, in the same spot, as the
+    // focal "zoom".
+    worldScale = Math.min(width, height) / 210;
+    iberiaScale = Math.min(width, height) / 15;
 
     drawWorld();
     drawPeninsula();
@@ -289,15 +291,23 @@ export function initIberianMap() {
     const haloRadius = 5 + pulse * 9;
 
     const patch = DOT_PATCH_RADIUS;
-    const sx = Math.max(0, bragaPoint.x - patch);
-    const sy = Math.max(0, bragaPoint.y - patch);
-    const sw = Math.min(width - sx, patch * 2);
-    const sh = Math.min(height - sy, patch * 2);
+    const dx = Math.max(0, bragaPoint.x - patch);
+    const dy = Math.max(0, bragaPoint.y - patch);
+    const dw = Math.min(width - dx, patch * 2);
+    const dh = Math.min(height - dy, patch * 2);
 
     // Restore the clean static map under the dot before repainting the
-    // glow — the only per-frame redraw, never the whole canvas.
-    ctx.clearRect(sx, sy, sw, sh);
-    ctx.drawImage(bgCanvas, sx, sy, sw, sh, sx, sy, sw, sh);
+    // glow — the only per-frame redraw, never the whole canvas. Source
+    // rect must be in bgCanvas's own device-pixel buffer (dpr-scaled),
+    // while the destination rect stays in the ctx's CSS-pixel space
+    // (ctx already carries the dpr transform) — mixing the two spaces
+    // here was the earlier bug that left a black patch around the dot.
+    ctx.clearRect(dx, dy, dw, dh);
+    ctx.drawImage(
+      bgCanvas,
+      dx * dpr, dy * dpr, dw * dpr, dh * dpr,
+      dx, dy, dw, dh,
+    );
 
     ctx.globalAlpha = 0.35 * (1 - pulse) + 0.1;
     ctx.fillStyle = SIGNAL_COLOR;

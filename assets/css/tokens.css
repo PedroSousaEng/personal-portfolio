@@ -69,17 +69,15 @@
   --fx-projects-spotlight-soft: #aeb8ff;
   --fx-projects-line: #5b6376;
 
-  /* ---- Contact page: Iberian map ----
+  /* ---- Contact page: world map ----
      Consumed by:
-       - assets/js/effects/iberian-map.js
-       - assets/css/effects/iberian-map.css
-     Monochrome line-art only — no accent blue here, kept deliberately
-     apart from the rest of the --fx-* palette so the map never picks up
-     a "radar" tint by accident. */
-  --fx-contact-map-line: #e6e8ee; /* world + peninsula linework, on #050505 */
-  --fx-contact-map-fill-pt: rgba(230, 232, 238, 0.05);
-  --fx-contact-map-fill-es: rgba(230, 232, 238, 0.03);
-  --fx-contact-signal: #e5484d; /* Braga marker — the one spot of color */
+       - assets/js/effects/world-map.js
+       - assets/css/effects/world-map.css
+     Thin, low-contrast coastline strokes only — kept deliberately apart
+     from the rest of the --fx-* palette so the map never picks up an
+     accent tint by accident. The one spot of color is the Lisbon pin. */
+  --fx-world-map-line: #34394a; /* coastline stroke, between #2c2f38 and #3a3d47 */
+  --fx-world-map-pin: #ff4d4d; /* Lisbon pin — the one spot of color */
 
   /* ---- 404 page: error / interference field ----
      Consumed by:

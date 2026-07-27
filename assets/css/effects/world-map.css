@@ -1,0 +1,102 @@
+/**
+ * PURPOSE
+ *   Contact-page-only ambient background: a real, accurately-coastlined
+ *   world map (Natural Earth data, not hand-drawn), rendered as thin,
+ *   low-contrast line art, weighted to the right side of the viewport
+ *   with a small glowing pin over Lisbon. Replaces the earlier
+ *   hand-simplified Iberian map (iberian-map.css).
+ *
+ * RESPONSIBILITIES
+ *   - Position the fetched <svg> (injected by world-map.js) fixed,
+ *     behind all content, cropped mostly to the right half of the
+ *     viewport.
+ *   - Fade the map to transparent toward the left via a mask, so the
+ *     contact card stays the clear visual focus.
+ *   - Style every country path identically: no fill, one thin
+ *     low-contrast stroke — this is what keeps 221 country outlines
+ *     from reading as "busy" instead of "map".
+ *   - Style + animate the Lisbon pin (halo pulses via CSS keyframes;
+ *     global prefers-reduced-motion rules in base.css already freeze
+ *     the animation, leaving just the small static dot).
+ *
+ * DEPENDENCIES
+ *   assets/css/tokens.css (--fx-world-map-line, --fx-world-map-pin)
+ *   assets/js/effects/world-map.js (fetches assets/images/world-map.svg
+ *   and injects it as the first child of <body>)
+ *
+ * SAFE EDITS
+ *   To move the map, adjust .world-map__svg's top/right/width — the
+ *   mask and pin travel with it since they're relative to the same
+ *   element. Do not hand-edit the coastline paths inside the SVG
+ *   asset; regenerate from source data instead (see the asset file's
+ *   own comment).
+ */
+
+body[data-page="contact"] {
+  background-image:
+    radial-gradient(ellipse 60% 70% at 82% 45%, transparent 0%, transparent 50%, var(--fx-depth-vignette) 100%);
+  background-attachment: fixed;
+}
+
+.world-map {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.16; /* keeps the whole map decorative, never competing with content */
+}
+
+.world-map__svg {
+  position: absolute;
+  top: 50%;
+  right: -6%;
+  width: min(1200px, 92vw);
+  height: auto;
+  transform: translateY(-50%);
+
+  /* Fade toward the left so the contact card (left/center column) stays
+     the clear visual focus; the map reads clearly only on the right. */
+  -webkit-mask-image: linear-gradient(to left, #000 0%, #000 38%, transparent 82%);
+  mask-image: linear-gradient(to left, #000 0%, #000 38%, transparent 82%);
+}
+
+.world-map__landmasses path {
+  fill: none;
+  stroke: var(--fx-world-map-line);
+  stroke-width: 1;
+  stroke-linejoin: round;
+  /* Keeps stroke thickness visually constant across the responsive
+     width above, instead of scaling up with the viewBox. */
+  vector-effect: non-scaling-stroke;
+}
+
+/* ---- Lisbon pin ---------------------------------------------------- */
+
+.world-map__pin-core {
+  fill: var(--fx-world-map-pin);
+  filter: drop-shadow(0 0 2.5px var(--fx-world-map-pin));
+}
+
+.world-map__pin-halo {
+  fill: none;
+  stroke: var(--fx-world-map-pin);
+  stroke-width: 1.1;
+  vector-effect: non-scaling-stroke;
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0.8;
+  animation: world-map-pulse 2.6s cubic-bezier(0.22, 0.8, 0.36, 1) infinite;
+}
+
+@keyframes world-map-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  70%,
+  100% {
+    transform: scale(6);
+    opacity: 0;
+  }
+}
