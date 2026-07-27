@@ -89,7 +89,7 @@ body[data-page="contact"] {
 .world-map__prt-trace {
   fill: none;
   stroke: var(--fx-world-map-highlight);
-  stroke-width: 2.2;
+  stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
@@ -97,9 +97,7 @@ body[data-page="contact"] {
      dasharray/dashoffset to percentages of the path, regardless of its
      real length — 14% visible dash, 86% gap. */
   stroke-dasharray: 14 86;
-  filter:
-    drop-shadow(0 0 2px var(--fx-world-map-highlight))
-    drop-shadow(0 0 6px var(--fx-world-map-line));
+  filter: drop-shadow(0 0 3px var(--fx-world-map-highlight));
   animation: world-map-trace 7s linear infinite;
 }
 

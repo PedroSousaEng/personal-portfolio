@@ -77,7 +77,7 @@
      of the --fx-* palette so the rest of the site never picks up this
      tint by accident. The one warm accent is the Portugal pin. */
   --fx-world-map-line: #5b7fd6; /* coastline stroke — bold blue, reads clearly against pure black */
-  --fx-world-map-highlight: #cfe0ff; /* bright traveling trace around Portugal's own outline */
+  --fx-world-map-highlight: #5c9dff; /* bright single-blue traveling trace around Portugal's own outline */
   --fx-world-map-pin: #ff4d4d; /* Portugal pin — the one warm spot of color */
 
   /* ---- 404 page: error / interference field ----

@@ -45,7 +45,7 @@
  *   assets/images/world-map.svg together so they stay in sync.
  */
 
-const WORLD_MAP_MARKUP = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="375 88 155 88" class="world-map__svg" role="img" aria-label="">
+const WORLD_MAP_MARKUP = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="358 82 180 102" class="world-map__svg" role="img" aria-label="">
 <title>Map centred on Portugal, showing the wider Atlantic, Europe and North Africa</title>
   <g class="world-map__landmasses">
     <path id="abw" d="M307,214L307,214L307,214L307,214L307,214L307,214L307,214L307,214L307,214L307,214"/>
@@ -272,8 +272,8 @@ const WORLD_MAP_MARKUP = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="375 8
   </g>
   <path class="world-map__prt-trace" pathLength="100" d="M477,122L478,121L479,121L480,122L481,122L482,122L483,122L484,123L483,124L482,127L482,127L482,128L481,129L482,131L481,133L482,134L481,135L480,136L481,137L480,138L478,137L477,137L477,135L477,133L476,133L475,132L476,129L477,128L477,127L478,125L478,124L477,123L477,122"/>
   <g class="world-map__interest" transform="translate(480 123)">
-    <ellipse class="world-map__pin-shadow" cx="0" cy="0.6" rx="2.4" ry="0.9"/>
-    <g class="world-map__pin-drop" transform="scale(0.42)">
+    <ellipse class="world-map__pin-shadow" cx="0" cy="0.4" rx="1.7" ry="0.65"/>
+    <g class="world-map__pin-drop" transform="scale(0.3)">
       <path class="world-map__pin-shape" transform="translate(-12 -22)" d="M12 2C8.14 2 5 5.14 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.86-3.14-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
     </g>
   </g>
