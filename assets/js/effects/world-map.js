@@ -39,13 +39,14 @@
  *   independently — if Portugal's coastline data ever changes, update
  *   both copies together.
  *   To show more/less area, adjust the svg's viewBox (currently
- *   "375 88 155 88", a 2x-zoomed crop centered on Iberia) and scale
+ *   "288 43 320 181", a wider crop centered on Iberia showing more of
+ *   Europe/Africa/the Atlantic) and scale
  *   .world-map__svg's width in world-map.css by the same ratio. If you
  *   regenerate the coastline data, update both this constant and
  *   assets/images/world-map.svg together so they stay in sync.
  */
 
-const WORLD_MAP_MARKUP = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="358 82 180 102" class="world-map__svg" role="img" aria-label="">
+const WORLD_MAP_MARKUP = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="260 50 380 215" class="world-map__svg" role="img" aria-label="">
 <title>Map centred on Portugal, showing the wider Atlantic, Europe and North Africa</title>
   <g class="world-map__landmasses">
     <path id="abw" d="M307,214L307,214L307,214L307,214L307,214L307,214L307,214L307,214L307,214L307,214"/>

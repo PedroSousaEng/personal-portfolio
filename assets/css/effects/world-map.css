@@ -59,7 +59,7 @@ body[data-page="contact"] {
 
 .world-map__svg {
   position: absolute;
-  top: 50%;
+  top: 74%;
   right: -8%;
   width: min(1600px, 124vw);
   height: auto;

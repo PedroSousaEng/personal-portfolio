@@ -118,7 +118,7 @@
       "JavaScript",
       "UI/UX"
     ],
-    "image": "assets/images/project-portfolio.svg",
+    "image": "assets/images/pp-0.jpeg",
     "featured": false,
     "github": "https://github.com/PedroSousaEng/personal-portfolio",
     "demo": "",
@@ -186,6 +186,28 @@
               "Each project gets its own detail page with a proper write-up",
               "Print-ready CV page generated from its own JSON"
             ]
+          }
+        ]
+      },
+      {
+        "type": "gallery",
+        "heading": "Showcase",
+        "images": [
+          {
+            "src": "assets/images/pp-0.jpeg",
+            "caption": "Homepage"
+          },
+          {
+            "src": "assets/images/pp-1.png",
+            "caption": "Projects grid"
+          },
+          {
+            "src": "assets/images/pp-2.png",
+            "caption": "Project detail page"
+          },
+          {
+            "src": "assets/images/pp-3.png",
+            "caption": "Contact page"
           }
         ]
       },
@@ -372,7 +394,7 @@
     "featured": false,
     "github": "https://github.com/PedroSousaEng/doorlock-teardown",
     "demo": "",
-    "report": "",
+    "report": "assets/documents/PI.pdf",
     "category": "Mechanical Engineering",
     "year": "2025",
     "status": "Completed",
