@@ -46,7 +46,7 @@
  *   assets/images/world-map.svg together so they stay in sync.
  */
 
-const WORLD_MAP_MARKUP = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="260 50 380 215" class="world-map__svg" role="img" aria-label="">
+const WORLD_MAP_MARKUP = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="228 50 380 215" class="world-map__svg" role="img" aria-label="">
 <title>Map centred on Portugal, showing the wider Atlantic, Europe and North Africa</title>
   <g class="world-map__landmasses">
     <path id="abw" d="M307,214L307,214L307,214L307,214L307,214L307,214L307,214L307,214L307,214L307,214"/>
