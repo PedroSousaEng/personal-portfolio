@@ -1,42 +1,37 @@
 <!--
   PURPOSE
-    Home page. First thing a visitor sees: hero introduction, featured
-    projects (data-driven), and a path to Projects/Contact.
+    Lab Notes index page. Short technical write-ups and, over time,
+    interactive engineering simulations (e.g. a four-bar linkage), grouped
+    together since both come from the same "here's how I think" habit.
+    Name decided to replace the earlier "Blog page (confirmed excluded at
+    kickoff)" TODO entry now that scope includes simulations too.
 
   DEPENDENCIES
     assets/css/{tokens,base,layout,components,pages,micro-interactions}.css
-    assets/js/main.js (renders featured projects via render-projects.js;
-      also drives cursor/magnetic/tilt fx and the hero text-decode effect)
-    assets/data/projects.json (for the featured cards)
+    assets/js/main.js (renders every note via render-labnotes.js)
+    assets/data/labnotes.json
 
   SAFE EDITS
-    Copy edits: hero name/role/lede text below, and the CTA button labels.
-    Keep the hero name wrapped in <span data-decode> — that's what
-    text-decode.js scrambles/resolves on load; editing the text inside it
-    is fine, removing the attribute just turns the effect off.
-    Do NOT hand-edit the featured project cards — they're generated from
-    assets/data/projects.json; edit that file instead.
+    Do NOT hand-edit note cards — add/edit/remove entries in
+    assets/data/labnotes.json instead; this page renders whatever is there.
 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pedro Sousa — Mechanical Engineering Student</title>
-  <meta name="description" content="Pedro Sousa is a Mechanical Engineering student at the University of Minho, building a career in mechanical engineering and coding as a personal hobby.">
-  <link rel="canonical" href="https://pedrosousaeng.github.io/portfolio/">
+  <title>Lab Notes — Pedro Sousa</title>
+  <meta name="description" content="Short technical notes and simulations by Pedro Sousa — mesh convergence, kinematics, and other engineering write-ups.">
+  <link rel="canonical" href="https://pedrosousaeng.github.io/portfolio/lab-notes.html">
 
-  <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Pedro Sousa — Mechanical Engineering Student">
-  <meta property="og:description" content="Mechanical Engineering student at the University of Minho, building a career in mechanical engineering.">
-  <meta property="og:url" content="https://pedrosousaeng.github.io/portfolio/">
+  <meta property="og:title" content="Lab Notes — Pedro Sousa">
+  <meta property="og:description" content="Short technical notes and simulations by Pedro Sousa.">
+  <meta property="og:url" content="https://pedrosousaeng.github.io/portfolio/lab-notes.html">
   <meta property="og:image" content="https://pedrosousaeng.github.io/portfolio/assets/images/og-image.png">
 
-  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Pedro Sousa — Mechanical Engineering Student">
-  <meta name="twitter:description" content="Engineering, technology, and artificial intelligence in service of concrete solutions.">
+  <meta name="twitter:title" content="Lab Notes — Pedro Sousa">
   <meta name="twitter:image" content="https://pedrosousaeng.github.io/portfolio/assets/images/og-image.png">
 
   <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
@@ -54,27 +49,13 @@
   <link rel="stylesheet" href="assets/css/page-transitions.css">
   <link rel="stylesheet" href="assets/css/svg-line-draw.css">
   <link rel="stylesheet" href="assets/css/noise.css">
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "Pedro Sousa",
-    "jobTitle": "Mechanical Engineering Student",
-    "url": "https://pedrosousaeng.github.io/portfolio/",
-    "sameAs": [
-      "https://github.com/PedroSousaEng",
-      "https://www.linkedin.com/in/pedro-sousa-3408201a4/"
-    ]
-  }
-  </script>
 <!-- Private analytics (GoatCounter). Only you see the stats — no
          dashboard, banner, or cookie notice is shown to visitors.
          Site code: pedro-sousa (goatcounter.com/settings). -->
     <script data-goatcounter="https://pedro-sousa.goatcounter.com/count"
             async src="https://gc.zgo.at/count.js"></script>
   </head>
-<body data-page="home">
+<body data-page="lab-notes">
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
@@ -84,57 +65,31 @@
         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       </button>
       <nav class="nav__menu" id="primary-navigation" data-nav-menu data-open="false" aria-label="Primary">
-        <a href="index.html" aria-current="page">Home</a>
+        <a href="index.html">Home</a>
         <a href="about.html">About</a>
         <a href="projects.html">Projects</a>
         <a href="cv.html">CV</a>
-        <a href="lab-notes.html">Lab Notes</a>
+        <a href="lab-notes.html" aria-current="page">Lab Notes</a>
         <a href="contact.html">Contact</a>
       </nav>
     </div>
   </header>
 
   <main id="main">
-    <section class="hero container">
-      <p class="pill" data-animate="1">
-        <span class="pill__dot" aria-hidden="true"></span>
-        Available for new projects
-      </p>
-
-      <h1 class="hero__name" data-animate="2">
-        <span data-decode data-site="name">Pedro Sousa</span>
-      </h1>
-
-      <p class="eyebrow mt-2" data-animate="2" data-site="role">Mechanical Engineering Student</p>
-
-      <p class="pill mt-4" data-animate="2">
-        <span class="pill__dot pill__dot--success" aria-hidden="true"></span>
-        Open to internship opportunities
-      </p>
-
-      <p class="hero__lede text-lg mt-6" data-animate="3">
-        <span data-site="tagline"></span>
-      </p>
-
-      <div class="hero__actions mt-8" data-animate="4">
-        <a class="btn btn--primary" href="projects.html">View projects</a>
-        <a class="btn btn--secondary" href="contact.html">Contact</a>
-      </div>
-    </section>
-
-    <section class="section section--tight container" aria-labelledby="featured-heading" data-reveal>
+    <section class="section container" aria-labelledby="labnotes-heading" data-reveal>
       <div class="section-heading">
-        <p class="eyebrow">Selected work</p>
-        <h2 id="featured-heading" class="text-2xl mt-2">Featured projects</h2>
+        <p class="eyebrow">Notes from the bench</p>
+        <h1 id="labnotes-heading" class="text-3xl font-display mt-2">Lab Notes</h1>
+        <p class="text-lg text-muted mt-4">
+          Short technical write-ups on things I ran into while building the
+          projects above, plus interactive simulations (like a four-bar
+          linkage) as they get built out.
+        </p>
       </div>
 
-      <div class="grid grid--3" data-featured-projects aria-live="polite">
-        <p class="empty-state">Loading featured projects…</p>
+      <div class="grid grid--3 mt-8" data-labnotes-list aria-live="polite">
+        <p class="empty-state">Loading notes…</p>
       </div>
-
-      <p class="mt-8">
-        <a class="card__link" href="projects.html">View all projects →</a>
-      </p>
     </section>
   </main>
 

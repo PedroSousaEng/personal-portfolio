@@ -27,6 +27,7 @@ import { renderProjectDetail } from "./render-project-detail.js";
 import { renderSkills, renderExperience, renderTimeline, renderAwards } from "./render-about.js";
 import { renderContact } from "./render-contact.js";
 import { renderCv } from "./render-cv.js";
+import { renderLabNotesList, renderLabNoteDetail } from "./render-labnotes.js";
 import { initSiteIdentity } from "./render-site.js";
 import { initBackgroundFX } from "./background-fx.js";
 import { initTechNetwork } from "./effects/tech-network.js";
@@ -137,6 +138,17 @@ function initPageData() {
   if (page === "cv") {
     const cvEl = document.querySelector("[data-cv]");
     if (cvEl) renderCv(cvEl);
+  }
+
+  if (page === "lab-notes") {
+    const listEl = document.querySelector("[data-labnotes-list]");
+    if (listEl) renderLabNotesList(listEl);
+  }
+
+  if (page === "lab-note") {
+    const detailEl = document.querySelector("[data-labnote-detail]");
+    const breadcrumbEl = document.querySelector("[data-labnote-breadcrumb]");
+    if (detailEl) renderLabNoteDetail(detailEl, breadcrumbEl);
   }
 }
 

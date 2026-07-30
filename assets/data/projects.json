@@ -6,7 +6,7 @@
     "description": "A Python tool I built on the side to manage my own Vinted inventory: tracking listings, prices, and performance in one place instead of spreadsheets, with some automation for relisting stale items. A coding side project I use to practice Python and automation, kept separate from my mechanical engineering work.",
     "tags": [
       "Python",
-      "Artificial Intelligence",
+      "AI-Assisted Development",
       "Automation"
     ],
     "image": "assets/images/VintedOS.png",
@@ -247,7 +247,7 @@
     "year": "2026",
     "status": "Completed",
     "highlights": [
-      "1st Place, University of Minho",
+      "🥇 1st Place — University of Minho Competition (2026)",
       "Team Project (6 members)"
     ],
     "objectives": [
@@ -651,6 +651,7 @@
     "year": "2024",
     "status": "Completed",
     "highlights": [
+      "🧮 Kinematics-Validated Engagement",
       "University Project",
       "Team Project (6 members)"
     ],
@@ -764,6 +765,17 @@
               "Pine components cut and drilled on a bench saw / pillar drill",
               "Clearances iterated across print revisions"
             ]
+          }
+        ]
+      },
+      {
+        "type": "achievements",
+        "heading": "Key Result",
+        "items": [
+          {
+            "title": "Kinematics-Validated Engagement",
+            "description": "Position, velocity, and acceleration of the pin's engagement point were derived analytically via a rotation-matrix formulation and matched the linkage geometry chosen in CAD, confirming the mechanism's motion before prototyping. (The dynamic analysis — real engagement force and time — was not completed, so this result covers kinematics only.)",
+            "year": "2024"
           }
         ]
       },

@@ -1,5 +1,27 @@
 # TODO.md
 
+## Content improvement pass (in progress)
+- [x] Home badge: "🟢 Open to internship opportunities" added under the
+      hero name/role.
+- [x] Vinted OS tag: "Artificial Intelligence" → "AI-Assisted Development"
+      (was misleading — the project uses AI coding assistants, not AI
+      features).
+- [x] Formula Water Key Result badge reformatted to "🥇 1st Place —
+      University of Minho Competition (2026)" and confirmed visible on the
+      Projects grid card (not just the project page).
+- [x] Pin Clutch Key Result added, scoped to kinematics only (position,
+      velocity, acceleration) since the dynamic analysis — real engagement
+      force/time — was left unfinished in the report.
+- [x] Lab Notes page created (see dedicated section below) with its first
+      article.
+- [ ] Fatigue Study Key Result badge — not added yet. Needs a decision on
+      which real number to headline (e.g. the converged 242 MPa peak
+      stress, the ~94-cycle FEA estimate, or the 4-step mesh-convergence
+      itself — all three are already in `projects.json`).
+- [ ] Door Lock Teardown Key Result badge — not added yet. Needs a real,
+      quantifiable result to headline (e.g. number of components
+      reverse-engineered, manufacturing processes identified, etc.).
+
 ## Before deploying with real content
 - [x] Replace placeholder name/bio copy in `index.html` and `about.html`.
 - [x] Replace all six entries in `assets/data/projects.json` with real
@@ -43,16 +65,28 @@
       by `category` (Mechanical Engineering / Software) rather than the
       finer-grained `tags` array. Filtering by individual tags as well is
       still open if that granularity turns out to be useful.
-- [ ] A blog, if that scope changes — `blog.json` was intentionally left
-      out per the confirmed requirements in `PROJECT_CONTEXT.md`, but the
-      data-driven pattern here would extend to it directly.
 - [ ] Light theme / theme toggle, if the fixed "dark, bold, high-contrast"
       direction is ever revisited — would need a `[data-theme]` attribute
       switch and a parallel light palette added to `tokens.css`.
 - [ ] Automated accessibility testing (e.g. axe-core) wired into a CI
       workflow, if this repo grows a CI pipeline.
 
+## Lab Notes (scope change — supersedes the earlier "no Blog" decision)
+- [x] Scope revisited: a blog-only page was excluded at kickoff, but a
+      combined blog + interactive-simulations page was requested and named
+      "Lab Notes". Added `lab-notes.html` (index), `lab-note.html`
+      (article template, `?id=<slug>`), `assets/data/labnotes.json`, and
+      `assets/js/render-labnotes.js`, following the same data-driven
+      pattern as Projects. Nav link added on all pages.
+- [x] First article published: "Why Mesh Convergence Matters More Than a
+      Refined Model" (Fatigue Study mesh-convergence note).
+- [ ] Add the exact per-step mesh-convergence numbers (element counts
+      and/or % variation at each of the four refinement steps) to that
+      article, if/when available.
+- [ ] Build an actual interactive simulation module for Lab Notes (e.g.
+      four-bar linkage) — the page and data contract support a future
+      `simulation` field per entry, but no simulation widget exists yet.
+
 ## Explicitly out of scope
-- Blog page (confirmed excluded at kickoff).
 - Contact form / Formspree integration (confirmed: mailto only).
 - Any build tool, bundler, or framework.

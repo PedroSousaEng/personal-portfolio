@@ -1,0 +1,16 @@
+[
+  {
+    "id": "mesh-convergence",
+    "title": "Why Mesh Convergence Matters More Than a Refined Model",
+    "subtitle": "A short note from the Fatigue Study project on trusting FEA results",
+    "excerpt": "A finer mesh isn't automatically a more trustworthy one — what matters is whether the result has stopped changing as you refine it further.",
+    "tags": ["FEA", "Fatigue Analysis", "Solid Mechanics"],
+    "date": "2026-01",
+    "relatedProject": "fatigue-study",
+    "content": [
+      "When you run an FEA simulation, it's tempting to judge quality by how refined the mesh looks. A finer mesh isn't automatically a more trustworthy one — what matters is whether the result has stopped changing as you refine it further.",
+      "In the Fatigue Study of a transmission hub (EN-GJS-500-7 nodular cast iron, σᵤ = 500 MPa, σᵧ = 320 MPa, E = 169 GPa), I ran a four-step mesh convergence study before trusting any stress result. Each step refined the mesh around the critical region and compared the resulting stress against the previous step, until the result stabilized within an acceptable margin.",
+      "Only once the mesh had converged did I compare the simulated fatigue life against an analytical hand calculation — and against the real part, which had already failed in service. Skipping the convergence step would have meant trusting a number with no way to know if it was reliable."
+    ]
+  }
+]

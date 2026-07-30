@@ -22,6 +22,7 @@ export const DATA_PATHS = Object.freeze({
   skills: "assets/data/skills.json",
   socials: "assets/data/socials.json",
   cv: "assets/data/cv.json",
+  labnotes: "assets/data/labnotes.json",
 });
 
 // Mirrors the breakpoint table in docs/DESIGN_SYSTEM.md — keep in sync.

@@ -382,6 +382,11 @@
   animation: pulse 2.4s var(--ease-standard) infinite;
 }
 
+.pill__dot--success {
+  background: var(--color-success);
+  box-shadow: 0 0 0 3px var(--color-success-tint);
+}
+
 @keyframes pulse {
   0%, 100% {
     opacity: 1;
