@@ -88,6 +88,20 @@
   --fx-404-glitch: #6c7cff;
   --fx-404-soft: #aeb8ff;
 
+  /* ---- Color: Lab Notes background (ruled notebook page) ----
+     Deliberately NOT a cross-hatch grid — About already owns that motif
+     (--fx-network-grid). This is horizontal ruled lines + one vertical
+     margin rule, i.e. an actual notebook page, plus a slow ambient glow
+     for a touch of life. No nodes, no particles, no pointer-tracking —
+     this page is for reading.
+     Consumed by:
+       - assets/js/effects/lab-notes.js
+       - assets/css/effects/lab-notes.css */
+  --fx-labnotes-rule: rgba(120, 130, 170, 0.05);
+  --fx-labnotes-rule-size: 42px;
+  --fx-labnotes-margin: rgba(255, 179, 71, 0.14); /* warm amber, notebook-margin nod */
+  --fx-labnotes-glow: rgba(108, 124, 255, 0.10);
+
   /* ---- Color: state ---- */
   --color-success: #4ade80;
   --color-success-tint: #4ade801a; /* 10% alpha, for glows/fills */

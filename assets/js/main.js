@@ -35,6 +35,7 @@ import { initAboutRocket } from "./effects/about-rocket.js";
 import { initProjectsSpotlight } from "./effects/projects-spotlight.js";
 import { initWorldMap } from "./effects/world-map.js";
 import { initErrorSignal } from "./effects/error-signal.js";
+import { initLabNotesBackground } from "./effects/lab-notes.js";
 import { initScrollReveal } from "./scroll-reveal.js";
 import { initCursor } from "./cursor.js";
 import { initMagneticButtons } from "./magnetic.js";
@@ -159,6 +160,7 @@ function initPageData() {
  *   projects-> initProjectsSpotlight() : mouse-led spotlight wash
  *   contact -> initWorldMap()          : real-coastline world map + Lisbon pin
  *   404     -> initErrorSignal()       : broken signal lines + interference
+ *   lab-notes/lab-note -> initLabNotesBackground() : ruled notebook page + slow glow
  *
  * Each effect module is self-contained: it injects its own <canvas>,
  * owns its own rAF loop, and honours prefers-reduced-motion internally.
@@ -178,6 +180,8 @@ function initPageBackground() {
     initWorldMap();
   } else if (page === "404") {
     initErrorSignal();
+  } else if (page === "lab-notes" || page === "lab-note") {
+    initLabNotesBackground();
   }
 }
 

@@ -1,0 +1,93 @@
+/**
+ * PURPOSE
+ *   Page-scoped background for Lab Notes (lab-notes.html + lab-note.html):
+ *   a ruled notebook page (horizontal lines + one vertical margin rule),
+ *   with a single slow-drifting ambient glow for a touch of life.
+ *
+ * WHY THIS AND NOT ANOTHER PAGE'S EFFECT
+ *   - Not About's cross-hatch schematic grid (--fx-network-grid) — reusing
+ *     that here would make two different pages look like the same effect.
+ *   - Not particles/dust (Home, Projects) and not pointer-tracking
+ *     (Projects, Contact, About) — Lab Notes is a page people read, so the
+ *     background should sit still and not compete for attention a few
+ *     paragraphs in.
+ *   - The one moving element (a soft glow drift) is intentionally slow
+ *     (100s loop) and low-contrast — alive, not busy.
+ *
+ * RESPONSIBILITIES
+ *   - Only apply when <body data-page="lab-notes"> or data-page="lab-note",
+ *     so this never leaks into other pages.
+ *   - Style the .bg-fx--labnotes div injected by
+ *     assets/js/effects/lab-notes.js.
+ *   - Pure CSS: no canvas, no requestAnimationFrame loop needed.
+ *
+ * DEPENDENCIES
+ *   tokens.css (--fx-labnotes-* tokens), base.css (.bg-fx base rules).
+ *
+ * SAFE EDITS
+ *   Tune rule spacing / margin position / glow below. Keep every selector
+ *   scoped under [data-page="lab-notes"]/[data-page="lab-note"] or
+ *   .bg-fx--labnotes.
+ */
+
+[data-page="lab-notes"],
+[data-page="lab-note"] {
+  /* Horizontal ruled lines only — a notebook page, not a schematic grid. */
+  background-image: linear-gradient(
+    to bottom,
+    var(--fx-labnotes-rule) 0,
+    var(--fx-labnotes-rule) 1px,
+    transparent 1px,
+    transparent var(--fx-labnotes-rule-size)
+  );
+  background-size: 100% var(--fx-labnotes-rule-size);
+  background-attachment: fixed;
+}
+
+.bg-fx--labnotes {
+  overflow: hidden;
+}
+
+/* Vertical margin rule, like a notebook's left-margin line. Skipped on
+   narrow viewports where it would sit too close to the content edge. */
+.bg-fx--labnotes::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  left: min(88px, 9%);
+  width: 1px;
+  background: var(--fx-labnotes-margin);
+}
+
+@media (max-width: 640px) {
+  .bg-fx--labnotes::before {
+    display: none;
+  }
+}
+
+/* Single slow-drifting glow — the only motion on this page. */
+.bg-fx--labnotes::after {
+  content: "";
+  position: absolute;
+  inset: -25%;
+  background: radial-gradient(
+    circle at 28% 24%,
+    var(--fx-labnotes-glow) 0%,
+    transparent 60%
+  );
+  filter: blur(70px);
+  animation: labnotes-drift 100s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes labnotes-drift {
+  0% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(6%, 10%);
+  }
+  100% {
+    transform: translate(-8%, 4%);
+  }
+}
