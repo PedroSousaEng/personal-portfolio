@@ -11,6 +11,16 @@
  *   - Boot Phase 8 global polish modules: reduced-motion, page
  *     transitions and SVG line-draw.
  *
+ * PERFORMANCE NOTE
+ *   Only the modules every page actually needs (nav, site identity, cursor,
+ *   reduced-motion, scroll-reveal, micro-interactions, Phase 8 polish) are
+ *   imported statically below. The render-*.js data renderer and the
+ *   ambient background effect for the current page are loaded with a
+ *   dynamic import() inside initPageData()/initPageBackground(), so e.g.
+ *   the 96KB world-map effect (contact-only) or the project detail
+ *   renderer (project-only) are never fetched/parsed on pages that don't
+ *   use them.
+ *
  * DEPENDENCIES
  *   render-projects.js, render-project-detail.js, render-about.js, background-fx.js, scroll-reveal.js,
  *   cursor.js, magnetic.js, text-decode.js, tilt.js, reduced-motion.js,
@@ -22,20 +32,7 @@
  *   below rather than adding a script tag/logic to that page's HTML.
  */
 
-import { renderProjects, renderProjectsPage } from "./render-projects.js";
-import { renderProjectDetail } from "./render-project-detail.js";
-import { renderSkills, renderExperience, renderTimeline, renderAwards } from "./render-about.js";
-import { renderContact } from "./render-contact.js";
-import { renderCv } from "./render-cv.js";
-import { renderLabNotesList, renderLabNoteDetail } from "./render-labnotes.js";
 import { initSiteIdentity } from "./render-site.js";
-import { initBackgroundFX } from "./background-fx.js";
-import { initTechNetwork } from "./effects/tech-network.js";
-import { initAboutRocket } from "./effects/about-rocket.js";
-import { initProjectsSpotlight } from "./effects/projects-spotlight.js";
-import { initWorldMap } from "./effects/world-map.js";
-import { initErrorSignal } from "./effects/error-signal.js";
-import { initLabNotesBackground } from "./effects/lab-notes.js";
 import { initScrollReveal } from "./scroll-reveal.js";
 import { initCursor } from "./cursor.js";
 import { initMagneticButtons } from "./magnetic.js";
@@ -99,25 +96,38 @@ function initFooterYear() {
   }
 }
 
-/** Calls the appropriate render function(s) for the current page. */
-function initPageData() {
+/**
+ * Calls the appropriate render function(s) for the current page.
+ * Each branch dynamically imports only the render module it needs, so a
+ * visitor on / never downloads render-project-detail.js, render-cv.js, etc.
+ */
+async function initPageData() {
   const page = document.body.dataset.page;
 
   if (page === "home") {
     const featuredEl = document.querySelector("[data-featured-projects]");
-    if (featuredEl) renderProjects(featuredEl, { featuredOnly: true });
+    if (featuredEl) {
+      const { renderProjects } = await import("./render-projects.js");
+      renderProjects(featuredEl, { featuredOnly: true });
+    }
   }
 
   if (page === "projects") {
     const allEl = document.querySelector("[data-all-projects]");
     const filterBarEl = document.querySelector("[data-project-filters]");
-    if (allEl) renderProjectsPage(allEl, filterBarEl);
+    if (allEl) {
+      const { renderProjectsPage } = await import("./render-projects.js");
+      renderProjectsPage(allEl, filterBarEl);
+    }
   }
 
   if (page === "project") {
     const detailEl = document.querySelector("[data-project-detail]");
     const breadcrumbEl = document.querySelector("[data-project-breadcrumb]");
-    if (detailEl) renderProjectDetail(detailEl, breadcrumbEl);
+    if (detailEl) {
+      const { renderProjectDetail } = await import("./render-project-detail.js");
+      renderProjectDetail(detailEl, breadcrumbEl);
+    }
   }
 
   if (page === "about") {
@@ -125,31 +135,47 @@ function initPageData() {
     const experienceEl = document.querySelector("[data-experience]");
     const timelineEl = document.querySelector("[data-timeline]");
     const awardsEl = document.querySelector("[data-awards]");
-    if (skillsEl) renderSkills(skillsEl);
-    if (experienceEl) renderExperience(experienceEl);
-    if (timelineEl) renderTimeline(timelineEl);
-    if (awardsEl) renderAwards(awardsEl);
+    if (skillsEl || experienceEl || timelineEl || awardsEl) {
+      const { renderSkills, renderExperience, renderTimeline, renderAwards } =
+        await import("./render-about.js");
+      if (skillsEl) renderSkills(skillsEl);
+      if (experienceEl) renderExperience(experienceEl);
+      if (timelineEl) renderTimeline(timelineEl);
+      if (awardsEl) renderAwards(awardsEl);
+    }
   }
 
   if (page === "contact") {
     const contactEl = document.querySelector("[data-contact]");
-    if (contactEl) renderContact(contactEl);
+    if (contactEl) {
+      const { renderContact } = await import("./render-contact.js");
+      renderContact(contactEl);
+    }
   }
 
   if (page === "cv") {
     const cvEl = document.querySelector("[data-cv]");
-    if (cvEl) renderCv(cvEl);
+    if (cvEl) {
+      const { renderCv } = await import("./render-cv.js");
+      renderCv(cvEl);
+    }
   }
 
   if (page === "lab-notes") {
     const listEl = document.querySelector("[data-labnotes-list]");
-    if (listEl) renderLabNotesList(listEl);
+    if (listEl) {
+      const { renderLabNotesList } = await import("./render-labnotes.js");
+      renderLabNotesList(listEl);
+    }
   }
 
   if (page === "lab-note") {
     const detailEl = document.querySelector("[data-labnote-detail]");
     const breadcrumbEl = document.querySelector("[data-labnote-breadcrumb]");
-    if (detailEl) renderLabNoteDetail(detailEl, breadcrumbEl);
+    if (detailEl) {
+      const { renderLabNoteDetail } = await import("./render-labnotes.js");
+      renderLabNoteDetail(detailEl, breadcrumbEl);
+    }
   }
 }
 
@@ -165,22 +191,34 @@ function initPageData() {
  * Each effect module is self-contained: it injects its own <canvas>,
  * owns its own rAF loop, and honours prefers-reduced-motion internally.
  * Never call more than one on the same page — they'd stack.
+ *
+ * Loaded via dynamic import() so only the current page's effect module
+ * (and its assets, e.g. world-map's coastline data) is ever fetched.
  */
-function initPageBackground() {
+async function initPageBackground() {
   const page = document.body.dataset.page;
 
   if (page === "home") {
+    const { initBackgroundFX } = await import("./background-fx.js");
     initBackgroundFX();
   } else if (page === "about") {
+    const [{ initTechNetwork }, { initAboutRocket }] = await Promise.all([
+      import("./effects/tech-network.js"),
+      import("./effects/about-rocket.js"),
+    ]);
     initTechNetwork();
     initAboutRocket();
   } else if (page === "projects") {
+    const { initProjectsSpotlight } = await import("./effects/projects-spotlight.js");
     initProjectsSpotlight();
   } else if (page === "contact") {
+    const { initWorldMap } = await import("./effects/world-map.js");
     initWorldMap();
   } else if (page === "404") {
+    const { initErrorSignal } = await import("./effects/error-signal.js");
     initErrorSignal();
   } else if (page === "lab-notes" || page === "lab-note") {
+    const { initLabNotesBackground } = await import("./effects/lab-notes.js");
     initLabNotesBackground();
   }
 }

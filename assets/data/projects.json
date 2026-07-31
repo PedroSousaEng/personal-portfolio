@@ -9,7 +9,7 @@
       "AI-Assisted Development",
       "Automation"
     ],
-    "image": "assets/images/VintedOS.png",
+    "image": "assets/images/VintedOS.webp",
     "featured": false,
     "github": "https://github.com/PedroSousaEng/vinted-os",
     "demo": "",
@@ -64,7 +64,7 @@
         "heading": "Showcase",
         "images": [
           {
-            "src": "assets/images/VintedOS.png",
+            "src": "assets/images/VintedOS.webp",
             "caption": "Vinted OS dashboard"
           }
         ]
@@ -118,7 +118,7 @@
       "JavaScript",
       "UI/UX"
     ],
-    "image": "assets/images/pp-0.jpeg",
+    "image": "assets/images/pp-0.webp",
     "featured": false,
     "github": "https://github.com/PedroSousaEng/personal-portfolio",
     "demo": "",
@@ -194,19 +194,19 @@
         "heading": "Showcase",
         "images": [
           {
-            "src": "assets/images/pp-0.jpeg",
+            "src": "assets/images/pp-0.webp",
             "caption": "Homepage"
           },
           {
-            "src": "assets/images/pp-1.png",
+            "src": "assets/images/pp-1.webp",
             "caption": "Projects grid"
           },
           {
-            "src": "assets/images/pp-2.png",
+            "src": "assets/images/pp-2.webp",
             "caption": "Project detail page"
           },
           {
-            "src": "assets/images/pp-3.png",
+            "src": "assets/images/pp-3.webp",
             "caption": "Contact page"
           }
         ]
@@ -238,7 +238,7 @@
       "Simulation",
       "Mechanical Design"
     ],
-    "image": "assets/images/fw-0.jpeg",
+    "image": "assets/images/fw-0.webp",
     "featured": true,
     "github": "https://github.com/PedroSousaEng/formula-water",
     "demo": "",
@@ -302,15 +302,15 @@
         "heading": "Showcase",
         "images": [
           {
-            "src": "assets/images/fw-0.jpeg",
+            "src": "assets/images/fw-0.webp",
             "caption": "Real Model"
           },
           {
-            "src": "assets/images/fw-1.png",
+            "src": "assets/images/fw-1.webp",
             "caption": "CAD Model"
           },
           {
-            "src": "assets/images/fw-2.png",
+            "src": "assets/images/fw-2.webp",
             "caption": "Stress Analysis"
           }
         ]
@@ -390,7 +390,7 @@
       "Materials",
       "Product Development"
     ],
-    "image": "assets/images/dlt-0.jpeg",
+    "image": "assets/images/dlt-0.webp",
     "featured": false,
     "github": "https://github.com/PedroSousaEng/doorlock-teardown",
     "demo": "",
@@ -445,11 +445,11 @@
         "heading": "Showcase",
         "images": [
           {
-            "src": "assets/images/dlt-0.jpeg",
+            "src": "assets/images/dlt-0.webp",
             "caption": "Real Lock"
           },
           {
-            "src": "assets/images/dlt-1.jpeg",
+            "src": "assets/images/dlt-1.webp",
             "caption": "CAD Model - Exploded View"
           },
           {
@@ -515,7 +515,7 @@
       "Solid Mechanics",
       "Fatigue Analysis"
     ],
-    "image": "assets/images/fs-2.png",
+    "image": "assets/images/fs-2.webp",
     "featured": true,
     "github": "https://github.com/PedroSousaEng/fatigue-study",
     "demo": "",
@@ -571,15 +571,15 @@
         "heading": "Showcase",
         "images": [
           {
-            "src": "assets/images/fs-0.jpeg",
+            "src": "assets/images/fs-0.webp",
             "caption": "Real Piece"
           },
           {
-            "src": "assets/images/fs-1.jpeg",
+            "src": "assets/images/fs-1.webp",
             "caption": "Mechanism where the piece is used"
           },
           {
-            "src": "assets/images/fs-2.png",
+            "src": "assets/images/fs-2.webp",
             "caption": "Stress Analysis"
           }
         ]
@@ -642,7 +642,7 @@
       "Mechanical Design",
       "Solid Edge"
     ],
-    "image": "assets/images/pc-2.jpeg",
+    "image": "assets/images/pc-2.webp",
     "featured": true,
     "github": "https://github.com/PedroSousaEng/pin-clutch",
     "demo": "",
@@ -707,27 +707,27 @@
         "heading": "Showcase",
         "images": [
           {
-            "src": "assets/images/pc-1.jpeg",
+            "src": "assets/images/pc-1.webp",
             "caption": "3D-Printed Components"
           },
           {
-            "src": "assets/images/pc-2.jpeg",
+            "src": "assets/images/pc-2.webp",
             "caption": "Assembled Prototype"
           },
           {
-            "src": "assets/images/pc-3.jpeg",
+            "src": "assets/images/pc-3.webp",
             "caption": "Pedal Linkage Detail"
           },
           {
-            "src": "assets/images/pc-4.jpeg",
+            "src": "assets/images/pc-4.webp",
             "caption": "Pin Engagement Close-up"
           },
           {
-            "src": "assets/images/pc-5.jpeg",
+            "src": "assets/images/pc-5.webp",
             "caption": "Pedal Actuation Test"
           },
           {
-            "src": "assets/images/pc-6.jpeg",
+            "src": "assets/images/pc-6.webp",
             "caption": "Full Prototype Setup"
           },
           {
