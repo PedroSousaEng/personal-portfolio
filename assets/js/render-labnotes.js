@@ -15,6 +15,7 @@
  * DATA CONTRACT (assets/data/labnotes.json)
  *   Array<{
  *     id: string,
+ *     category: string,        // groups the list page into carousel rows
  *     title: string,
  *     subtitle: string,
  *     excerpt: string,
@@ -28,6 +29,11 @@
  *   A `simulation` entry lazy-loads its JS module and CSS file only on
  *   articles that use it (see SIMULATION_MODULES below), so text-only
  *   notes never pay for simulation code they don't use.
+ *
+ *   The list page (renderLabNotesList) groups notes by `category`,
+ *   preserving each note's insertion order within its group and each
+ *   group's first-seen order overall, and renders one horizontally
+ *   scrollable row per category (see .labnotes-categories in pages.css).
  *
  * DEPENDENCIES
  *   data-loader.js
@@ -170,7 +176,102 @@ function buildCard(note) {
 }
 
 /**
- * Fetches Lab Notes data and renders cards into containerEl.
+ * Groups notes by their `category`, preserving first-seen order both for
+ * categories and for notes within each category.
+ * @param {object[]} notes
+ * @returns {Map<string, object[]>}
+ */
+function groupByCategory(notes) {
+  const groups = new Map();
+  for (const note of notes) {
+    const key = note.category || "Notes";
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(note);
+  }
+  return groups;
+}
+
+/**
+ * Builds one category row: an eyebrow header (name + count + prev/next
+ * scroll buttons) above a horizontally scrollable, scroll-snapped card
+ * track. Arrow buttons scroll by roughly one card's width and disable
+ * themselves at either end of the track.
+ * @param {string} categoryName
+ * @param {object[]} notes
+ * @returns {HTMLElement}
+ */
+function buildCategorySection(categoryName, notes) {
+  const section = document.createElement("section");
+  section.className = "labnotes-category";
+
+  const header = document.createElement("div");
+  header.className = "labnotes-category__header";
+
+  const heading = document.createElement("h2");
+  heading.className = "labnotes-category__title";
+  heading.textContent = categoryName;
+  header.appendChild(heading);
+
+  const count = document.createElement("span");
+  count.className = "labnotes-category__count";
+  count.textContent = `${notes.length} note${notes.length === 1 ? "" : "s"}`;
+  header.appendChild(count);
+
+  const nav = document.createElement("div");
+  nav.className = "labnotes-category__nav";
+
+  const prevBtn = document.createElement("button");
+  prevBtn.type = "button";
+  prevBtn.className = "labnotes-category__arrow";
+  prevBtn.setAttribute("aria-label", `Scroll ${categoryName} left`);
+  prevBtn.innerHTML = `<svg viewBox="0 0 24 24" class="icon icon--sm" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>`;
+
+  const nextBtn = document.createElement("button");
+  nextBtn.type = "button";
+  nextBtn.className = "labnotes-category__arrow";
+  nextBtn.setAttribute("aria-label", `Scroll ${categoryName} right`);
+  nextBtn.innerHTML = `<svg viewBox="0 0 24 24" class="icon icon--sm" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>`;
+
+  nav.appendChild(prevBtn);
+  nav.appendChild(nextBtn);
+  header.appendChild(nav);
+
+  const track = document.createElement("div");
+  track.className = "labnotes-category__track";
+  for (const note of notes) {
+    track.appendChild(buildCard(note));
+  }
+
+  const updateArrowState = () => {
+    const maxScroll = track.scrollWidth - track.clientWidth;
+    prevBtn.disabled = track.scrollLeft <= 4;
+    nextBtn.disabled = track.scrollLeft >= maxScroll - 4;
+  };
+
+  const scrollByCard = (direction) => {
+    const card = track.querySelector(".card");
+    const distance = card ? card.getBoundingClientRect().width + 24 : track.clientWidth * 0.8;
+    track.scrollBy({ left: direction * distance, behavior: "smooth" });
+  };
+
+  prevBtn.addEventListener("click", () => scrollByCard(-1));
+  nextBtn.addEventListener("click", () => scrollByCard(1));
+  track.addEventListener("scroll", updateArrowState, { passive: true });
+  window.addEventListener("resize", updateArrowState, { passive: true });
+
+  section.appendChild(header);
+  section.appendChild(track);
+
+  // Arrow disabled-state depends on layout, which isn't settled until
+  // after this section is in the document — defer one frame.
+  requestAnimationFrame(updateArrowState);
+
+  return section;
+}
+
+/**
+ * Fetches Lab Notes data and renders one horizontally scrollable card
+ * carousel per category into containerEl.
  * @param {HTMLElement} containerEl
  */
 export async function renderLabNotesList(containerEl) {
@@ -182,9 +283,10 @@ export async function renderLabNotesList(containerEl) {
       return;
     }
 
+    const groups = groupByCategory(notes);
     const fragment = document.createDocumentFragment();
-    for (const note of notes) {
-      fragment.appendChild(buildCard(note));
+    for (const [categoryName, categoryNotes] of groups) {
+      fragment.appendChild(buildCategorySection(categoryName, categoryNotes));
     }
     containerEl.replaceChildren(fragment);
   } catch (error) {

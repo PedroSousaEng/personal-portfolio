@@ -671,6 +671,90 @@ body[data-page="projects"] [data-all-projects] > .card[data-tilting="true"] .car
 }
 
 /* =========================================================
+   Lab Notes list — category carousels
+   ========================================================= */
+
+.labnotes-categories {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-10);
+}
+
+.labnotes-category__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.labnotes-category__title {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-100);
+}
+
+.labnotes-category__count {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-ink-900);
+  border: 1px solid var(--color-line);
+  color: var(--color-text-400);
+  font-size: var(--text-xs);
+}
+
+.labnotes-category__nav {
+  display: flex;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.labnotes-category__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-full);
+  background: var(--color-ink-800);
+  border: 1px solid var(--color-line);
+  color: var(--color-text-400);
+  cursor: pointer;
+  transition: color var(--duration-base) var(--ease-standard),
+    border-color var(--duration-base) var(--ease-standard);
+}
+
+.labnotes-category__arrow:hover:not(:disabled),
+.labnotes-category__arrow:focus-visible {
+  color: var(--color-accent-indigo);
+  border-color: var(--color-accent-indigo-dim);
+}
+
+.labnotes-category__arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.labnotes-category__track {
+  display: flex;
+  gap: var(--space-6);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding-bottom: var(--space-2);
+  /* So a card's focus/hover glow and lift-on-hover transform aren't
+     clipped by the scroll container's edge. */
+  margin: calc(var(--space-2) * -1);
+  padding: var(--space-2);
+}
+
+.labnotes-category__track .card {
+  flex: 0 0 auto;
+  width: min(320px, 85vw);
+  scroll-snap-align: start;
+}
+
+/* =========================================================
    Lab Notes article body
    ========================================================= */
 

@@ -1,6 +1,7 @@
 [
   {
     "id": "mesh-convergence",
+    "category": "Blog",
     "title": "Why Mesh Convergence Matters More Than a Refined Model",
     "subtitle": "A short note from the Fatigue Study project on trusting FEA results",
     "excerpt": "A finer mesh isn't automatically a more trustworthy one — what matters is whether the result has stopped changing as you refine it further.",
@@ -15,6 +16,7 @@
   },
   {
     "id": "four-bar-linkage",
+    "category": "Mechanisms & Machines",
     "title": "The Four-Bar Linkage: Why Four Links Is the Interesting Number",
     "subtitle": "Grashof's law, loop-closure kinematics, and an interactive explorer",
     "excerpt": "Four pin-jointed links and one simple inequality decide whether a mechanism can spin all the way around or just rock back and forth. Adjust the four lengths below and watch it happen live.",
