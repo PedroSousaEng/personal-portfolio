@@ -38,6 +38,20 @@
   --color-accent-amber: #ffb347;
   --color-accent-amber-tint: #ffb3471a;
 
+  /* ---- Color: Lab Notes card illustrations ----
+     NOT a site-wide accent system — the two-accent rule above (indigo +
+     amber) still governs every button, border, badge, and top-bar on this
+     page. These five hues are for the small icon illustration inside each
+     Lab Notes card only, the same way a project screenshot is allowed to
+     be colorful without adding a new UI accent. Never apply these to
+     text, borders, or interactive elements — icon strokes/fills only.
+     Consumed by: assets/js/render-labnotes.js (ICON_LIBRARY). */
+  --illus-blue: #5b9dff;
+  --illus-teal: #2dd4bf;
+  --illus-orange: #ff8a4c;
+  --illus-pink: #ff6fa5;
+  --illus-green: #7ed957;
+
   /* ---- Color: background-fx (canvas pendulum/particles/lighting) ---- */
   --fx-particle: #aeb8ff;
   --fx-particle-dim: #5b6376;

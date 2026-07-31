@@ -60,6 +60,57 @@ const SIMULATION_MODULES = {
 };
 
 /**
+ * Small library of colorful icon illustrations shown inside each Lab
+ * Notes card (one per note.id, keyed below). These are decorative
+ * illustrations only — like a project screenshot — and intentionally sit
+ * outside the site's two-accent (indigo/amber) UI system, which still
+ * governs every border, badge, and button. Add an entry here when a new
+ * note deserves a bespoke icon; anything else falls back to DEFAULT_ICON.
+ */
+const ICON_LIBRARY = {
+  "mesh-convergence": `
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6 34 18 10 30 34Z" stroke="var(--illus-blue)" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M18 10 18 34M6 34 30 34M12 22 24 22" stroke="var(--illus-blue)" stroke-width="1.4" opacity="0.6"/>
+      <path d="M18 22 30 10 42 34 18 34Z" stroke="var(--illus-teal)" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M30 10 30 34M24 22 36 22" stroke="var(--illus-teal)" stroke-width="1.4" opacity="0.6"/>
+      <circle cx="24" cy="22" r="2.5" fill="var(--illus-orange)"/>
+    </svg>
+  `,
+  "four-bar-linkage": `
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8 36 8 16" stroke="var(--illus-blue)" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M8 16 22 8" stroke="var(--illus-teal)" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M22 8 40 20" stroke="var(--illus-pink)" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M40 20 8 36" stroke="var(--illus-orange)" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="8" cy="36" r="2.75" fill="var(--illus-blue)"/>
+      <circle cx="8" cy="16" r="2.75" fill="var(--illus-teal)"/>
+      <circle cx="22" cy="8" r="2.75" fill="var(--illus-pink)"/>
+      <circle cx="40" cy="20" r="2.75" fill="var(--illus-orange)"/>
+    </svg>
+  `,
+};
+
+/** Generic fallback icon for any note without a bespoke entry above. */
+const DEFAULT_ICON = `
+  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M18 6h12v10l9 20a4 4 0 0 1-3.7 5.6H12.7A4 4 0 0 1 9 41.6l9-20V6Z" stroke="var(--illus-teal)" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M15 6h18" stroke="var(--illus-blue)" stroke-width="2" stroke-linecap="round"/>
+    <path d="M13 30h22" stroke="var(--illus-orange)" stroke-width="2"/>
+    <circle cx="24" cy="36" r="2.25" fill="var(--illus-pink)"/>
+    <circle cx="19" cy="36" r="1.5" fill="var(--illus-green)"/>
+  </svg>
+`;
+
+/** Small gear glyph shown before each category title. */
+const CATEGORY_ICON = `
+  <svg viewBox="0 0 24 24" class="icon icon--sm labnotes-category__title-icon" aria-hidden="true">
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>
+  </svg>
+`;
+
+/**
  * Injects a stylesheet <link> into <head> exactly once per href.
  * @param {string} href
  */
@@ -91,9 +142,16 @@ function renderFallback(containerEl, message) {
  */
 function buildCard(note) {
   const card = document.createElement("article");
-  card.className = "card card--interactive card--linked";
+  card.className = "card card--interactive card--linked labnote-card";
+  if (note.simulation) card.classList.add("labnote-card--interactive");
 
   const detailHref = `lab-note.html?id=${encodeURIComponent(note.id)}`;
+
+  const icon = document.createElement("div");
+  icon.className = "labnote-card__icon";
+  icon.setAttribute("aria-hidden", "true");
+  icon.innerHTML = ICON_LIBRARY[note.id] || DEFAULT_ICON;
+  card.appendChild(icon);
 
   card.setAttribute("role", "link");
   card.tabIndex = 0;
@@ -161,16 +219,25 @@ function buildCard(note) {
     card.appendChild(tags);
   }
 
-  const links = document.createElement("div");
-  links.className = "card__links";
+  const cta = document.createElement("div");
+  cta.className = "labnote-card__cta";
 
-  const openLink = document.createElement("a");
-  openLink.className = "card__link card__link--primary";
-  openLink.href = detailHref;
-  openLink.innerHTML = `<svg viewBox="0 0 24 24" class="icon icon--sm" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg> Read note`;
-  openLink.setAttribute("aria-label", `Read ${note.title}`);
-  links.appendChild(openLink);
-  card.appendChild(links);
+  const pill = document.createElement("a");
+  pill.className = "labnote-card__cta-pill";
+  pill.href = detailHref;
+  pill.textContent = note.simulation ? "Simulate" : "Read note";
+  pill.setAttribute("aria-label", `${note.simulation ? "Simulate" : "Read"} ${note.title}`);
+  cta.appendChild(pill);
+
+  const arrow = document.createElement("a");
+  arrow.className = "labnote-card__cta-arrow";
+  arrow.href = detailHref;
+  arrow.setAttribute("aria-hidden", "true");
+  arrow.tabIndex = -1;
+  arrow.innerHTML = `<svg viewBox="0 0 24 24" class="icon icon--sm" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`;
+  cta.appendChild(arrow);
+
+  card.appendChild(cta);
 
   return card;
 }
@@ -209,7 +276,7 @@ function buildCategorySection(categoryName, notes) {
 
   const heading = document.createElement("h2");
   heading.className = "labnotes-category__title";
-  heading.textContent = categoryName;
+  heading.innerHTML = `${CATEGORY_ICON}<span>${categoryName}</span>`;
   header.appendChild(heading);
 
   const count = document.createElement("span");
@@ -242,10 +309,50 @@ function buildCategorySection(categoryName, notes) {
     track.appendChild(buildCard(note));
   }
 
+  // Compact scroll-position bar under the track — a second, glanceable
+  // read of progress through the row, echoing the arrow buttons above.
+  const progress = document.createElement("div");
+  progress.className = "labnotes-category__progress";
+
+  const progressPrev = document.createElement("button");
+  progressPrev.type = "button";
+  progressPrev.className = "labnotes-category__progress-edge";
+  progressPrev.setAttribute("aria-hidden", "true");
+  progressPrev.tabIndex = -1;
+  progressPrev.innerHTML = `<svg viewBox="0 0 24 24" class="icon icon--xs" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>`;
+
+  const progressTrack = document.createElement("div");
+  progressTrack.className = "labnotes-category__progress-track";
+  const progressThumb = document.createElement("div");
+  progressThumb.className = "labnotes-category__progress-thumb";
+  progressTrack.appendChild(progressThumb);
+
+  const progressNext = document.createElement("button");
+  progressNext.type = "button";
+  progressNext.className = "labnotes-category__progress-edge";
+  progressNext.setAttribute("aria-hidden", "true");
+  progressNext.tabIndex = -1;
+  progressNext.innerHTML = `<svg viewBox="0 0 24 24" class="icon icon--xs" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>`;
+
+  progress.appendChild(progressPrev);
+  progress.appendChild(progressTrack);
+  progress.appendChild(progressNext);
+
   const updateArrowState = () => {
     const maxScroll = track.scrollWidth - track.clientWidth;
-    prevBtn.disabled = track.scrollLeft <= 4;
-    nextBtn.disabled = track.scrollLeft >= maxScroll - 4;
+    const atStart = track.scrollLeft <= 4;
+    const atEnd = track.scrollLeft >= maxScroll - 4;
+    prevBtn.disabled = atStart;
+    nextBtn.disabled = atEnd;
+    progressPrev.disabled = atStart;
+    progressNext.disabled = atEnd;
+
+    const visibleFraction = maxScroll > 0 ? track.clientWidth / track.scrollWidth : 1;
+    const thumbWidthPct = Math.max(visibleFraction * 100, 8);
+    const scrollFraction = maxScroll > 0 ? track.scrollLeft / maxScroll : 0;
+    const thumbLeftPct = scrollFraction * (100 - thumbWidthPct);
+    progressThumb.style.width = `${thumbWidthPct}%`;
+    progressThumb.style.left = `${thumbLeftPct}%`;
   };
 
   const scrollByCard = (direction) => {
@@ -256,14 +363,17 @@ function buildCategorySection(categoryName, notes) {
 
   prevBtn.addEventListener("click", () => scrollByCard(-1));
   nextBtn.addEventListener("click", () => scrollByCard(1));
+  progressPrev.addEventListener("click", () => scrollByCard(-1));
+  progressNext.addEventListener("click", () => scrollByCard(1));
   track.addEventListener("scroll", updateArrowState, { passive: true });
   window.addEventListener("resize", updateArrowState, { passive: true });
 
   section.appendChild(header);
   section.appendChild(track);
+  section.appendChild(progress);
 
-  // Arrow disabled-state depends on layout, which isn't settled until
-  // after this section is in the document — defer one frame.
+  // Arrow/progress disabled-state depends on layout, which isn't settled
+  // until after this section is in the document — defer one frame.
   requestAnimationFrame(updateArrowState);
 
   return section;
