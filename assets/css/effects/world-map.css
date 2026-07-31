@@ -42,12 +42,6 @@
  *   data instead (see the asset file's own comment).
  */
 
-body[data-page="contact"] {
-  background-image:
-    radial-gradient(ellipse 60% 70% at 82% 45%, transparent 0%, transparent 50%, var(--fx-depth-vignette) 100%);
-  background-attachment: fixed;
-}
-
 .world-map {
   position: fixed;
   inset: 0;
@@ -55,6 +49,11 @@ body[data-page="contact"] {
   overflow: hidden;
   pointer-events: none;
   opacity: 0.45; /* visible against pure-black background, still decorative, never competing with content */
+  /* Vignette lives here (not on body via background-attachment:fixed)
+     since this wrapper is already position:fixed and composites once,
+     instead of being a candidate for scroll-triggered repaint. */
+  background-image:
+    radial-gradient(ellipse 60% 70% at 82% 45%, transparent 0%, transparent 50%, var(--fx-depth-vignette) 100%);
 }
 
 .world-map__svg {

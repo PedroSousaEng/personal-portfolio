@@ -5,12 +5,17 @@
  *   atmosphere without leaking styles into other pages.
  */
 
-body[data-page="404"] {
+body[data-page="404"] .bg-fx--404 {
+  /* Background lives here (not on body via background-attachment:fixed)
+     since this canvas is already position:fixed and composites once,
+     instead of being a candidate for scroll-triggered repaint. */
   background-image:
     radial-gradient(circle at 52% 42%, rgba(108, 124, 255, 0.08), transparent 26%),
     linear-gradient(180deg, rgba(91, 99, 118, 0.04) 0%, rgba(5, 5, 5, 0) 28%),
     radial-gradient(ellipse 78% 84% at 50% 50%, transparent 0%, transparent 55%, rgba(20, 23, 31, 0.62) 100%);
-  background-attachment: fixed;
+  /* Plain alpha compositing — see tech-network.css for why mix-blend-mode
+     was dropped here. */
+  opacity: 0.92;
 }
 
 body[data-page="404"]::before,
@@ -38,12 +43,6 @@ body[data-page="404"]::after {
   background:
     linear-gradient(90deg, rgba(108, 124, 255, 0.03) 0%, transparent 16%, transparent 84%, rgba(108, 124, 255, 0.03) 100%),
     linear-gradient(180deg, rgba(5, 5, 5, 0) 0%, rgba(5, 5, 5, 0.26) 100%);
-}
-
-body[data-page="404"] .bg-fx--404 {
-  /* Plain alpha compositing — see tech-network.css for why mix-blend-mode
-     was dropped here. */
-  opacity: 0.92;
 }
 
 @media (prefers-reduced-motion: reduce) {

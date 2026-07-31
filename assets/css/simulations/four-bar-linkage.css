@@ -1,0 +1,158 @@
+/**
+ * PURPOSE
+ *   Visual styling for the four-bar linkage simulation widget (mounted by
+ *   assets/js/simulations/four-bar-linkage.js into any container with
+ *   class "fourbar"). Kept as its own file — like the page-effect CSS
+ *   files — so it's only loaded on articles that actually embed it.
+ *
+ * RESPONSIBILITIES
+ *   - Layout: control panel + SVG stage, stacked on mobile, side-by-side
+ *     on wider viewports.
+ *   - Color every SVG element via CSS (the JS module only ever sets
+ *     geometry attributes: x/y/d/cx/cy/transform).
+ *
+ * DEPENDENCIES
+ *   tokens.css, components.css (.btn styles reused as-is).
+ *
+ * SAFE EDITS
+ *   Tune colors/sizes here. Do not add geometry (positions, sizes in
+ *   viewBox units) here — that belongs in the JS module.
+ */
+
+.fourbar {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: var(--space-6);
+  align-items: start;
+  background: var(--color-ink-900);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin-block: var(--space-8);
+}
+
+@media (max-width: 720px) {
+  .fourbar {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Control panel ---- */
+
+.fourbar__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.fourbar__control {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.fourbar__control-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.fourbar__control-label {
+  color: var(--color-text-100);
+}
+
+.fourbar__control-value {
+  color: var(--color-accent-indigo);
+  font-variant-numeric: tabular-nums;
+}
+
+.fourbar__control input[type="range"] {
+  width: 100%;
+  accent-color: var(--color-accent-indigo);
+}
+
+.fourbar__buttons {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.fourbar__buttons .btn {
+  flex: 1;
+  min-width: 0;
+}
+
+.fourbar__readout {
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--color-text-70, rgba(255, 255, 255, 0.7));
+  line-height: 1.5;
+  border-top: 1px solid var(--color-line);
+  padding-top: var(--space-3);
+  margin: 0;
+}
+
+/* ---- SVG stage ---- */
+
+.fourbar__stage {
+  min-width: 0;
+}
+
+.fourbar__svg {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 640 / 420;
+  display: block;
+}
+
+.fourbar__link {
+  stroke-linecap: round;
+}
+
+.fourbar__link--ground {
+  stroke: var(--color-line);
+  stroke-width: 6;
+}
+
+.fourbar__link--crank {
+  stroke: var(--color-accent-indigo);
+  stroke-width: 5;
+}
+
+.fourbar__link--coupler {
+  stroke: var(--color-accent-amber);
+  stroke-width: 5;
+}
+
+.fourbar__link--rocker {
+  stroke: var(--color-accent-indigo);
+  stroke-width: 5;
+}
+
+.fourbar__link--coupler-tri {
+  stroke: var(--color-accent-amber);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 4;
+  opacity: 0.5;
+}
+
+.fourbar__pivot {
+  fill: var(--color-ink-950);
+  stroke: var(--color-text-100);
+  stroke-width: 2;
+}
+
+.fourbar__pivot--ground {
+  fill: var(--color-text-100);
+}
+
+.fourbar__coupler-point {
+  fill: var(--color-accent-amber);
+}
+
+.fourbar__trace {
+  fill: none;
+  stroke: var(--fx-labnotes-glow, rgba(108, 124, 255, 0.5));
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  opacity: 0.85;
+}

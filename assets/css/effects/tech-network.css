@@ -26,9 +26,14 @@
    About-only background layer
    ========================================================= */
 
-[data-page="about"] {
-  /* Subtle schematic grid + a soft depth vignette. The grid is a pair of
-     repeating linear gradients so it costs nothing at runtime. */
+[data-page="about"] .bg-fx--network {
+  /* Subtle schematic grid + a soft depth vignette, applied to the
+     already-position:fixed canvas (not body via background-attachment:
+     fixed). A *repeating* tiled gradient under background-attachment:
+     fixed forces the browser to repaint every tile on every scroll
+     frame — that's expensive, not "free", despite repeating gradients
+     being cheap to define. A position:fixed element's own background is
+     composited once and doesn't need to repaint on scroll at all. */
   background-image:
     linear-gradient(
       to right,
@@ -54,12 +59,6 @@
     var(--fx-network-grid-size) var(--fx-network-grid-size),
     var(--fx-network-grid-size) var(--fx-network-grid-size),
     100% 100%;
-  background-attachment: fixed;
-}
-
-/* Canvas variant: same base .bg-fx rules; this variant hook lets us
-   tweak blend / composition without touching base.css. */
-[data-page="about"] .bg-fx--network {
   /* Plain alpha compositing (no mix-blend-mode): a blended layer that
      redraws 30x/sec is measurably more expensive to composite than a
      normal one, which is the likely source of pointer lag reported on

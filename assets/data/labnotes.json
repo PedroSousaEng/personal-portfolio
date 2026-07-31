@@ -12,5 +12,21 @@
       "In the Fatigue Study of a transmission hub (EN-GJS-500-7 nodular cast iron, σᵤ = 500 MPa, σᵧ = 320 MPa, E = 169 GPa), I ran a four-step mesh convergence study before trusting any stress result. Each step refined the mesh around the critical region and compared the resulting stress against the previous step, until the result stabilized within an acceptable margin.",
       "Only once the mesh had converged did I compare the simulated fatigue life against an analytical hand calculation — and against the real part, which had already failed in service. Skipping the convergence step would have meant trusting a number with no way to know if it was reliable."
     ]
+  },
+  {
+    "id": "four-bar-linkage",
+    "title": "The Four-Bar Linkage: Why Four Links Is the Interesting Number",
+    "subtitle": "Grashof's law, loop-closure kinematics, and an interactive explorer",
+    "excerpt": "Four pin-jointed links and one simple inequality decide whether a mechanism can spin all the way around or just rock back and forth. Adjust the four lengths below and watch it happen live.",
+    "tags": ["Kinematics", "Mechanisms", "Interactive"],
+    "date": "2026-02",
+    "relatedProject": "pin-clutch",
+    "content": [
+      "A four-bar linkage is about the simplest mechanism that can do something genuinely interesting: four rigid links, pin-jointed into a closed loop, one of them fixed to the frame (the ground link). Turn one of the remaining links and the geometry of the loop forces the other two into a very specific, coupled motion — no motors, no cams, no electronics, just constraint.",
+      "What that motion looks like — whether the driven link can spin all the way around, or only rock back and forth between two limits — is decided entirely by the four link lengths, through a rule called Grashof's law. Call the four lengths s (shortest), l (longest), and p, q (the other two). If s + l ≤ p + q, at least one link in the loop can fully rotate relative to the ground; which one depends on which link is shortest. If that inequality fails, every link is stuck oscillating.",
+      "The widget below solves the linkage's position at every instant using loop-closure: fix the ground link, place the crank pin from the driven angle, then find where the coupler and rocker links can possibly meet — geometrically, the intersection of two circles. Drag the four sliders and watch the classification (double-crank, crank-rocker, double-rocker, or non-Grashof) update live, along with the coupler curve traced by a point rigidly attached to the coupler link.",
+      "This is the same rotation-matrix-and-constraint way of thinking used to validate the Pin Clutch engagement kinematics — different mechanism, same underlying idea: the geometry alone tells you what motion is even possible before a single force is applied."
+    ],
+    "simulation": "four-bar-linkage"
   }
 ]

@@ -21,12 +21,13 @@
  *     tags: string[],
  *     date: string,            // "2026-01"
  *     relatedProject: string,  // optional project id to cross-link
- *     content: string[]        // paragraphs, rendered in order
+ *     content: string[],       // paragraphs, rendered in order
+ *     simulation: string       // optional — a key in SIMULATION_MODULES
  *   }>
  *
- *   Future entries can add a `simulation` field (e.g. an embedded
- *   four-bar-linkage widget) — no entry is required to have one, so nothing
- *   here breaks for text-only notes.
+ *   A `simulation` entry lazy-loads its JS module and CSS file only on
+ *   articles that use it (see SIMULATION_MODULES below), so text-only
+ *   notes never pay for simulation code they don't use.
  *
  * DEPENDENCIES
  *   data-loader.js
@@ -38,6 +39,31 @@
 
 import { loadJSON } from "./data-loader.js";
 import { DATA_PATHS } from "./config.js";
+
+/**
+ * Registry of embeddable simulations. Keyed by the `simulation` string
+ * used in labnotes.json. Add new simulations here as they're built —
+ * each entry lazy-loads its own JS module and CSS file.
+ */
+const SIMULATION_MODULES = {
+  "four-bar-linkage": {
+    css: "assets/css/simulations/four-bar-linkage.css",
+    load: () => import("./simulations/four-bar-linkage.js"),
+    init: (mod, containerEl) => mod.initFourBarLinkage(containerEl),
+  },
+};
+
+/**
+ * Injects a stylesheet <link> into <head> exactly once per href.
+ * @param {string} href
+ */
+function ensureStylesheet(href) {
+  if (document.querySelector(`link[href="${href}"]`)) return;
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = href;
+  document.head.appendChild(link);
+}
 
 /**
  * Renders an accessible empty/error state into a container.
@@ -91,6 +117,12 @@ function buildCard(note) {
     date.className = "card__meta-item";
     date.textContent = note.date;
     meta.appendChild(date);
+    if (note.simulation) {
+      const interactive = document.createElement("span");
+      interactive.className = "card__meta-item";
+      interactive.textContent = "🕹 Interactive";
+      meta.appendChild(interactive);
+    }
     card.appendChild(meta);
   }
 
@@ -240,6 +272,13 @@ export async function renderLabNoteDetail(containerEl, breadcrumbEl) {
     fragment.appendChild(header);
     fragment.appendChild(body);
 
+    let simulationMount = null;
+    if (note.simulation && SIMULATION_MODULES[note.simulation]) {
+      simulationMount = document.createElement("div");
+      simulationMount.className = "fourbar-mount mt-8";
+      fragment.appendChild(simulationMount);
+    }
+
     if (note.relatedProject) {
       const cta = document.createElement("p");
       cta.className = "mt-8";
@@ -252,6 +291,19 @@ export async function renderLabNoteDetail(containerEl, breadcrumbEl) {
     }
 
     containerEl.replaceChildren(fragment);
+
+    if (simulationMount && note.simulation) {
+      const sim = SIMULATION_MODULES[note.simulation];
+      ensureStylesheet(sim.css);
+      try {
+        const mod = await sim.load();
+        sim.init(mod, simulationMount);
+      } catch (simError) {
+        console.error("Simulation load failed:", note.simulation, simError);
+        simulationMount.textContent =
+          "This simulation couldn't be loaded right now.";
+      }
+    }
   } catch (error) {
     console.error("renderLabNoteDetail:", error);
     renderFallback(

@@ -30,9 +30,17 @@
  *   .bg-fx--labnotes.
  */
 
-[data-page="lab-notes"],
-[data-page="lab-note"] {
-  /* Horizontal ruled lines only — a notebook page, not a schematic grid. */
+/* Horizontal ruled lines only — a notebook page, not a schematic grid.
+   Applied to the already-position:fixed .bg-fx layer (not body via
+   background-attachment: fixed) so scrolling never repaints it: a
+   *repeating* tiled background with background-attachment:fixed forces
+   the browser to repaint every tile on every scroll frame, which is
+   what made this page feel sluggish. A position:fixed element with its
+   own background gets composited once and simply doesn't move — same
+   look, none of the repaint cost. */
+.bg-fx--labnotes {
+  overflow: hidden;
+  contain: paint;
   background-image: linear-gradient(
     to bottom,
     var(--fx-labnotes-rule) 0,
@@ -41,11 +49,6 @@
     transparent var(--fx-labnotes-rule-size)
   );
   background-size: 100% var(--fx-labnotes-rule-size);
-  background-attachment: fixed;
-}
-
-.bg-fx--labnotes {
-  overflow: hidden;
 }
 
 /* Vertical margin rule, like a notebook's left-margin line. Skipped on

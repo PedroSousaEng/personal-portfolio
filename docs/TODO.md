@@ -83,9 +83,17 @@
 - [ ] Add the exact per-step mesh-convergence numbers (element counts
       and/or % variation at each of the four refinement steps) to that
       article, if/when available.
-- [ ] Build an actual interactive simulation module for Lab Notes (e.g.
-      four-bar linkage) — the page and data contract support a future
-      `simulation` field per entry, but no simulation widget exists yet.
+- [x] Built an interactive simulation for Lab Notes: the Four-Bar Linkage
+      Explorer (`assets/js/simulations/four-bar-linkage.js` +
+      `assets/css/simulations/four-bar-linkage.css`), an original
+      implementation (loop-closure kinematics from first principles, not
+      based on any third-party site's code). Wired into
+      `render-labnotes.js` via a `simulation` field on a labnotes.json
+      entry, lazy-loaded so text-only notes don't pay for it.
+      `assets/js/simulations/` and `assets/css/simulations/` are the
+      pattern for adding more (each one: a JS module exporting an
+      `init(containerEl)` function + its own scoped CSS file, registered
+      in `SIMULATION_MODULES` in render-labnotes.js).
 
 ## Explicitly out of scope
 - Contact form / Formspree integration (confirmed: mailto only).
