@@ -58,9 +58,20 @@ const DEFAULTS = {
 
 const LIMITS = { min: 20, max: 220 };
 const SPEED = 0.9; // radians/sec at the crank
-const TRACE_MAX_POINTS = 600;
+const TRACE_MAX_POINTS = 300;
 const VIEW_W = 640;
 const VIEW_H = 420;
+// Cap our own work to ~30fps. The mechanism doesn't need 60fps to read
+// as smooth, and this halves the per-frame cost competing with the
+// site's own cursor rAF loop (see cursor.js's PERF NOTE — this is the
+// same class of regression, fixed the same way: do less work per frame).
+const MIN_FRAME_MS = 1000 / 30;
+// Full trace-path string rebuilds are the most expensive thing this
+// widget does (building an SVG path `d` string from up to
+// TRACE_MAX_POINTS points). Only rebuild it a few times a second — the
+// mechanism itself still animates every throttled frame; only the trail
+// redraw is decoupled and slower.
+const TRACE_REBUILD_MS = 120;
 
 function svgEl(tag, attrs = {}) {
   const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
@@ -123,6 +134,12 @@ export function initFourBarLinkage(containerEl) {
     prevB: null,
     trace: [],
     lastFrameTime: null,
+    lastRenderTime: 0,
+    lastTraceBuildTime: 0,
+    traceDirty: true,
+    inView: true,
+    cachedScale: null,
+    classification: classify(DEFAULTS.ground, DEFAULTS.crank, DEFAULTS.coupler, DEFAULTS.rocker),
   };
 
   containerEl.classList.add("fourbar");
@@ -164,6 +181,9 @@ export function initFourBarLinkage(containerEl) {
       valueText.textContent = input.value;
       state.trace = [];
       state.prevB = null;
+      state.cachedScale = null;
+      state.traceDirty = true;
+      state.classification = classify(state.ground, state.crank, state.coupler, state.rocker);
     });
 
     const labelRow = document.createElement("div");
@@ -199,6 +219,7 @@ export function initFourBarLinkage(containerEl) {
 
   resetTraceBtn.addEventListener("click", () => {
     state.trace = [];
+    state.traceDirty = true;
   });
 
   buttonRow.appendChild(playBtn);
@@ -223,18 +244,18 @@ export function initFourBarLinkage(containerEl) {
   const tracePath = svgEl("path", { class: "fourbar__trace" });
   traceGroup.appendChild(tracePath);
 
-  const groundLine = svgEl("line", { class: "fourbar__link fourbar__link--ground" });
-  const crankLine = svgEl("line", { class: "fourbar__link fourbar__link--crank" });
-  const couplerLine = svgEl("line", { class: "fourbar__link fourbar__link--coupler" });
-  const rockerLine = svgEl("line", { class: "fourbar__link fourbar__link--rocker" });
-  const couplerPointLine1 = svgEl("line", { class: "fourbar__link fourbar__link--coupler-tri" });
-  const couplerPointLine2 = svgEl("line", { class: "fourbar__link fourbar__link--coupler-tri" });
+  const groundLine = svgEl("path", { class: "fourbar__link fourbar__link--ground" });
+  const crankLine = svgEl("path", { class: "fourbar__link fourbar__link--crank" });
+  const couplerLine = svgEl("path", { class: "fourbar__link fourbar__link--coupler" });
+  const rockerLine = svgEl("path", { class: "fourbar__link fourbar__link--rocker" });
+  const couplerPointLine1 = svgEl("path", { class: "fourbar__link fourbar__link--coupler-tri" });
+  const couplerPointLine2 = svgEl("path", { class: "fourbar__link fourbar__link--coupler-tri" });
 
-  const pivotO2 = svgEl("circle", { r: 6, class: "fourbar__pivot fourbar__pivot--ground" });
-  const pivotO4 = svgEl("circle", { r: 6, class: "fourbar__pivot fourbar__pivot--ground" });
-  const jointA = svgEl("circle", { r: 5, class: "fourbar__pivot" });
-  const jointB = svgEl("circle", { r: 5, class: "fourbar__pivot" });
-  const couplerPoint = svgEl("circle", { r: 4, class: "fourbar__coupler-point" });
+  const pivotO2 = svgEl("circle", { r: 6, cx: 0, cy: 0, class: "fourbar__pivot fourbar__pivot--ground" });
+  const pivotO4 = svgEl("circle", { r: 6, cx: 0, cy: 0, class: "fourbar__pivot fourbar__pivot--ground" });
+  const jointA = svgEl("circle", { r: 5, cx: 0, cy: 0, class: "fourbar__pivot" });
+  const jointB = svgEl("circle", { r: 5, cx: 0, cy: 0, class: "fourbar__pivot" });
+  const couplerPoint = svgEl("circle", { r: 4, cx: 0, cy: 0, class: "fourbar__coupler-point" });
 
   svg.append(
     traceGroup,
@@ -258,23 +279,40 @@ export function initFourBarLinkage(containerEl) {
   // ---- Geometry / animation ------------------------------------------
 
   function originAndScale() {
+    if (state.cachedScale) return state.cachedScale;
     // Fit the mechanism's max possible reach inside the viewBox with margin.
     const maxReach = state.ground + state.crank + state.coupler + state.rocker;
     const scale = Math.min(VIEW_W, VIEW_H) / Math.max(maxReach * 0.9, 1);
     const ox = VIEW_W / 2 - (state.ground * scale) / 2;
     const oy = VIEW_H / 2 + 20;
-    return { scale, ox, oy };
+    state.cachedScale = { scale, ox, oy };
+
+    // The ground link and its two pivots only move when a slider changes
+    // (they're fixed in model space at (0,0) and (ground,0)) — never
+    // during animation. Redraw them here, once per slider change,
+    // instead of every single animation frame.
+    const O2 = { x: ox, y: oy };
+    const O4 = { x: ox + state.ground * scale, y: oy };
+    setLine(groundLine, O2, O4);
+    setPos(pivotO2, O2);
+    setPos(pivotO4, O4);
+
+    return state.cachedScale;
   }
 
   function toScreen(pt, ox, oy, scale) {
     return { x: ox + pt.x * scale, y: oy - pt.y * scale };
   }
 
-  function setLine(lineEl, p1, p2) {
-    lineEl.setAttribute("x1", p1.x);
-    lineEl.setAttribute("y1", p1.y);
-    lineEl.setAttribute("x2", p2.x);
-    lineEl.setAttribute("y2", p2.y);
+  function setLine(pathEl, p1, p2) {
+    pathEl.setAttribute(
+      "d",
+      `M${p1.x.toFixed(1)},${p1.y.toFixed(1)} L${p2.x.toFixed(1)},${p2.y.toFixed(1)}`
+    );
+  }
+
+  function setPos(circleEl, pt) {
+    circleEl.setAttribute("transform", `translate(${pt.x.toFixed(1)},${pt.y.toFixed(1)})`);
   }
 
   function step(dt) {
@@ -330,68 +368,113 @@ export function initFourBarLinkage(containerEl) {
       y: A.y + along * Math.sin(theta3) + perp * Math.cos(theta3),
     };
 
-    return { O2, O4, A, B, P };
+    return { A, B, P };
   }
 
-  function render(points) {
+  function render(points, now) {
     const { scale, ox, oy } = originAndScale();
-    const s = (pt) => toScreen(pt, ox, oy, scale);
 
-    const O2 = s(points.O2);
-    const O4 = s(points.O4);
-    const A = s(points.A);
-    const B = s(points.B);
-    const P = s(points.P);
+    const A = toScreen(points.A, ox, oy, scale);
+    const B = toScreen(points.B, ox, oy, scale);
+    const P = toScreen(points.P, ox, oy, scale);
+    // O2/O4 don't need recomputing here — see originAndScale, which
+    // already redrew the ground link/pivots when the cache was last
+    // rebuilt. They're only needed below to connect the moving links.
+    const O2 = { x: ox, y: oy };
+    const O4 = { x: ox + state.ground * scale, y: oy };
 
-    setLine(groundLine, O2, O4);
     setLine(crankLine, O2, A);
     setLine(couplerLine, A, B);
     setLine(rockerLine, O4, B);
     setLine(couplerPointLine1, A, P);
     setLine(couplerPointLine2, B, P);
 
-    pivotO2.setAttribute("cx", O2.x);
-    pivotO2.setAttribute("cy", O2.y);
-    pivotO4.setAttribute("cx", O4.x);
-    pivotO4.setAttribute("cy", O4.y);
-    jointA.setAttribute("cx", A.x);
-    jointA.setAttribute("cy", A.y);
-    jointB.setAttribute("cx", B.x);
-    jointB.setAttribute("cy", B.y);
-    couplerPoint.setAttribute("cx", P.x);
-    couplerPoint.setAttribute("cy", P.y);
+    setPos(jointA, A);
+    setPos(jointB, B);
+    setPos(couplerPoint, P);
 
     if (state.running) {
       state.trace.push(P);
       if (state.trace.length > TRACE_MAX_POINTS) state.trace.shift();
+      state.traceDirty = true;
     }
 
-    if (state.trace.length > 1) {
-      const d = state.trace
-        .map((pt, i) => `${i === 0 ? "M" : "L"} ${pt.x.toFixed(1)} ${pt.y.toFixed(1)}`)
-        .join(" ");
-      tracePath.setAttribute("d", d);
-    } else {
-      tracePath.setAttribute("d", "");
+    // The trace path is the expensive part (rebuilding a string from up
+    // to TRACE_MAX_POINTS points). The mechanism itself still redraws
+    // every throttled frame above; only the trail redraw is decoupled
+    // and slowed further, since a few-hundred-ms-old trail is visually
+    // indistinguishable from an up-to-the-frame one.
+    if (state.traceDirty && now - state.lastTraceBuildTime >= TRACE_REBUILD_MS) {
+      if (state.trace.length > 1) {
+        const parts = new Array(state.trace.length);
+        for (let i = 0; i < state.trace.length; i += 1) {
+          const pt = state.trace[i];
+          parts[i] = `${i === 0 ? "M" : "L"}${pt.x.toFixed(1)},${pt.y.toFixed(1)}`;
+        }
+        tracePath.setAttribute("d", parts.join(""));
+      } else {
+        tracePath.setAttribute("d", "");
+      }
+      state.traceDirty = false;
+      state.lastTraceBuildTime = now;
     }
 
-    readout.textContent = classify(state.ground, state.crank, state.coupler, state.rocker);
+    if (readout.dataset.label !== state.classification) {
+      readout.textContent = state.classification;
+      readout.dataset.label = state.classification;
+    }
   }
 
   function loop(now) {
-    if (!state.running) return;
+    if (!state.running || !state.inView) return;
+
+    // Throttle our own work to ~30fps (see MIN_FRAME_MS) rather than
+    // running at whatever the display refresh rate is — this is the
+    // single biggest lever on how much this widget competes with the
+    // page's own cursor rAF loop for frame budget.
+    if (now - state.lastRenderTime < MIN_FRAME_MS) {
+      requestAnimationFrame(loop);
+      return;
+    }
+
     if (state.lastFrameTime === null) state.lastFrameTime = now;
     const dt = Math.min((now - state.lastFrameTime) / 1000, 0.05);
     state.lastFrameTime = now;
+    state.lastRenderTime = now;
 
     const points = step(dt);
-    if (points) render(points);
+    if (points) render(points, now);
 
     requestAnimationFrame(loop);
   }
 
+  // Pause entirely when the tab isn't visible or the widget has
+  // scrolled out of view — no reason to spend any frame budget on
+  // something nobody can see.
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && state.running && state.inView) {
+      state.lastFrameTime = null;
+      requestAnimationFrame(loop);
+    }
+  });
+
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const wasInView = state.inView;
+        state.inView = entries[0]?.isIntersecting ?? true;
+        if (state.inView && !wasInView && state.running) {
+          state.lastFrameTime = null;
+          requestAnimationFrame(loop);
+        }
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(containerEl);
+  }
+
   // Render one static frame immediately (even if paused / reduced motion).
   const initialPoints = step(0);
-  if (initialPoints) render(initialPoints);
+  if (initialPoints) render(initialPoints, 0);
   if (state.running) requestAnimationFrame(loop);
 }
